@@ -12,12 +12,12 @@ namespace KinopoiskDev\Models;
  * просмотров и географического распределения зрителей.
  *
  * @package KinopoiskDev\Models
+ * @since   1.0.0
  * @author  Maxim Harder
  * @version 1.0.0
  *
- * @see     \KinopoiskDev\Models\Fees Для информации о кассовых сборах
  * @see     \KinopoiskDev\Models\Rating Для информации о рейтингах
- * @since   1.0.0
+ * @see     \KinopoiskDev\Models\Fees Для информации о кассовых сборах
  */
 class Audience {
 

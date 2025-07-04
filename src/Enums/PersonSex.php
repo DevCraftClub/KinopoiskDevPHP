@@ -9,16 +9,18 @@ namespace KinopoiskDev\Enums;
  * возвращены API Kinopoisk.dev
  */
 enum PersonSex: string {
-    case MALE = 'male';
-    case FEMALE = 'female';
-    
-    /**
-     * Возвращает название пола на русском языке
-     */
-    public function getRussianName(): string {
-        return match($this) {
-            self::MALE => 'мужской',
-            self::FEMALE => 'женский',
-        };
-    }
+
+	case MALE   = 'male';
+	case FEMALE = 'female';
+
+	/**
+	 * Возвращает название пола на русском языке
+	 */
+	public function getRussianName(): string {
+		return match ($this) {
+			self::MALE   => 'мужской',
+			self::FEMALE => 'женский',
+		};
+	}
+
 }

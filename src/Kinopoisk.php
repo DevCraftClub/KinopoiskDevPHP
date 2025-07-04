@@ -36,7 +36,7 @@ class Kinopoisk extends Helper {
 		}
 
 		$this->httpClient = $httpClient ?? new HttpClient([
-			'base_uri' => self::BASE_URL . '/' . self::API_VERSION,
+			'base_uri' => self::BASE_URL,
 			'timeout'  => 30,
 			'headers'  => [
 				'User-Agent'   => 'KinopoiskDev-PHP-Client/' . self::APP_VERSION,
@@ -49,9 +49,10 @@ class Kinopoisk extends Helper {
 	/**
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	protected function makeRequest(string $method, string $endpoint, array $queryParams = []): ResponseInterface {
+	protected function makeRequest(string $method, string $endpoint, array $queryParams = [], ?string $apiVersion = null): ResponseInterface {
 		try {
-			$url = $endpoint;
+			$version = $apiVersion ?? self::API_VERSION;
+			$url = "/{$version}/{$endpoint}";
 
 			if (!empty($queryParams)) {
 				$url .= '?' . http_build_query($queryParams);

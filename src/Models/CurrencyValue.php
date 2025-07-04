@@ -13,12 +13,12 @@ namespace KinopoiskDev\Models;
  * валюты и обрабатывает отсутствующие значения.
  *
  * @package KinopoiskDev\Models
- * @version 1.0.0
  * @since   1.0.0
- * @author Maxim Harder
+ * @author  Maxim Harder
  *
- * @see     \KinopoiskDev\Models\Fees Для информации о кассовых сборах
+ * @version 1.0.0
  * @see     \KinopoiskDev\Models\Budget Для информации о бюджете фильма
+ * @see     \KinopoiskDev\Models\Fees Для информации о кассовых сборах
  */
 class CurrencyValue {
 
@@ -32,8 +32,8 @@ class CurrencyValue {
 	 * @see CurrencyValue::fromArray() Для создания объекта из массива данных API
 	 * @see CurrencyValue::toArray() Для преобразования объекта в массив
 	 *
-	 * @param int|null    $value    Денежное значение в указанной валюте (null если не указано)
-	 * @param string|null $currency Код валюты (например, USD, RUB, EUR) или null если не указана
+	 * @param   int|null     $value     Денежное значение в указанной валюте (null если не указано)
+	 * @param   string|null  $currency  Код валюты (например, USD, RUB, EUR) или null если не указана
 	 */
 	public function __construct(
 		public readonly ?int    $value = NULL,
@@ -50,9 +50,9 @@ class CurrencyValue {
 	 *
 	 * @see CurrencyValue::toArray() Для обратного преобразования в массив
 	 *
-	 * @param array $data Массив данных о денежном значении от API, содержащий ключи:
-	 *                    - value: int|null - денежное значение
-	 *                    - currency: string|null - код валюты
+	 * @param   array  $data  Массив данных о денежном значении от API, содержащий ключи:
+	 *                        - value: int|null - денежное значение
+	 *                        - currency: string|null - код валюты
 	 *
 	 * @return self Новый экземпляр класса CurrencyValue с данными из массива
 	 */

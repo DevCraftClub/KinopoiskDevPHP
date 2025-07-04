@@ -672,3 +672,21 @@ may consider it more useful to permit linking proprietary applications with
 the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <http://www.gnu.org/philosophy/why-not-lgpl.html>.
+
+-----------------------------------------------------------------------
+
+                    ADDITIONAL INFORMATION FOR KinoPoiskDevPHP
+
+This KinoPoiskDevPHP library is licensed under the GNU General Public License
+version 3 (GPL-3.0) as published by the Free Software Foundation.
+
+Copyright (C) 2025 Maxim Harder <dev@devcraft.club>
+
+For questions, contributions, or issues related to this project, please contact:
+- Email: dev@devcraft.club
+- GitHub: https://github.com/DevCraftClub/KinopoiskDevPHP
+
+When using this library in your projects, please ensure you comply with the 
+terms of the GPL-3.0 license as described above.
+
+-----------------------------------------------------------------------

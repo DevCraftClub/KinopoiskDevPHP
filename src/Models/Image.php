@@ -7,134 +7,59 @@ namespace KinopoiskDev\Models;
 /**
  * Image model for posters, backdrops, etc.
  */
-class Image
-{
+class Image {
+
+//Methods
 	public function __construct(
-		public readonly ?string $url = null,
-		public readonly ?string $previewUrl = null,
-		public readonly ?int $height = null,
-		public readonly ?int $width = null,
+		public readonly ?string $url = NULL,
+		public readonly ?string $previewUrl = NULL,
+		public readonly ?int    $height = NULL,
+		public readonly ?int    $width = NULL,
 	) {}
 
 	/**
-	 * Create Image object from array (API response)
+	 * String representation
 	 */
-	public static function fromArray(array $data): self
-	{
-		return new self(
-			url: $data['url'] ?? null,
-			previewUrl: $data['previewUrl'] ?? null,
-			height: isset($data['height']) ? (int) $data['height'] : null,
-			width: isset($data['width']) ? (int) $data['width'] : null,
-		);
-	}
-
-	/**
-	 * Convert to array
-	 */
-	public function toArray(): array
-	{
-		return [
-			'url' => $this->url,
-			'previewUrl' => $this->previewUrl,
-			'height' => $this->height,
-			'width' => $this->width,
-		];
-	}
-
-	/**
-	 * Get image URL
-	 */
-	public function getUrl(): ?string
-	{
-		return $this->url;
-	}
-
-	/**
-	 * Get preview URL (smaller version)
-	 */
-	public function getPreviewUrl(): ?string
-	{
-		return $this->previewUrl;
-	}
-
-	/**
-	 * Get best available URL (prefers full size)
-	 */
-	public function getBestUrl(): ?string
-	{
-		return $this->url ?? $this->previewUrl;
-	}
-
-	/**
-	 * Get image dimensions
-	 */
-	public function getDimensions(): ?array
-	{
-		if ($this->width === null || $this->height === null) {
-			return null;
+	public function __toString(): string {
+		if (!$this->exists()) {
+			return 'No image';
 		}
 
-		return [
-			'width' => $this->width,
-			'height' => $this->height,
-		];
-	}
-
-	/**
-	 * Get aspect ratio
-	 */
-	public function getAspectRatio(): ?float
-	{
-		if ($this->width === null || $this->height === null || $this->height === 0) {
-			return null;
+		$parts = [];
+		if ($this->getFormattedDimensions()) {
+			$parts[] = $this->getFormattedDimensions();
+		}
+		if ($this->getResolutionCategory()) {
+			$parts[] = $this->getResolutionCategory();
 		}
 
-		return $this->width / $this->height;
-	}
-
-	/**
-	 * Check if image is portrait
-	 */
-	public function isPortrait(): ?bool
-	{
-		$ratio = $this->getAspectRatio();
-		return $ratio !== null ? $ratio < 1 : null;
-	}
-
-	/**
-	 * Check if image is landscape
-	 */
-	public function isLandscape(): ?bool
-	{
-		$ratio = $this->getAspectRatio();
-		return $ratio !== null ? $ratio > 1 : null;
-	}
-
-	/**
-	 * Check if image is square
-	 */
-	public function isSquare(): ?bool
-	{
-		$ratio = $this->getAspectRatio();
-		return $ratio !== null ? abs($ratio - 1) < 0.01 : null;
+		return empty($parts) ? 'Image available' : implode(' - ', $parts);
 	}
 
 	/**
 	 * Check if image exists
 	 */
-	public function exists(): bool
-	{
-		return $this->url !== null || $this->previewUrl !== null;
+	public function exists(): bool {
+		return $this->url !== NULL || $this->previewUrl !== NULL;
+	}
+
+	/**
+	 * Get formatted dimensions string
+	 */
+	public function getFormattedDimensions(): ?string {
+		if ($this->width === NULL || $this->height === NULL) {
+			return NULL;
+		}
+
+		return "{$this->width}x{$this->height}";
 	}
 
 	/**
 	 * Get image resolution category
 	 */
-	public function getResolutionCategory(): ?string
-	{
-		if ($this->width === null || $this->height === null) {
-			return null;
+	public function getResolutionCategory(): ?string {
+		if ($this->width === NULL || $this->height === NULL) {
+			return NULL;
 		}
 
 		$pixels = $this->width * $this->height;
@@ -153,34 +78,101 @@ class Image
 	}
 
 	/**
-	 * Get formatted dimensions string
+	 * Create Image object from array (API response)
 	 */
-	public function getFormattedDimensions(): ?string
-	{
-		if ($this->width === null || $this->height === null) {
-			return null;
-		}
-
-		return "{$this->width}x{$this->height}";
+	public static function fromArray(array $data): self {
+		return new self(
+			url       : $data['url'] ?? NULL,
+			previewUrl: $data['previewUrl'] ?? NULL,
+			height    : isset($data['height']) ? (int) $data['height'] : NULL,
+			width     : isset($data['width']) ? (int) $data['width'] : NULL,
+		);
 	}
 
 	/**
-	 * String representation
+	 * Convert to array
 	 */
-	public function __toString(): string
-	{
-		if (!$this->exists()) {
-			return 'No image';
-		}
-
-		$parts = [];
-		if ($this->getFormattedDimensions()) {
-			$parts[] = $this->getFormattedDimensions();
-		}
-		if ($this->getResolutionCategory()) {
-			$parts[] = $this->getResolutionCategory();
-		}
-
-		return empty($parts) ? 'Image available' : implode(' - ', $parts);
+	public function toArray(): array {
+		return [
+			'url'        => $this->url,
+			'previewUrl' => $this->previewUrl,
+			'height'     => $this->height,
+			'width'      => $this->width,
+		];
 	}
+
+	/**
+	 * Get image URL
+	 */
+	public function getUrl(): ?string {
+		return $this->url;
+	}
+
+	/**
+	 * Get preview URL (smaller version)
+	 */
+	public function getPreviewUrl(): ?string {
+		return $this->previewUrl;
+	}
+
+	/**
+	 * Get best available URL (prefers full size)
+	 */
+	public function getBestUrl(): ?string {
+		return $this->url ?? $this->previewUrl;
+	}
+
+	/**
+	 * Get image dimensions
+	 */
+	public function getDimensions(): ?array {
+		if ($this->width === NULL || $this->height === NULL) {
+			return NULL;
+		}
+
+		return [
+			'width'  => $this->width,
+			'height' => $this->height,
+		];
+	}
+
+	/**
+	 * Check if image is portrait
+	 */
+	public function isPortrait(): ?bool {
+		$ratio = $this->getAspectRatio();
+
+		return $ratio !== NULL ? $ratio < 1 : NULL;
+	}
+
+	/**
+	 * Get aspect ratio
+	 */
+	public function getAspectRatio(): ?float {
+		if ($this->width === NULL || $this->height === NULL || $this->height === 0) {
+			return NULL;
+		}
+
+		return $this->width / $this->height;
+	}
+
+	/**
+	 * Check if image is landscape
+	 */
+	public function isLandscape(): ?bool {
+		$ratio = $this->getAspectRatio();
+
+		return $ratio !== NULL ? $ratio > 1 : NULL;
+	}
+
+	/**
+	 * Check if image is square
+	 */
+	public function isSquare(): ?bool {
+		$ratio = $this->getAspectRatio();
+
+		return $ratio !== NULL ? abs($ratio - 1) < 0.01 : NULL;
+	}
+//Methods
+
 }

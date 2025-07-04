@@ -6,10 +6,11 @@ namespace KinopoiskDev\Models;
 
 class Fees {
 
+//Methods
 	public function __construct(
-		public readonly ?CurrencyValue $world = null,
-		public readonly ?CurrencyValue $russia = null,
-		public readonly ?CurrencyValue $usa = null,
+		public readonly ?CurrencyValue $world = NULL,
+		public readonly ?CurrencyValue $russia = NULL,
+		public readonly ?CurrencyValue $usa = NULL,
 	) {}
 
 	/**
@@ -17,9 +18,9 @@ class Fees {
 	 */
 	public static function fromArray(array $data): self {
 		return new self(
-			world: isset($data['world']) ? CurrencyValue::fromArray($data['world']) : null,
-			russia: isset($data['russia']) ? CurrencyValue::fromArray($data['russia']) : null,
-			usa: isset($data['usa']) ? CurrencyValue::fromArray($data['usa']) : null,
+			world : isset($data['world']) ? CurrencyValue::fromArray($data['world']) : NULL,
+			russia: isset($data['russia']) ? CurrencyValue::fromArray($data['russia']) : NULL,
+			usa   : isset($data['usa']) ? CurrencyValue::fromArray($data['usa']) : NULL,
 		);
 	}
 
@@ -28,9 +29,11 @@ class Fees {
 	 */
 	public function toArray(): array {
 		return [
-			'world' => $this->world?->toArray(),
+			'world'  => $this->world?->toArray(),
 			'russia' => $this->russia?->toArray(),
-			'usa' => $this->usa?->toArray(),
+			'usa'    => $this->usa?->toArray(),
 		];
 	}
+//Methods
+
 }

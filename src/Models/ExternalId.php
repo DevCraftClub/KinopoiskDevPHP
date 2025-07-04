@@ -12,7 +12,7 @@ class ExternalId {
 	public function __construct(
 		public readonly ?string $kpHD = NULL,
 		public readonly ?string $imdb = NULL,
-		public readonly ?int $tmdb = NULL,
+		public readonly ?int    $tmdb = NULL,
 	) {}
 
 	/**

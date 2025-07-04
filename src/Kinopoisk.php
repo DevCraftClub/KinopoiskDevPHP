@@ -17,8 +17,8 @@ use Psr\Http\Message\ResponseInterface;
 class Kinopoisk extends Helper {
 
 	private const BASE_URL = 'https://api.kinopoisk.dev';
-
 	private const API_VERSION = 'v1.4';
+	private const APP_VERSION = '1.0.0';
 
 	private HttpClient $httpClient;
 	private string $apiToken;
@@ -29,30 +29,17 @@ class Kinopoisk extends Helper {
 	public function __construct(?string $apiToken = NULL, ?HttpClient $httpClient = NULL) {
 		parent::__construct();
 
-		$dotenv = Dotenv\Dotenv::createImmutable(__DIR__, dirname(__DIR__));
-		$dotenv->safeLoad();
+		$this->setApiToken($apiToken);
 
-		$this->setApiToken($apiToken ?? getenv('KINOPOISK_API_TOKEN'));
-		$envBaseUrl = getenv('KINOPOISK_API_URL');
-		$envApiVersion = getenv('KINOPOISK_API_VERSION');
-
-		if ($envBaseUrl) {
-			$this->BASE_URL = $envBaseUrl;
-		}
-
-		if ($envApiVersion) {
-			$this->API_VERSION = $envApiVersion;
-		}
-
-		if (!$this->apiToken) {
-			throw new KinopoiskDevException('Ключ API не установлен!', 403);
+		if (!$this->getApiToken()) {
+			throw new KinopoiskDevException('Ключ API не установлен!', 401);
 		}
 
 		$this->httpClient = $httpClient ?? new HttpClient([
-			'base_uri' => self::BASE_URL,
+			'base_uri' => self::BASE_URL . '/' . self::API_VERSION,
 			'timeout'  => 30,
 			'headers'  => [
-				'User-Agent'   => 'KinopoiskDev-PHP-Client/1.0',
+				'User-Agent'   => 'KinopoiskDev-PHP-Client/' . self::APP_VERSION,
 				'Accept'       => 'application/json',
 				'Content-Type' => 'application/json',
 			],
@@ -64,7 +51,7 @@ class Kinopoisk extends Helper {
 	 */
 	protected function makeRequest(string $method, string $endpoint, array $queryParams = []): ResponseInterface {
 		try {
-			$url = '/' . self::API_VERSION . $endpoint;
+			$url = $endpoint;
 
 			if (!empty($queryParams)) {
 				$url .= '?' . http_build_query($queryParams);

@@ -211,9 +211,11 @@ class Movie {
 			ticketsOnSale     : $data['ticketsOnSale'] ?? NULL,
 			totalSeriesLength : $data['totalSeriesLength'] ?? NULL,
 			seriesLength      : $data['seriesLength'] ?? NULL,
-			audience          : $data['audience'] ?? [],
+			audience          : isset($data['audience']) ? array_map(fn ($a) => 
+				is_array($a) ? Audience::fromArray($a) : $a, $data['audience']) : [],
 			lists             : $data['lists'] ?? [],
-			networks          : $data['networks'] ?? NULL,
+			networks          : isset($data['networks']) && is_array($data['networks']) 
+				? Networks::fromArray($data['networks']) : $data['networks'] ?? NULL,
 			createdAt         : $data['createdAt'] ?? NULL,
 			updatedAt         : $data['updatedAt'] ?? NULL,
 		);

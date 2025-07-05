@@ -56,18 +56,18 @@ class Movie {
 	 * @param   int|null                                 $ageRating           Возрастной рейтинг (6+, 12+, 16+, 18+)
 	 * @param   Rating|null                              $rating              Рейтинги от различных источников
 	 * @param   Votes|null                               $votes               Количество голосов по рейтингам
-	 * @param   \KinopoiskDev\Models\Logo|null         $logo                Логотип фильма
-	 * @param   \KinopoiskDev\Models\ShortImage|null                               $poster              Постер фильма
-	 * @param   \KinopoiskDev\Models\ShortImage|null                               $backdrop            Фоновое изображение фильма
-	 * @param   \KinopoiskDev\Models\VideoTypes|null        $videos              Видеоматериалы (трейлеры, тизеры)
+	 * @param   \KinopoiskDev\Models\Logo|null           $logo                Логотип фильма
+	 * @param   \KinopoiskDev\Models\ShortImage|null     $poster              Постер фильма
+	 * @param   \KinopoiskDev\Models\ShortImage|null     $backdrop            Фоновое изображение фильма
+	 * @param   \KinopoiskDev\Models\VideoTypes|null     $videos              Видеоматериалы (трейлеры, тизеры)
 	 * @param   \KinopoiskDev\Models\ItemName[]          $genres              Жанры фильма
 	 * @param   \KinopoiskDev\Models\ItemName[]          $countries           Страны производства
 	 * @param   \KinopoiskDev\Models\Person[]            $persons             Участники фильма (актеры, режиссеры и т.д.)
-	 * @param   \KinopoiskDev\Models\ReviewInfo|null   $reviewInfo          Информация о рецензиях
+	 * @param   \KinopoiskDev\Models\ReviewInfo|null     $reviewInfo          Информация о рецензиях
 	 * @param   \KinopoiskDev\Models\SeasonInfo[]        $seasonsInfo         Информация о сезонах (для сериалов)
-	 * @param   \KinopoiskDev\Models\CurrencyValue|null     $budget              Бюджет фильма
-	 * @param   \KinopoiskDev\Models\Fees|null              $fees                Кассовые сборы
-	 * @param   \KinopoiskDev\Models\Premiere|null          $premiere            Даты премьер в разных странах
+	 * @param   \KinopoiskDev\Models\CurrencyValue|null  $budget              Бюджет фильма
+	 * @param   \KinopoiskDev\Models\Fees|null           $fees                Кассовые сборы
+	 * @param   \KinopoiskDev\Models\Premiere|null       $premiere            Даты премьер в разных странах
 	 * @param   \KinopoiskDev\Models\LinkedMovie[]|null  $similarMovies       Похожие фильмы
 	 * @param   \KinopoiskDev\Models\LinkedMovie[]|null  $sequelsAndPrequels  Сиквелы и приквелы
 	 * @param   \KinopoiskDev\Models\Watchability|null   $watchability        Информация о просмотрах
@@ -85,52 +85,52 @@ class Movie {
 	 * @param   string|null                              $updatedAt           Дата последнего обновления записи
 	 */
 	public function __construct(
-		#[Getter] public readonly ?int          $id = NULL,
-		#[Getter] public readonly ?ExternalId   $externalId = NULL,
-		#[Getter] public readonly ?string       $name = NULL,
-		#[Getter] public readonly ?string       $alternativeName = NULL,
-		#[Getter] public readonly ?string       $enName = NULL,
-		#[Getter] public readonly ?array        $names = [],
-		#[Getter] public readonly ?MovieType    $type = NULL,
-		#[Getter] public readonly ?int          $typeNumber = NULL,
-		#[Getter] public readonly ?int          $year = NULL,
-		#[Getter] public readonly ?string       $description = NULL,
-		#[Getter] public readonly ?string       $shortDescription = NULL,
-		#[Getter] public readonly ?string       $slogan = NULL,
-		#[Getter] public readonly ?MovieStatus  $status = NULL,
-		#[Getter] public readonly ?array        $facts = [],
-		#[Getter] public readonly ?int          $movieLength = NULL,
-		#[Getter] public readonly ?RatingMpaa   $ratingMpaa = NULL,
-		#[Getter] public readonly ?int          $ageRating = NULL,
-		#[Getter] public readonly ?Rating       $rating = NULL,
-		#[Getter] public readonly ?Votes        $votes = NULL,
-		#[Getter] public readonly ?Logo        $logo = NULL,
-		#[Getter] public readonly ?ShortImage        $poster = NULL,
-		#[Getter] public readonly ?ShortImage        $backdrop = NULL,
-		#[Getter] public readonly ?VideoTypes        $videos = NULL,
-		#[Getter] public readonly array         $genres = [],
-		#[Getter] public readonly array         $countries = [],
-		#[Getter] public readonly array         $persons = [],
-		#[Getter] public readonly ?ReviewInfo        $reviewInfo = NULL,
-		#[Getter] public readonly ?array        $seasonsInfo = [],
-		#[Getter] public readonly ?CurrencyValue         $budget = NULL,
-		#[Getter] public readonly ?Fees         $fees = NULL,
-		#[Getter] public readonly ?Premiere         $premiere = NULL,
-		#[Getter] public readonly ?array        $similarMovies = [],
-		#[Getter] public readonly ?array        $sequelsAndPrequels = [],
-		#[Getter] public readonly ?Watchability $watchability = NULL,
-		#[Getter] public readonly ?array        $releaseYears = [],
-		#[Getter] public readonly ?int          $top10 = NULL,
-		#[Getter] public readonly ?int          $top250 = NULL,
-		#[Getter] public readonly bool          $isSeries = FALSE,
-		#[Getter] public readonly ?bool         $ticketsOnSale = NULL,
-		#[Getter] public readonly ?int          $totalSeriesLength = NULL,
-		#[Getter] public readonly ?int          $seriesLength = NULL,
-		#[Getter] public readonly ?array        $audience = [],
-		#[Getter] public readonly array         $lists = [],
-		#[Getter] public readonly ?Networks     $networks = NULL,
-		#[Getter] public readonly ?string       $createdAt = NULL,
-		#[Getter] public readonly ?string       $updatedAt = NULL,
+		#[Getter] public readonly ?int           $id = NULL,
+		#[Getter] public readonly ?ExternalId    $externalId = NULL,
+		#[Getter] public readonly ?string        $name = NULL,
+		#[Getter] public readonly ?string        $alternativeName = NULL,
+		#[Getter] public readonly ?string        $enName = NULL,
+		#[Getter] public readonly ?array         $names = [],
+		#[Getter] public readonly ?MovieType     $type = NULL,
+		#[Getter] public readonly ?int           $typeNumber = NULL,
+		#[Getter] public readonly ?int           $year = NULL,
+		#[Getter] public readonly ?string        $description = NULL,
+		#[Getter] public readonly ?string        $shortDescription = NULL,
+		#[Getter] public readonly ?string        $slogan = NULL,
+		#[Getter] public readonly ?MovieStatus   $status = NULL,
+		#[Getter] public readonly ?array         $facts = [],
+		#[Getter] public readonly ?int           $movieLength = NULL,
+		#[Getter] public readonly ?RatingMpaa    $ratingMpaa = NULL,
+		#[Getter] public readonly ?int           $ageRating = NULL,
+		#[Getter] public readonly ?Rating        $rating = NULL,
+		#[Getter] public readonly ?Votes         $votes = NULL,
+		#[Getter] public readonly ?Logo          $logo = NULL,
+		#[Getter] public readonly ?ShortImage    $poster = NULL,
+		#[Getter] public readonly ?ShortImage    $backdrop = NULL,
+		#[Getter] public readonly ?VideoTypes    $videos = NULL,
+		#[Getter] public readonly array          $genres = [],
+		#[Getter] public readonly array          $countries = [],
+		#[Getter] public readonly array          $persons = [],
+		#[Getter] public readonly ?ReviewInfo    $reviewInfo = NULL,
+		#[Getter] public readonly ?array         $seasonsInfo = [],
+		#[Getter] public readonly ?CurrencyValue $budget = NULL,
+		#[Getter] public readonly ?Fees          $fees = NULL,
+		#[Getter] public readonly ?Premiere      $premiere = NULL,
+		#[Getter] public readonly ?array         $similarMovies = [],
+		#[Getter] public readonly ?array         $sequelsAndPrequels = [],
+		#[Getter] public readonly ?Watchability  $watchability = NULL,
+		#[Getter] public readonly ?array         $releaseYears = [],
+		#[Getter] public readonly ?int           $top10 = NULL,
+		#[Getter] public readonly ?int           $top250 = NULL,
+		#[Getter] public readonly bool           $isSeries = FALSE,
+		#[Getter] public readonly ?bool          $ticketsOnSale = NULL,
+		#[Getter] public readonly ?int           $totalSeriesLength = NULL,
+		#[Getter] public readonly ?int           $seriesLength = NULL,
+		#[Getter] public readonly ?array         $audience = [],
+		#[Getter] public readonly array          $lists = [],
+		#[Getter] public readonly ?Networks      $networks = NULL,
+		#[Getter] public readonly ?string        $createdAt = NULL,
+		#[Getter] public readonly ?string        $updatedAt = NULL,
 	) {}
 
 	/**
@@ -150,72 +150,54 @@ class Movie {
 	 * @param   array  $data  Массив данных о фильме от API, содержащий все возможные поля фильма
 	 *
 	 * @return \KinopoiskDev\Models\Movie Новый экземпляр класса Movie с данными из массива
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
 	public static function fromArray(array $data): Movie {
 		return new self(
 			id                : $data['id'],
-			externalId        : isset($data['externalId'])
-				? ExternalId::fromArray($data['externalId']) : NULL,
+			externalId        : DataManager::parseObjectAuto($data, 'externalId', ExternalId::class),
 			name              : $data['name'] ?? NULL,
 			alternativeName   : $data['alternativeName'] ?? NULL,
 			enName            : $data['enName'] ?? NULL,
 			names             : $data['names'] ?? [],
-			type              : isset($data['type']) ? MovieType::tryFrom($data['type']) : NULL,
+			type              : DataManager::parseEnumValue($data, 'type', MovieType::class),
 			typeNumber        : $data['typeNumber'] ?? NULL,
 			year              : $data['year'] ?? NULL,
 			description       : $data['description'] ?? NULL,
 			shortDescription  : $data['shortDescription'] ?? NULL,
 			slogan            : $data['slogan'] ?? NULL,
-			status            : isset($data['status']) ? MovieStatus::tryFrom($data['status']) : NULL,
+			status            : DataManager::parseEnumValue($data, 'status', MovieStatus::class),
 			facts             : $data['facts'] ?? [],
 			movieLength       : $data['movieLength'] ?? NULL,
-			ratingMpaa        : isset($data['ratingMpaa']) ? RatingMpaa::tryFrom($data['ratingMpaa']) : NULL,
+			ratingMpaa        : DataManager::parseEnumValue($data, 'ratingMpaa', RatingMpaa::class),
 			ageRating         : $data['ageRating'] ?? NULL,
-			rating            : isset($data['rating']) ? Rating::fromArray($data['rating'])
-				: NULL,
-			votes             : isset($data['votes']) ? Votes::fromArray($data['votes'])
-				: NULL,
-			logo              : $data['logo'] ?? NULL,
-			poster            : isset($data['poster']) ? ShortImage::fromArray($data['poster'])
-				: NULL,
-			backdrop          : isset($data['backdrop'])
-				? ShortImage::fromArray($data['backdrop']) : NULL,
-			videos            : $data['videos'] ?? NULL,
-			genres            : isset($data['genres']) ? array_map(fn ($g) => 
-				is_array($g) ? ItemName::fromArray($g) : $g, $data['genres']) : [],
-			countries         : isset($data['countries']) ? array_map(fn ($c) => 
-				is_array($c) ? ItemName::fromArray($c) : $c, $data['countries']) : [],
-			persons           : isset($data['persons']) ? array_map(fn ($p) => 
-				Person::fromArray($p), $data['persons']) : [],
-			reviewInfo        : isset($data['reviewInfo']) && is_array($data['reviewInfo']) 
-				? ReviewInfo::fromArray($data['reviewInfo']) : $data['reviewInfo'] ?? NULL,
-			seasonsInfo       : isset($data['seasonsInfo']) ? array_map(fn ($s) => 
-				is_array($s) ? SeasonInfo::fromArray($s) : $s, $data['seasonsInfo']) : [],
-			budget            : isset($data['budget']) && is_array($data['budget']) 
-				? CurrencyValue::fromArray($data['budget']) : $data['budget'] ?? NULL,
-			fees              : isset($data['fees']) && is_array($data['fees']) 
-				? Fees::fromArray($data['fees']) : $data['fees'] ?? NULL,
-			premiere          : isset($data['premiere']) && is_array($data['premiere']) 
-				? Premiere::fromArray($data['premiere']) : $data['premiere'] ?? NULL,
-			similarMovies     : isset($data['similarMovies']) ? array_map(fn ($m) => 
-				is_array($m) ? LinkedMovie::fromArray($m) : $m, $data['similarMovies']) : [],
-			sequelsAndPrequels: isset($data['sequelsAndPrequels']) ? array_map(fn ($m) => 
-				is_array($m) ? LinkedMovie::fromArray($m) : $m, $data['sequelsAndPrequels']) : [],
-			watchability      : isset($data['watchability']) && is_array($data['watchability']) 
-				? Watchability::fromArray($data['watchability']) : $data['watchability'] ?? NULL,
-			releaseYears      : isset($data['releaseYears']) ? array_map(fn ($y) => 
-				is_array($y) ? YearRange::fromArray($y) : $y, $data['releaseYears']) : [],
+			rating            : DataManager::parseObjectData($data, 'rating', Rating::class),
+			votes             : DataManager::parseObjectData($data, 'votes', Votes::class),
+			logo              : DataManager::parseObjectData($data, 'logo', Logo::class),
+			poster            : DataManager::parseObjectData($data, 'poster', ShortImage::class),
+			backdrop          : DataManager::parseObjectData($data, 'backdrop', ShortImage::class),
+			videos            : DataManager::parseObjectData($data, 'videos', VideoTypes::class),
+			genres            : DataManager::parseObjectArray($data, 'genres', ItemName::class),
+			countries         : DataManager::parseObjectArray($data, 'countries', ItemName::class),
+			persons           : DataManager::parseObjectArray($data, 'persons', Person::class),
+			reviewInfo        : DataManager::parseObjectAuto($data, 'reviewInfo', ReviewInfo::class),
+			seasonsInfo       : DataManager::parseObjectAuto($data, 'seasonsInfo', SeasonInfo::class, []),
+			budget            : DataManager::parseObjectAuto($data, 'budget', CurrencyValue::class),
+			fees              : DataManager::parseObjectData($data, 'fees', Fees::class),
+			premiere          : DataManager::parseObjectData($data, 'premiere', Premiere::class),
+			similarMovies     : DataManager::parseObjectArray($data, 'similarMovies', LinkedMovie::class, []),
+			sequelsAndPrequels: DataManager::parseObjectArray($data, 'sequelsAndPrequels', LinkedMovie::class, []),
+			watchability      : DataManager::parseObjectData($data, 'watchability', Watchability::class),
+			releaseYears      : DataManager::parseObjectArray($data, 'releaseYears', YearRange::class, []),
 			top10             : $data['top10'] ?? NULL,
 			top250            : $data['top250'] ?? NULL,
 			isSeries          : $data['isSeries'] ?? FALSE,
 			ticketsOnSale     : $data['ticketsOnSale'] ?? NULL,
 			totalSeriesLength : $data['totalSeriesLength'] ?? NULL,
 			seriesLength      : $data['seriesLength'] ?? NULL,
-			audience          : isset($data['audience']) ? array_map(fn ($a) => 
-				is_array($a) ? Audience::fromArray($a) : $a, $data['audience']) : [],
+			audience          : DataManager::parseObjectArray($data, 'audience', Audience::class),
 			lists             : $data['lists'] ?? [],
-			networks          : isset($data['networks']) && is_array($data['networks']) 
-				? Networks::fromArray($data['networks']) : $data['networks'] ?? NULL,
+			networks          : DataManager::parseObjectData($data, 'networks', Networks::class),
 			createdAt         : $data['createdAt'] ?? NULL,
 			updatedAt         : $data['updatedAt'] ?? NULL,
 		);
@@ -391,6 +373,5 @@ class Movie {
 	public function getTmdbUrl(): ?string {
 		return $this->externalId?->getTmdbUrl();
 	}
-
 
 }

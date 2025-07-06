@@ -10,6 +10,8 @@ class MovieRequests extends Kinopoisk {
 
 	/**
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException|\JsonException
+	 * @api /movie/{id}
+	 * @link https://kinopoiskdev.readme.io/reference/moviecontroller_findonev1_4
 	 */
 	public function getMovieById(int $movieId): Movie {
 		$response = $this->makeRequest('GET', "/movie/{$movieId}");

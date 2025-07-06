@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace KinopoiskDev\Models;
 
+use KinopoiskDev\Utils\DataManager;
+
 /**
  * Класс для работы с коллекцией сетей/телеканалов
  *
@@ -83,13 +85,8 @@ class Networks {
 	 * ```
 	 */
 	public static function fromArray(array $data): self {
-		$items = NULL;
-		if (isset($data['items']) && is_array($data['items'])) {
-			$items = array_map(fn ($item) => NetworkItem::fromArray($item), $data['items']);
-		}
-
 		return new self(
-			items: $items,
+			items: DataManager::parseObjectArray($data, 'items', NetworkItem::class, NULL),
 		);
 	}
 
@@ -119,13 +116,8 @@ class Networks {
 	 * ```
 	 */
 	public function toArray(): array {
-		$items = NULL;
-		if ($this->items !== NULL) {
-			$items = array_map(fn ($item) => $item->toArray(), $this->items);
-		}
-
 		return [
-			'items' => $items,
+			'items' => DataManager::getObjectsArray($this->items),
 		];
 	}
 

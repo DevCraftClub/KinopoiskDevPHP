@@ -18,6 +18,7 @@ use Lombok\Getter;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\ShortImage Для упрощенной модели изображений
  * @see     \KinopoiskDev\Models\Logo Для логотипов

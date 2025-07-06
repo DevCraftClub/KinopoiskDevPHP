@@ -14,6 +14,7 @@ namespace KinopoiskDev\Models;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
@@ -34,8 +35,8 @@ class ReviewInfo {
 	 * @param   string|null  $percentage     Процент положительных рецензий в виде строки
 	 */
 	public function __construct(
-		public readonly ?int $count = NULL,
-		public readonly ?int $positiveCount = NULL,
+		public readonly ?int    $count = NULL,
+		public readonly ?int    $positiveCount = NULL,
 		public readonly ?string $percentage = NULL,
 	) {}
 
@@ -57,9 +58,9 @@ class ReviewInfo {
 	 */
 	public static function fromArray(array $data): self {
 		return new self(
-			count: $data['count'] ?? NULL,
+			count        : $data['count'] ?? NULL,
 			positiveCount: $data['positiveCount'] ?? NULL,
-			percentage: $data['percentage'] ?? NULL,
+			percentage   : $data['percentage'] ?? NULL,
 		);
 	}
 
@@ -79,9 +80,10 @@ class ReviewInfo {
 	 */
 	public function toArray(): array {
 		return [
-			'count' => $this->count,
+			'count'         => $this->count,
 			'positiveCount' => $this->positiveCount,
-			'percentage' => $this->percentage,
+			'percentage'    => $this->percentage,
 		];
 	}
+
 }

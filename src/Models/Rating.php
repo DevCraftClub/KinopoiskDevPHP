@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace KinopoiskDev\Models;
 
-use KinopoiskDev\Utils\DataManager;
-
 /**
  * Класс для представления рейтингов фильма из различных источников
  *
@@ -16,6 +14,7 @@ use KinopoiskDev\Utils\DataManager;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie::getRating() Для получения рейтинга фильма
  * @see     \KinopoiskDev\Models\Votes Для информации о количестве голосов
@@ -32,12 +31,12 @@ class Rating {
 	 * @see Rating::fromArray() Для создания объекта из массива данных API
 	 * @see Rating::toArray() Для преобразования объекта в массив
 	 *
-	 * @param   float|null  $kp                 Рейтинг на Кинопоиске (от 0.0 до 10.0)
-	 * @param   float|null  $imdb               Рейтинг на IMDB (от 0.0 до 10.0)
-	 * @param   float|null  $tmdb               Рейтинг на The Movie Database (от 0.0 до 10.0)
-	 * @param   float|null  $filmCritics        Рейтинг кинокритиков (от 0.0 до 100.0)
-	 * @param   float|null  $russianFilmCritics Рейтинг российских кинокритиков (от 0.0 до 100.0)
-	 * @param   float|null  $await              Рейтинг ожидания (от 0.0 до 100.0)
+	 * @param   float|null  $kp                  Рейтинг на Кинопоиске (от 0.0 до 10.0)
+	 * @param   float|null  $imdb                Рейтинг на IMDB (от 0.0 до 10.0)
+	 * @param   float|null  $tmdb                Рейтинг на The Movie Database (от 0.0 до 10.0)
+	 * @param   float|null  $filmCritics         Рейтинг кинокритиков (от 0.0 до 100.0)
+	 * @param   float|null  $russianFilmCritics  Рейтинг российских кинокритиков (от 0.0 до 100.0)
+	 * @param   float|null  $await               Рейтинг ожидания (от 0.0 до 100.0)
 	 */
 	public function __construct(
 		public readonly ?float $kp = NULL,
@@ -47,6 +46,34 @@ class Rating {
 		public readonly ?float $russianFilmCritics = NULL,
 		public readonly ?float $await = NULL,
 	) {}
+
+	/**
+	 * Возвращает строковое представление рейтингов
+	 *
+	 * Реализует магический метод __toString для преобразования объекта
+	 * в строку. Формирует строку, содержащую основные рейтинги в удобочитаемом
+	 * формате, разделенные запятыми.
+	 *
+	 * @return string Строковое представление рейтингов или 'No ratings', если рейтинги отсутствуют
+	 */
+	public function __toString(): string {
+		$parts = [];
+
+		if ($this->kp) {
+			$parts[] = "KP: {$this->kp}";
+		}
+		if ($this->imdb) {
+			$parts[] = "IMDB: {$this->imdb}";
+		}
+		if ($this->tmdb) {
+			$parts[] = "TMDB: {$this->tmdb}";
+		}
+		if ($this->filmCritics) {
+			$parts[] = "Critics: {$this->filmCritics}";
+		}
+
+		return empty($parts) ? 'No ratings' : implode(', ', $parts);
+	}
 
 	/**
 	 * Создает объект Rating из массива данных API
@@ -63,14 +90,14 @@ class Rating {
 	 */
 	public static function fromArray(array $data): self {
 		return new self(
-			kp: isset($data['kp']) ? (float) $data['kp'] : NULL,
-			imdb: isset($data['imdb']) ? (float) $data['imdb'] : NULL,
-			tmdb: isset($data['tmdb']) ? (float) $data['tmdb'] : NULL,
-			filmCritics: isset($data['filmCritics'])
+			kp                : isset($data['kp']) ? (float) $data['kp'] : NULL,
+			imdb              : isset($data['imdb']) ? (float) $data['imdb'] : NULL,
+			tmdb              : isset($data['tmdb']) ? (float) $data['tmdb'] : NULL,
+			filmCritics       : isset($data['filmCritics'])
 				? (float) $data['filmCritics'] : NULL,
 			russianFilmCritics: isset($data['russianFilmCritics'])
 				? (float) $data['russianFilmCritics'] : NULL,
-			await: isset($data['await']) ? (float) $data['await'] : NULL,
+			await             : isset($data['await']) ? (float) $data['await'] : NULL,
 		);
 	}
 
@@ -278,34 +305,6 @@ class Rating {
 		}
 
 		return $ratings;
-	}
-
-	/**
-	 * Возвращает строковое представление рейтингов
-	 *
-	 * Реализует магический метод __toString для преобразования объекта
-	 * в строку. Формирует строку, содержащую основные рейтинги в удобочитаемом
-	 * формате, разделенные запятыми.
-	 *
-	 * @return string Строковое представление рейтингов или 'No ratings', если рейтинги отсутствуют
-	 */
-	public function __toString(): string {
-		$parts = [];
-
-		if ($this->kp) {
-			$parts[] = "KP: {$this->kp}";
-		}
-		if ($this->imdb) {
-			$parts[] = "IMDB: {$this->imdb}";
-		}
-		if ($this->tmdb) {
-			$parts[] = "TMDB: {$this->tmdb}";
-		}
-		if ($this->filmCritics) {
-			$parts[] = "Critics: {$this->filmCritics}";
-		}
-
-		return empty($parts) ? 'No ratings' : implode(', ', $parts);
 	}
 
 }

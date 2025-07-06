@@ -20,10 +20,12 @@ use Lombok\Getter;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\SearchMovie Для поисковых результатов фильмов
  * @see     \KinopoiskDev\Models\LinkedMovie Для связанных фильмов
  * @see     \KinopoiskDev\Models\ExternalId Для внешних идентификаторов
+ * @link    https://kinopoiskdev.readme.io/reference/moviecontroller_findonev1_4
  */
 class Movie {
 

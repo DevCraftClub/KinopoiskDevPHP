@@ -14,6 +14,7 @@ namespace KinopoiskDev\Models;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Video Для отдельных видеоматериалов
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
@@ -34,7 +35,7 @@ class VideoTypes {
 	 * @param   array|null  $trailers  Массив объектов Video с трейлерами или null
 	 */
 	public function __construct(
-		public readonly ?array $trailers = null,
+		public readonly ?array $trailers = NULL,
 	) {}
 
 	/**
@@ -53,9 +54,9 @@ class VideoTypes {
 	 * @return \KinopoiskDev\Models\VideoTypes Новый экземпляр класса VideoTypes с данными из массива
 	 */
 	public static function fromArray(array $data): self {
-		$trailers = null;
+		$trailers = NULL;
 		if (isset($data['trailers']) && is_array($data['trailers'])) {
-			$trailers = array_map(fn($trailer) => Video::fromArray($trailer), $data['trailers']);
+			$trailers = array_map(fn ($trailer) => Video::fromArray($trailer), $data['trailers']);
 		}
 
 		return new self(
@@ -78,13 +79,14 @@ class VideoTypes {
 	 *               - trailers: array|null - массив данных о трейлерах или null
 	 */
 	public function toArray(): array {
-		$trailers = null;
-		if ($this->trailers !== null) {
-			$trailers = array_map(fn($trailer) => $trailer->toArray(), $this->trailers);
+		$trailers = NULL;
+		if ($this->trailers !== NULL) {
+			$trailers = array_map(fn ($trailer) => $trailer->toArray(), $this->trailers);
 		}
 
 		return [
 			'trailers' => $trailers,
 		];
 	}
+
 }

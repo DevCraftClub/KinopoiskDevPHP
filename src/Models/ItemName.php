@@ -16,6 +16,7 @@ namespace KinopoiskDev\Models;
  * @api     /v1/movie/possible-values-by-field
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Name Для представления названий с языком и типом
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма

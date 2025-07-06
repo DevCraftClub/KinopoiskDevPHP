@@ -18,10 +18,12 @@ use KinopoiskDev\Utils\DataManager;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\PersonInMovie Для информации о персоне в контексте фильма
  * @see     \KinopoiskDev\Enums\PersonProfession Для типов профессий персон
  * @see     \KinopoiskDev\Enums\PersonSex Для типов пола персон
+ * @link    https://kinopoiskdev.readme.io/reference/personcontroller_findonev1_4
  */
 class Person {
 
@@ -35,26 +37,26 @@ class Person {
 	 * @see Person::fromArray() Для создания объекта из массива данных API
 	 * @see Person::toArray() Для преобразования объекта в массив
 	 *
-	 * @param   int                                $id           Уникальный идентификатор персоны в системе Kinopoisk
-	 * @param   string|null                        $photo        URL фотографии персоны
-	 * @param   string|null                        $name         Имя персоны на русском языке
-	 * @param   string|null                        $enName       Имя персоны на английском языке
-	 * @param   string|null                        $description  Описание или роль персоны
-	 * @param   string|null                        $profession   Профессия персоны на русском языке
-	 * @param   PersonProfession|null              $enProfession Профессия персоны (enum)
-	 * @param   PersonSex|null                     $sex          Пол персоны (enum)
-	 * @param   int|null                           $growth       Рост персоны в сантиметрах
-	 * @param   string|null                        $birthday     Дата рождения в формате ISO
-	 * @param   string|null                        $death        Дата смерти в формате ISO
-	 * @param   int|null                           $age          Возраст персоны
-	 * @param   array                              $birthPlace   Массив мест рождения
-	 * @param   array                              $deathPlace   Массив мест смерти
-	 * @param   array                              $spouses      Массив данных о супругах
-	 * @param   int|null                           $countAwards  Количество наград
-	 * @param   array                              $facts        Массив интересных фактов о персоне
-	 * @param   array                              $movies       Массив фильмов с участием персоны
-	 * @param   string|null                        $updatedAt    Дата последнего обновления записи
-	 * @param   string|null                        $createdAt    Дата создания записи
+	 * @param   int                    $id            Уникальный идентификатор персоны в системе Kinopoisk
+	 * @param   string|null            $photo         URL фотографии персоны
+	 * @param   string|null            $name          Имя персоны на русском языке
+	 * @param   string|null            $enName        Имя персоны на английском языке
+	 * @param   string|null            $description   Описание или роль персоны
+	 * @param   string|null            $profession    Профессия персоны на русском языке
+	 * @param   PersonProfession|null  $enProfession  Профессия персоны (enum)
+	 * @param   PersonSex|null         $sex           Пол персоны (enum)
+	 * @param   int|null               $growth        Рост персоны в сантиметрах
+	 * @param   string|null            $birthday      Дата рождения в формате ISO
+	 * @param   string|null            $death         Дата смерти в формате ISO
+	 * @param   int|null               $age           Возраст персоны
+	 * @param   array                  $birthPlace    Массив мест рождения
+	 * @param   array                  $deathPlace    Массив мест смерти
+	 * @param   array                  $spouses       Массив данных о супругах
+	 * @param   int|null               $countAwards   Количество наград
+	 * @param   array                  $facts         Массив интересных фактов о персоне
+	 * @param   array                  $movies        Массив фильмов с участием персоны
+	 * @param   string|null            $updatedAt     Дата последнего обновления записи
+	 * @param   string|null            $createdAt     Дата создания записи
 	 */
 	public function __construct(
 		public readonly int               $id,
@@ -78,6 +80,55 @@ class Person {
 		public readonly ?string           $updatedAt = NULL,
 		public readonly ?string           $createdAt = NULL,
 	) {}
+
+	/**
+	 * Возвращает строковое представление персоны
+	 *
+	 * Реализует магический метод __toString для преобразования объекта
+	 * в строку. Возвращает отформатированное имя персоны с ролью.
+	 *
+	 * @see Person::getFormattedNameWithRole() Для получения отформатированного имени с ролью
+	 *
+	 * @return string Строковое представление персоны
+	 */
+	public function __toString(): string {
+		return $this->getFormattedNameWithRole();
+	}
+
+	/**
+	 * Возвращает отформатированное имя персоны с ролью
+	 *
+	 * Формирует строку, содержащую имя персоны и описание роли в скобках,
+	 * если описание роли доступно. Если имя персоны отсутствует, использует
+	 * идентификатор персоны в качестве запасного варианта.
+	 *
+	 * @see Person::getBestName() Для получения наиболее подходящего имени
+	 *
+	 * @return string Отформатированное имя с ролью или только имя, если роль отсутствует
+	 */
+	public function getFormattedNameWithRole(): string {
+		$name = $this->getBestName() ?? "Person #{$this->id}";
+		$role = $this->description;
+
+		if ($role) {
+			return "{$name} ({$role})";
+		}
+
+		return $name;
+	}
+
+	/**
+	 * Возвращает наиболее подходящее имя персоны
+	 *
+	 * Определяет и возвращает наиболее подходящее имя персоны, отдавая
+	 * предпочтение русскому имени, если оно доступно. Если русское имя
+	 * отсутствует, возвращает английское имя.
+	 *
+	 * @return string|null Наиболее подходящее имя персоны или null, если имя не задано
+	 */
+	public function getBestName(): ?string {
+		return $this->name ?? $this->enName;
+	}
 
 	/**
 	 * Создает объект Person из массива данных API
@@ -156,19 +207,6 @@ class Person {
 	}
 
 	/**
-	 * Возвращает наиболее подходящее имя персоны
-	 *
-	 * Определяет и возвращает наиболее подходящее имя персоны, отдавая
-	 * предпочтение русскому имени, если оно доступно. Если русское имя
-	 * отсутствует, возвращает английское имя.
-	 *
-	 * @return string|null Наиболее подходящее имя персоны или null, если имя не задано
-	 */
-	public function getBestName(): ?string {
-		return $this->name ?? $this->enName;
-	}
-
-	/**
 	 * Возвращает URL фотографии персоны
 	 *
 	 * Предоставляет прямой доступ к URL-адресу фотографии персоны.
@@ -219,6 +257,39 @@ class Person {
 	 */
 	public function getRoleDescription(): ?string {
 		return $this->description;
+	}
+
+	/**
+	 * Возвращает категорию роли персоны
+	 *
+	 * Определяет основную категорию профессии персоны на основе
+	 * проверки различных типов профессий. Возвращает строковое
+	 * представление категории из enum PersonProfession.
+	 *
+	 * @see Person::isActor() Для проверки, является ли персона актером
+	 * @see Person::isDirector() Для проверки, является ли персона режиссером
+	 * @see PersonProfession Для списка возможных категорий профессий
+	 *
+	 * @return string Строковое представление категории профессии
+	 */
+	public function getRoleCategory(): string {
+		if ($this->isActor()) {
+			return PersonProfession::ACTOR->value;
+		}
+		if ($this->isDirector()) {
+			return PersonProfession::DIRECTOR->value;
+		}
+		if ($this->isWriter()) {
+			return PersonProfession::WRITER->value;
+		}
+		if ($this->isProducer()) {
+			return PersonProfession::PRODUCER->value;
+		}
+		if ($this->isComposer()) {
+			return PersonProfession::COMPOSER->value;
+		}
+
+		return PersonProfession::OTHER->value;
 	}
 
 	/**
@@ -309,75 +380,6 @@ class Person {
 		return $this->enProfession === PersonProfession::COMPOSER ||
 		       $this->profession === 'композиторы' ||
 		       $this->profession === 'композитор';
-	}
-
-	/**
-	 * Возвращает категорию роли персоны
-	 *
-	 * Определяет основную категорию профессии персоны на основе
-	 * проверки различных типов профессий. Возвращает строковое
-	 * представление категории из enum PersonProfession.
-	 *
-	 * @see Person::isActor() Для проверки, является ли персона актером
-	 * @see Person::isDirector() Для проверки, является ли персона режиссером
-	 * @see PersonProfession Для списка возможных категорий профессий
-	 *
-	 * @return string Строковое представление категории профессии
-	 */
-	public function getRoleCategory(): string {
-		if ($this->isActor()) {
-			return PersonProfession::ACTOR->value;
-		}
-		if ($this->isDirector()) {
-			return PersonProfession::DIRECTOR->value;
-		}
-		if ($this->isWriter()) {
-			return PersonProfession::WRITER->value;
-		}
-		if ($this->isProducer()) {
-			return PersonProfession::PRODUCER->value;
-		}
-		if ($this->isComposer()) {
-			return PersonProfession::COMPOSER->value;
-		}
-
-		return PersonProfession::OTHER->value;
-	}
-
-	/**
-	 * Возвращает отформатированное имя персоны с ролью
-	 *
-	 * Формирует строку, содержащую имя персоны и описание роли в скобках,
-	 * если описание роли доступно. Если имя персоны отсутствует, использует
-	 * идентификатор персоны в качестве запасного варианта.
-	 *
-	 * @see Person::getBestName() Для получения наиболее подходящего имени
-	 *
-	 * @return string Отформатированное имя с ролью или только имя, если роль отсутствует
-	 */
-	public function getFormattedNameWithRole(): string {
-		$name = $this->getBestName() ?? "Person #{$this->id}";
-		$role = $this->description;
-
-		if ($role) {
-			return "{$name} ({$role})";
-		}
-
-		return $name;
-	}
-
-	/**
-	 * Возвращает строковое представление персоны
-	 *
-	 * Реализует магический метод __toString для преобразования объекта
-	 * в строку. Возвращает отформатированное имя персоны с ролью.
-	 *
-	 * @see Person::getFormattedNameWithRole() Для получения отформатированного имени с ролью
-	 *
-	 * @return string Строковое представление персоны
-	 */
-	public function __toString(): string {
-		return $this->getFormattedNameWithRole();
 	}
 
 }

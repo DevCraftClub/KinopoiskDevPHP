@@ -15,6 +15,7 @@ namespace KinopoiskDev\Models;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма
  * @see     \KinopoiskDev\Models\SearchMovie Для поисковой модели фильма

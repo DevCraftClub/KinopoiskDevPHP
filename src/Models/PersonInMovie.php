@@ -14,6 +14,7 @@ namespace KinopoiskDev\Models;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Person Для полной информации о персоне
  * @see     \KinopoiskDev\Models\Movie Для информации о фильме
@@ -30,22 +31,22 @@ class PersonInMovie {
 	 * @see PersonInMovie::fromArray() Для создания объекта из массива данных API
 	 * @see PersonInMovie::toArray() Для преобразования объекта в массив
 	 *
-	 * @param   int         $id           Уникальный идентификатор персоны
-	 * @param   string|null $photo        URL фотографии персоны
-	 * @param   string|null $name         Имя персоны на русском языке
-	 * @param   string|null $enName       Имя персоны на английском языке
-	 * @param   string|null $description  Описание роли персоны в фильме
-	 * @param   string|null $profession   Профессия персоны на русском языке
-	 * @param   string|null $enProfession Профессия персоны на английском языке
+	 * @param   int          $id            Уникальный идентификатор персоны
+	 * @param   string|null  $photo         URL фотографии персоны
+	 * @param   string|null  $name          Имя персоны на русском языке
+	 * @param   string|null  $enName        Имя персоны на английском языке
+	 * @param   string|null  $description   Описание роли персоны в фильме
+	 * @param   string|null  $profession    Профессия персоны на русском языке
+	 * @param   string|null  $enProfession  Профессия персоны на английском языке
 	 */
 	public function __construct(
-		public readonly int $id,
-		public readonly ?string $photo = null,
-		public readonly ?string $name = null,
-		public readonly ?string $enName = null,
-		public readonly ?string $description = null,
-		public readonly ?string $profession = null,
-		public readonly ?string $enProfession = null,
+		public readonly int     $id,
+		public readonly ?string $photo = NULL,
+		public readonly ?string $name = NULL,
+		public readonly ?string $enName = NULL,
+		public readonly ?string $description = NULL,
+		public readonly ?string $profession = NULL,
+		public readonly ?string $enProfession = NULL,
 	) {}
 
 	/**
@@ -70,13 +71,13 @@ class PersonInMovie {
 	 */
 	public static function fromArray(array $data): self {
 		return new self(
-			id: $data['id'],
-			photo: $data['photo'] ?? null,
-			name: $data['name'] ?? null,
-			enName: $data['enName'] ?? null,
-			description: $data['description'] ?? null,
-			profession: $data['profession'] ?? null,
-			enProfession: $data['enProfession'] ?? null,
+			id          : $data['id'],
+			photo       : $data['photo'] ?? NULL,
+			name        : $data['name'] ?? NULL,
+			enName      : $data['enName'] ?? NULL,
+			description : $data['description'] ?? NULL,
+			profession  : $data['profession'] ?? NULL,
+			enProfession: $data['enProfession'] ?? NULL,
 		);
 	}
 
@@ -93,13 +94,14 @@ class PersonInMovie {
 	 */
 	public function toArray(): array {
 		return [
-			'id' => $this->id,
-			'photo' => $this->photo,
-			'name' => $this->name,
-			'enName' => $this->enName,
-			'description' => $this->description,
-			'profession' => $this->profession,
+			'id'           => $this->id,
+			'photo'        => $this->photo,
+			'name'         => $this->name,
+			'enName'       => $this->enName,
+			'description'  => $this->description,
+			'profession'   => $this->profession,
 			'enProfession' => $this->enProfession,
 		];
 	}
+
 }

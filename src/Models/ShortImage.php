@@ -14,6 +14,7 @@ namespace KinopoiskDev\Models;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Image Для полной информации об изображении
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
@@ -34,8 +35,8 @@ class ShortImage {
 	 * @param   string|null  $previewUrl  URL превью изображения
 	 */
 	public function __construct(
-		public readonly ?string $url = null,
-		public readonly ?string $previewUrl = null,
+		public readonly ?string $url = NULL,
+		public readonly ?string $previewUrl = NULL,
 	) {}
 
 	/**
@@ -55,8 +56,8 @@ class ShortImage {
 	 */
 	public static function fromArray(array $data): self {
 		return new self(
-			url: $data['url'] ?? null,
-			previewUrl: $data['previewUrl'] ?? null,
+			url       : $data['url'] ?? NULL,
+			previewUrl: $data['previewUrl'] ?? NULL,
 		);
 	}
 
@@ -73,8 +74,9 @@ class ShortImage {
 	 */
 	public function toArray(): array {
 		return [
-			'url' => $this->url,
+			'url'        => $this->url,
 			'previewUrl' => $this->previewUrl,
 		];
 	}
+
 }

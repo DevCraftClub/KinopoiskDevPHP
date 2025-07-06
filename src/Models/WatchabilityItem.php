@@ -15,6 +15,7 @@ namespace KinopoiskDev\Models;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Watchability Для коллекции элементов доступности
  * @see     \KinopoiskDev\Models\Logo Для работы с логотипами сервисов

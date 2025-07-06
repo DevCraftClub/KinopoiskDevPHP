@@ -17,6 +17,7 @@ use KinopoiskDev\Utils\DataManager;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\NetworkItem Для отдельных элементов сети
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма

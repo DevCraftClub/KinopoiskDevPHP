@@ -14,6 +14,7 @@ namespace KinopoiskDev\Models;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
@@ -38,13 +39,13 @@ class Premiere {
 	 * @param   string|null  $dvd      Дата релиза на DVD в формате ISO
 	 */
 	public function __construct(
-		public readonly ?string $country = null,
-		public readonly ?string $world = null,
-		public readonly ?string $russia = null,
-		public readonly ?string $digital = null,
-		public readonly ?string $cinema = null,
-		public readonly ?string $bluray = null,
-		public readonly ?string $dvd = null,
+		public readonly ?string $country = NULL,
+		public readonly ?string $world = NULL,
+		public readonly ?string $russia = NULL,
+		public readonly ?string $digital = NULL,
+		public readonly ?string $cinema = NULL,
+		public readonly ?string $bluray = NULL,
+		public readonly ?string $dvd = NULL,
 	) {}
 
 	/**
@@ -69,13 +70,13 @@ class Premiere {
 	 */
 	public static function fromArray(array $data): self {
 		return new self(
-			country: $data['country'] ?? null,
-			world: $data['world'] ?? null,
-			russia: $data['russia'] ?? null,
-			digital: $data['digital'] ?? null,
-			cinema: $data['cinema'] ?? null,
-			bluray: $data['bluray'] ?? null,
-			dvd: $data['dvd'] ?? null,
+			country: $data['country'] ?? NULL,
+			world  : $data['world'] ?? NULL,
+			russia : $data['russia'] ?? NULL,
+			digital: $data['digital'] ?? NULL,
+			cinema : $data['cinema'] ?? NULL,
+			bluray : $data['bluray'] ?? NULL,
+			dvd    : $data['dvd'] ?? NULL,
 		);
 	}
 
@@ -93,12 +94,13 @@ class Premiere {
 	public function toArray(): array {
 		return [
 			'country' => $this->country,
-			'world' => $this->world,
-			'russia' => $this->russia,
+			'world'   => $this->world,
+			'russia'  => $this->russia,
 			'digital' => $this->digital,
-			'cinema' => $this->cinema,
-			'bluray' => $this->bluray,
-			'dvd' => $this->dvd,
+			'cinema'  => $this->cinema,
+			'bluray'  => $this->bluray,
+			'dvd'     => $this->dvd,
 		];
 	}
+
 }

@@ -14,6 +14,7 @@ namespace KinopoiskDev\Models;
  * @package KinopoiskDev\Models
  * @since   1.0.0
  * @author  Maxim Harder
+ *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\VideoTypes Для коллекции видеоматериалов
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
@@ -37,11 +38,11 @@ class Video {
 	 * @param   string|null  $type  Тип видеоматериала (например, трейлер, тизер)
 	 */
 	public function __construct(
-		public readonly ?string $url = null,
-		public readonly ?string $name = null,
-		public readonly ?string $site = null,
-		public readonly ?int $size = null,
-		public readonly ?string $type = null,
+		public readonly ?string $url = NULL,
+		public readonly ?string $name = NULL,
+		public readonly ?string $site = NULL,
+		public readonly ?int    $size = NULL,
+		public readonly ?string $type = NULL,
 	) {}
 
 	/**
@@ -64,11 +65,11 @@ class Video {
 	 */
 	public static function fromArray(array $data): self {
 		return new self(
-			url: $data['url'] ?? null,
-			name: $data['name'] ?? null,
-			site: $data['site'] ?? null,
-			size: $data['size'] ?? null,
-			type: $data['type'] ?? null,
+			url : $data['url'] ?? NULL,
+			name: $data['name'] ?? NULL,
+			site: $data['site'] ?? NULL,
+			size: $data['size'] ?? NULL,
+			type: $data['type'] ?? NULL,
 		);
 	}
 
@@ -85,11 +86,12 @@ class Video {
 	 */
 	public function toArray(): array {
 		return [
-			'url' => $this->url,
+			'url'  => $this->url,
 			'name' => $this->name,
 			'site' => $this->site,
 			'size' => $this->size,
 			'type' => $this->type,
 		];
 	}
+
 }

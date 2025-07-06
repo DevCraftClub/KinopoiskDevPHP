@@ -36,36 +36,60 @@ enum FilterOperator: string {
 	 * Возвращает оператор по умолчанию для указанного типа поля
 	 */
 	public static function getDefaultForFieldType(string $fieldType): self {
-		return match ($fieldType) {
-			'array'   => self::IN,
-			'text'    => self::REGEX,
-			default   => self::EQUALS
-		};
+		static $cache = [];
+
+		if (!isset($cache[$fieldType])) {
+			$cache[$fieldType] = match ($fieldType) {
+				'array'   => self::IN,
+				'text'    => self::REGEX,
+				default   => self::EQUALS
+			};
+		}
+
+		return $cache[$fieldType];
 	}
 
 	/**
 	 * Возвращает префикс для операторов включения/исключения
 	 */
 	public function getPrefix(): ?string {
-		return match ($this) {
-			self::INCLUDE => '+',
-			self::EXCLUDE => '!',
-			default       => NULL
-		};
+		static $cache = [];
+
+		if (!array_key_exists($this->value, $cache)) {
+			$cache[$this->value] = match ($this) {
+				self::INCLUDE => '+',
+				self::EXCLUDE => '!',
+				default       => NULL
+			};
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
 	 * Проверяет, является ли оператор оператором диапазона
 	 */
 	public function isRangeOperator(): bool {
-		return $this === self::RANGE;
+		static $cache = [];
+
+		if (!isset($cache[$this->value])) {
+			$cache[$this->value] = $this === self::RANGE;
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
 	 * Проверяет, является ли оператор оператором включения/исключения
 	 */
 	public function isIncludeExcludeOperator(): bool {
-		return in_array($this, [self::INCLUDE, self::EXCLUDE]);
+		static $cache = [];
+
+		if (!isset($cache[$this->value])) {
+			$cache[$this->value] = $this === self::INCLUDE || $this === self::EXCLUDE;
+		}
+
+		return $cache[$this->value];
 	}
 
 }

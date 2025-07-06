@@ -65,7 +65,14 @@ enum SortField: string {
 	 * @return string Тип данных поля ('number', 'string', 'date')
 	 */
 	public function getDataType(): string {
-		return match ($this) {
+		// Используем статический кеш для оптимизации
+		static $cache = [];
+
+		if (isset($cache[$this->value])) {
+			return $cache[$this->value];
+		}
+
+		$result = match ($this) {
 			// Числовые поля
 			self::ID, self::YEAR, self::MOVIE_LENGTH, self::SERIES_LENGTH,
 			self::TOTAL_SERIES_LENGTH, self::AGE_RATING, self::TOP_10, self::TOP_250,
@@ -81,6 +88,9 @@ enum SortField: string {
 			self::CREATED_AT, self::UPDATED_AT, self::PREMIERE_WORLD,
 			self::PREMIERE_RUSSIA, self::PREMIERE_USA => 'date',
 		};
+
+		$cache[$this->value] = $result;
+		return $result;
 	}
 
 	/**
@@ -92,7 +102,14 @@ enum SortField: string {
 	 * @return string Описательное название поля на русском языке
 	 */
 	public function getDescription(): string {
-		return match ($this) {
+		// Используем статический кеш для оптимизации
+		static $cache = [];
+
+		if (isset($cache[$this->value])) {
+			return $cache[$this->value];
+		}
+
+		$result = match ($this) {
 			self::ID                            => 'ID фильма',
 			self::NAME                          => 'Название (русское)',
 			self::EN_NAME                       => 'Название (английское)',
@@ -122,6 +139,9 @@ enum SortField: string {
 			self::PREMIERE_RUSSIA               => 'Дата премьеры в России',
 			self::PREMIERE_USA                  => 'Дата премьеры в США',
 		};
+
+		$cache[$this->value] = $result;
+		return $result;
 	}
 
 	/**
@@ -133,7 +153,13 @@ enum SortField: string {
 	 * @return bool true, если поле является рейтинговым, false в противном случае
 	 */
 	public function isRatingField(): bool {
-		return str_starts_with($this->value, 'rating.');
+		static $cache = [];
+
+		if (!isset($cache[$this->value])) {
+			$cache[$this->value] = str_starts_with($this->value, 'rating.');
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
@@ -145,7 +171,13 @@ enum SortField: string {
 	 * @return bool true, если поле является полем голосов, false в противном случае
 	 */
 	public function isVotesField(): bool {
-		return str_starts_with($this->value, 'votes.');
+		static $cache = [];
+
+		if (!isset($cache[$this->value])) {
+			$cache[$this->value] = str_starts_with($this->value, 'votes.');
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
@@ -157,7 +189,13 @@ enum SortField: string {
 	 * @return bool true, если поле является полем даты, false в противном случае
 	 */
 	public function isDateField(): bool {
-		return $this->getDataType() === 'date';
+		static $cache = [];
+
+		if (!isset($cache[$this->value])) {
+			$cache[$this->value] = $this->getDataType() === 'date';
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
@@ -169,7 +207,13 @@ enum SortField: string {
 	 * @return bool true, если поле является числовым, false в противном случае
 	 */
 	public function isNumericField(): bool {
-		return $this->getDataType() === 'number';
+		static $cache = [];
+
+		if (!isset($cache[$this->value])) {
+			$cache[$this->value] = $this->getDataType() === 'number';
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
@@ -181,14 +225,20 @@ enum SortField: string {
 	 * @return array Массив всех рейтинговых полей SortField
 	 */
 	public static function getRatingFields(): array {
-		return [
-			self::RATING_KP,
-			self::RATING_IMDB,
-			self::RATING_TMDB,
-			self::RATING_FILM_CRITICS,
-			self::RATING_RUSSIAN_FILM_CRITICS,
-			self::RATING_AWAIT,
-		];
+		static $fields = null;
+
+		if ($fields === null) {
+			$fields = [
+				self::RATING_KP,
+				self::RATING_IMDB,
+				self::RATING_TMDB,
+				self::RATING_FILM_CRITICS,
+				self::RATING_RUSSIAN_FILM_CRITICS,
+				self::RATING_AWAIT,
+			];
+		}
+
+		return $fields;
 	}
 
 	/**
@@ -200,14 +250,20 @@ enum SortField: string {
 	 * @return array Массив всех полей голосов SortField
 	 */
 	public static function getVotesFields(): array {
-		return [
-			self::VOTES_KP,
-			self::VOTES_IMDB,
-			self::VOTES_TMDB,
-			self::VOTES_FILM_CRITICS,
-			self::VOTES_RUSSIAN_FILM_CRITICS,
-			self::VOTES_AWAIT,
-		];
+		static $fields = null;
+
+		if ($fields === null) {
+			$fields = [
+				self::VOTES_KP,
+				self::VOTES_IMDB,
+				self::VOTES_TMDB,
+				self::VOTES_FILM_CRITICS,
+				self::VOTES_RUSSIAN_FILM_CRITICS,
+				self::VOTES_AWAIT,
+			];
+		}
+
+		return $fields;
 	}
 
 	/**
@@ -219,7 +275,13 @@ enum SortField: string {
 	 * @return SortDirection Рекомендуемое направление сортировки
 	 */
 	public function getDefaultDirection(): SortDirection {
-		return match ($this) {
+		static $cache = [];
+
+		if (isset($cache[$this->value])) {
+			return $cache[$this->value];
+		}
+
+		$result = match ($this) {
 			// По убыванию для рейтингов (сначала лучшие)
 			self::RATING_KP, self::RATING_IMDB, self::RATING_TMDB,
 			self::RATING_FILM_CRITICS, self::RATING_RUSSIAN_FILM_CRITICS, self::RATING_AWAIT,
@@ -244,5 +306,8 @@ enum SortField: string {
 			self::MOVIE_LENGTH, self::SERIES_LENGTH, self::TOTAL_SERIES_LENGTH,
 			self::AGE_RATING => SortDirection::ASC,
 		};
+
+		$cache[$this->value] = $result;
+		return $result;
 	}
 }

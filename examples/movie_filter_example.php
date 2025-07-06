@@ -54,8 +54,8 @@ $topFilter->inTop250()
 $movies = $movieRequests->searchMovies($topFilter, 1, 5);
 printMovies($movies->docs, "Топ-250 фильмов 2000-2022");
 
-// НОВОЕ: Пример 5: Базовая сортировка по рейтингу
-echo "\n=== Пример 5: НОВОЕ - Сортировка по рейтингу Кинопоиска ===\n";
+// Пример 5: Базовая сортировка по рейтингу
+echo "\n=== Пример 5: Сортировка по рейтингу Кинопоиска ===\n";
 $sortFilter = new MovieSearchFilter();
 $sortFilter->withMinRating(7.0, 'kp')
            ->withMinVotes(50000, 'kp')
@@ -65,8 +65,8 @@ $sortFilter->withMinRating(7.0, 'kp')
 $movies = $movieRequests->searchMovies($sortFilter, 1, 10);
 printMoviesWithSort($movies->docs, "Лучшие фильмы по рейтингу KP", $sortFilter->getSortString());
 
-// НОВОЕ: Пример 6: Множественная сортировка
-echo "\n=== Пример 6: НОВОЕ - Множественная сортировка ===\n";
+// Пример 6: Множественная сортировка
+echo "\n=== Пример 6: Множественная сортировка ===\n";
 $multiSortFilter = new MovieSearchFilter();
 $multiSortFilter->withMinRating(6.5, 'kp')
                 ->withYearBetween(2015, 2024)
@@ -77,8 +77,8 @@ $multiSortFilter->withMinRating(6.5, 'kp')
 $movies = $movieRequests->searchMovies($multiSortFilter, 1, 10);
 printMoviesWithSort($movies->docs, "Фильмы с множественной сортировкой", $multiSortFilter->getSortString());
 
-// НОВОЕ: Пример 7: Ручная настройка сортировки с enum
-echo "\n=== Пример 7: НОВОЕ - Ручная настройка сортировки ===\n";
+// Пример 7: Ручная настройка сортировки с enum
+echo "\n=== Пример 7: Ручная настройка сортировки ===\n";
 $manualSortFilter = new MovieSearchFilter();
 $manualSortFilter->withIncludedGenres(['комедия'])
                  ->withMinRating(6.0, 'kp')
@@ -89,8 +89,8 @@ $manualSortFilter->withIncludedGenres(['комедия'])
 $movies = $movieRequests->searchMovies($manualSortFilter, 1, 8);
 printMoviesWithSort($movies->docs, "Комедии с ручной сортировкой", $manualSortFilter->getSortString());
 
-// НОВОЕ: Пример 8: Сортировка с использованием SortCriteria
-echo "\n=== Пример 8: НОВОЕ - Использование SortCriteria ===\n";
+// Пример 8: Сортировка с использованием SortCriteria
+echo "\n=== Пример 8: Использование SortCriteria ===\n";
 $criteriaFilter = new MovieSearchFilter();
 $criteriaFilter->withIncludedGenres(['триллер', 'драма'])
                ->withMinRating(7.5, 'kp');
@@ -107,8 +107,8 @@ $criteriaFilter->addSortCriteria($ratingCriteria)
 $movies = $movieRequests->searchMovies($criteriaFilter, 1, 8);
 printMoviesWithSort($movies->docs, "Драма-триллеры с SortCriteria", $criteriaFilter->getSortString());
 
-// НОВОЕ: Пример 9: Сортировка из строковых параметров
-echo "\n=== Пример 9: НОВОЕ - Сортировка из строковых параметров ===\n";
+// Пример 9: Сортировка из строковых параметров
+echo "\n=== Пример 9: Сортировка из строковых параметров ===\n";
 $stringParamsFilter = new MovieSearchFilter();
 $stringParamsFilter->withIncludedGenres(['фантастика'])
                    ->withYearBetween(2010, 2024)
@@ -122,8 +122,8 @@ $stringParamsFilter->withIncludedGenres(['фантастика'])
 $movies = $movieRequests->searchMovies($stringParamsFilter, 1, 8);
 printMoviesWithSort($movies->docs, "Фантастика со строковыми параметрами", $stringParamsFilter->getSortString());
 
-// НОВОЕ: Пример 10: Динамическое управление сортировкой
-echo "\n=== Пример 10: НОВОЕ - Динамическое управление сортировкой ===\n";
+// Пример 10: Динамическое управление сортировкой
+echo "\n=== Пример 10: Динамическое управление сортировкой ===\n";
 $dynamicFilter = new MovieSearchFilter();
 $dynamicFilter->withIncludedGenres(['боевик'])
               ->withMinRating(6.0, 'kp');
@@ -150,8 +150,8 @@ echo "Направление сортировки по рейтингу: " . ($r
 $movies = $movieRequests->searchMovies($dynamicFilter, 1, 8);
 printMoviesWithSort($movies->docs, "Боевики с динамической сортировкой", $dynamicFilter->getSortString());
 
-// НОВОЕ: Пример 11: Предустановленные комбинации сортировки
-echo "\n=== Пример 11: НОВОЕ - Предустановленные комбинации ===\n";
+// Пример 11: Предустановленные комбинации сортировки
+echo "\n=== Пример 11: Предустановленные комбинации ===\n";
 
 // Лучшие фильмы (комбинированная сортировка)
 $bestFilter = new MovieSearchFilter();
@@ -163,8 +163,8 @@ $bestFilter->withMinRating(7.0, 'kp')
 $movies = $movieRequests->searchMovies($bestFilter, 1, 8);
 printMoviesWithSort($movies->docs, "Лучшие фильмы (комбинированная сортировка)", $bestFilter->getSortString());
 
-// НОВОЕ: Пример 12: Работа с информацией о полях сортировки
-echo "\n=== Пример 12: НОВОЕ - Информация о полях сортировки ===\n";
+// Пример 12: Работа с информацией о полях сортировки
+echo "\n=== Пример 12: Информация о полях сортировки ===\n";
 
 // Получение информации о различных полях
 $fields = [
@@ -185,8 +185,8 @@ foreach ($fields as $field) {
 	);
 }
 
-// НОВОЕ: Пример 13: Экспорт и импорт критериев сортировки
-echo "\n=== Пример 13: НОВОЕ - Экспорт/импорт критериев ===\n";
+// Пример 13: Экспорт и импорт критериев сортировки
+echo "\n=== Пример 13: Экспорт/импорт критериев ===\n";
 
 $exportFilter = new MovieSearchFilter();
 $exportFilter->sortByKinopoiskRating()
@@ -205,8 +205,8 @@ $importFilter->withIncludedGenres(['мелодрама'])
 
 echo "Импортированная строка сортировки: " . $importFilter->getSortString() . "\n";
 
-// НОВОЕ: Пример 14: Сложный поиск с фильтрацией и сортировкой
-echo "\n=== Пример 14: НОВОЕ - Сложный поиск российских фильмов ===\n";
+// Пример 14: Сложный поиск с фильтрацией и сортировкой
+echo "\n=== Пример 14: Сложный поиск российских фильмов ===\n";
 $complexFilter = new MovieSearchFilter();
 $complexFilter->withIncludedCountries(['Россия', 'СССР'])
               ->withExcludedGenres(['ужасы', 'эротика'])
@@ -221,8 +221,8 @@ $complexFilter->withIncludedCountries(['Россия', 'СССР'])
 $movies = $movieRequests->searchMovies($complexFilter, 1, 10);
 printMoviesWithSort($movies->docs, "Лучшие российские фильмы", $complexFilter->getSortString());
 
-// НОВОЕ: Пример 15: Поиск сериалов с сортировкой по дате премьеры
-echo "\n=== Пример 15: НОВОЕ - Сериалы с сортировкой по премьере ===\n";
+// Пример 15: Поиск сериалов с сортировкой по дате премьеры
+echo "\n=== Пример 15: Сериалы с сортировкой по премьере ===\n";
 $seriesFilter = new MovieSearchFilter();
 $seriesFilter->onlySeries()
              ->withMinRating(7.5, 'kp')
@@ -252,7 +252,7 @@ function printMovies(array $movies, string $title = ""): void {
 	}
 }
 
-// НОВАЯ функция для вывода с информацией о сортировке
+// функция для вывода с информацией о сортировке
 function printMoviesWithSort(array $movies, string $title = "", ?string $sortString = null): void {
 	if ($title) {
 		echo "--- $title ---\n";
@@ -311,13 +311,16 @@ function printMoviesWithSort(array $movies, string $title = "", ?string $sortStr
 function formatNumber(int $number): string {
 	if ($number >= 1000000) {
 		return round($number / 1000000, 1) . 'M';
-	} elseif ($number >= 1000) {
+	}
+
+	if ($number >= 1000) {
 		return round($number / 1000, 1) . 'K';
 	}
+
 	return (string)$number;
 }
 
-// НОВАЯ функция для демонстрации различных операций с сортировкой
+// функция для демонстрации различных операций с сортировкой
 function demonstrateSortOperations(): void {
 	echo "\n=== ДЕМОНСТРАЦИЯ: Операции с сортировкой ===\n";
 

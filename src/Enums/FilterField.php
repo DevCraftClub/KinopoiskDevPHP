@@ -93,7 +93,14 @@ enum FilterField: string {
 	 * Возвращает тип поля
 	 */
 	public function getFieldType(): string {
-		return match ($this) {
+		// Используем статический кеш для оптимизации
+		static $cache = [];
+
+		if (isset($cache[$this->value])) {
+			return $cache[$this->value];
+		}
+
+		$result = match ($this) {
 			// Числовые поля
 			self::ID, self::TYPE_NUMBER, self::YEAR,
 			self::RATING_KP, self::RATING_IMDB, self::RATING_TMDB,
@@ -127,20 +134,35 @@ enum FilterField: string {
 
 			default                                                               => 'string'
 		};
+
+		$cache[$this->value] = $result;
+		return $result;
 	}
 
 	/**
 	 * Проверяет, поддерживает ли поле операторы включения/исключения
 	 */
 	public function supportsIncludeExclude(): bool {
-		return $this->getFieldType() === 'include_exclude';
+		static $cache = [];
+
+		if (!isset($cache[$this->value])) {
+			$cache[$this->value] = $this->getFieldType() === 'include_exclude';
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
 	 * Проверяет, поддерживает ли поле диапазоны
 	 */
 	public function supportsRange(): bool {
-		return in_array($this->getFieldType(), ['number', 'date']);
+		static $cache = [];
+
+		if (!isset($cache[$this->value])) {
+			$cache[$this->value] = in_array($this->getFieldType(), ['number', 'date']);
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
@@ -154,18 +176,28 @@ enum FilterField: string {
 	 * Возвращает базовое поле для составных полей (например, rating.kp -> rating)
 	 */
 	public function getBaseField(): string {
-		$parts = explode('.', $this->value);
+		static $cache = [];
 
-		return $parts[0];
+		if (!isset($cache[$this->value])) {
+			$parts = explode('.', $this->value);
+			$cache[$this->value] = $parts[0];
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
 	 * Возвращает подполе для составных полей (например, rating.kp -> kp)
 	 */
 	public function getSubField(): ?string {
-		$parts = explode('.', $this->value);
+		static $cache = [];
 
-		return $parts[1] ?? NULL;
+		if (!array_key_exists($this->value, $cache)) {
+			$parts = explode('.', $this->value);
+			$cache[$this->value] = $parts[1] ?? NULL;
+		}
+
+		return $cache[$this->value];
 	}
 
 }

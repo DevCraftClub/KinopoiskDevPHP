@@ -28,6 +28,14 @@ trait SortManager {
 	protected array $sortCriteria = [];
 
 	/**
+	 * Ассоциативный массив критериев сортировки, индексированный по полю
+	 * Используется для быстрого доступа к критериям по полю
+	 *
+	 * @var array<string, SortCriteria>
+	 */
+	protected array $sortCriteriaByField = [];
+
+	/**
 	 * Добавляет критерий сортировки
 	 *
 	 * Добавляет новый критерий сортировки к текущему набору.
@@ -37,10 +45,20 @@ trait SortManager {
 	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
 	 */
 	public function addSortCriteria(SortCriteria $criteria): static {
-		// Удаляем существующий критерий для того же поля
-		$this->removeSortByField($criteria->field);
+		$fieldKey = $criteria->field->value;
 
+		// Если критерий для этого поля уже существует, удаляем его из основного массива
+		if (isset($this->sortCriteriaByField[$fieldKey])) {
+			$this->sortCriteria = array_filter(
+				$this->sortCriteria,
+				fn(SortCriteria $c) => $c->field !== $criteria->field
+			);
+		}
+
+		// Добавляем новый критерий
 		$this->sortCriteria[] = $criteria;
+		$this->sortCriteriaByField[$fieldKey] = $criteria;
+
 		return $this;
 	}
 
@@ -84,10 +102,20 @@ trait SortManager {
 	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
 	 */
 	public function removeSortByField(SortField $field): static {
-		$this->sortCriteria = array_filter(
-			$this->sortCriteria,
-			fn(SortCriteria $criteria) => $criteria->field !== $field
-		);
+		$fieldKey = $field->value;
+
+		// Если критерий для этого поля существует, удаляем его
+		if (isset($this->sortCriteriaByField[$fieldKey])) {
+			// Удаляем из ассоциативного массива
+			unset($this->sortCriteriaByField[$fieldKey]);
+
+			// Удаляем из основного массива
+			$this->sortCriteria = array_filter(
+				$this->sortCriteria,
+				fn(SortCriteria $criteria) => $criteria->field !== $field
+			);
+		}
+
 		return $this;
 	}
 
@@ -98,6 +126,7 @@ trait SortManager {
 	 */
 	public function clearSort(): static {
 		$this->sortCriteria = [];
+		$this->sortCriteriaByField = [];
 		return $this;
 	}
 
@@ -111,11 +140,25 @@ trait SortManager {
 	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
 	 */
 	public function toggleSort(SortField $field): static {
-		foreach ($this->sortCriteria as $index => $criteria) {
-			if ($criteria->field === $field) {
-				$this->sortCriteria[$index] = $criteria->reverse();
-				return $this;
+		$fieldKey = $field->value;
+
+		// Если критерий для этого поля существует, меняем направление
+		if (isset($this->sortCriteriaByField[$fieldKey])) {
+			$criteria = $this->sortCriteriaByField[$fieldKey];
+			$reversedCriteria = $criteria->reverse();
+
+			// Обновляем в ассоциативном массиве
+			$this->sortCriteriaByField[$fieldKey] = $reversedCriteria;
+
+			// Обновляем в основном массиве
+			foreach ($this->sortCriteria as $index => $c) {
+				if ($c->field === $field) {
+					$this->sortCriteria[$index] = $reversedCriteria;
+					break;
+				}
 			}
+
+			return $this;
 		}
 
 		// Если сортировка по полю не найдена, добавляем с направлением по умолчанию
@@ -129,12 +172,7 @@ trait SortManager {
 	 * @return bool true, если сортировка по полю установлена, false в противном случае
 	 */
 	public function hasSortBy(SortField $field): bool {
-		foreach ($this->sortCriteria as $criteria) {
-			if ($criteria->field === $field) {
-				return true;
-			}
-		}
-		return false;
+		return isset($this->sortCriteriaByField[$field->value]);
 	}
 
 	/**
@@ -144,12 +182,7 @@ trait SortManager {
 	 * @return SortDirection|null Направление сортировки или null, если сортировка не установлена
 	 */
 	public function getSortDirection(SortField $field): ?SortDirection {
-		foreach ($this->sortCriteria as $criteria) {
-			if ($criteria->field === $field) {
-				return $criteria->direction;
-			}
-		}
-		return null;
+		return $this->sortCriteriaByField[$field->value]->direction ?? null;
 	}
 
 	/**
@@ -170,7 +203,10 @@ trait SortManager {
 	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
 	 */
 	public function setSortCriteria(array $criteria): static {
-		$this->sortCriteria = [];
+		// Очищаем текущие критерии
+		$this->clearSort();
+
+		// Добавляем новые критерии
 		foreach ($criteria as $criterion) {
 			if ($criterion instanceof SortCriteria) {
 				$this->addSortCriteria($criterion);
@@ -376,6 +412,7 @@ trait SortManager {
 	 * @return $this
 	 */
 	public function importSortCriteria(array $data): static {
+		// Используем clearSort для очистки обоих массивов
 		$this->clearSort();
 
 		foreach ($data as $criteriaData) {

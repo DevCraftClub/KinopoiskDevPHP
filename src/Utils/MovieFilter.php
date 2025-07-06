@@ -760,28 +760,48 @@ class MovieFilter {
 	 * @return $this
 	 */
 	public function addFilter(string $field, mixed $value, string $operator = 'eq'): self {
-		// Если оператор - это диапазон, форматируем значение как строку с разделителем "-"
-		if ($operator === 'range' && is_array($value) && count($value) === 2) {
-			$this->filters[$field] = $value[0] . '-' . $value[1];
-			return $this;
-		}
-
-		// Если оператор - это include или exclude для жанров и стран
-		if (in_array($operator, ['include', 'exclude']) && (strpos($field, 'genres.name') === 0 || strpos($field, 'countries.name') === 0)) {
-			$prefix = $operator === 'include' ? '+' : '!';
-
-			if (is_array($value)) {
-				foreach ($value as $item) {
-					$this->filters[$field][] = $prefix . $item;
+		// Оптимизированная обработка различных типов фильтров
+		switch ($operator) {
+			// Обработка диапазонов
+			case 'range':
+				if (is_array($value) && count($value) === 2) {
+					$this->filters[$field] = $value[0] . '-' . $value[1];
 				}
-			} else {
-				$this->filters[$field][] = $prefix . $value;
-			}
+				break;
 
-			return $this;
+			// Обработка включения/исключения для жанров и стран
+			case 'include':
+			case 'exclude':
+				// Быстрая проверка на жанры или страны
+				$isGenreOrCountry = str_starts_with($field, 'genres.name') || str_starts_with($field, 'countries.name');
+				if ($isGenreOrCountry) {
+					$prefix = ($operator === 'include') ? '+' : '!';
+
+					if (is_array($value)) {
+						if (!isset($this->filters[$field])) {
+							$this->filters[$field] = [];
+						}
+
+						// Предварительно выделяем память для массива
+						$count = count($value);
+						if ($count > 0) {
+							// Используем array_map вместо цикла для лучшей производительности
+							$prefixedValues = array_map(fn($item) => $prefix . $item, $value);
+							$this->filters[$field] = array_merge($this->filters[$field], $prefixedValues);
+						}
+					} else {
+						$this->filters[$field][] = $prefix . $value;
+					}
+					break;
+				}
+				// Если не жанр/страна, обрабатываем как обычный фильтр
+				// Намеренно пропускаем break, чтобы перейти к default
+
+			// Обработка обычных фильтров
+			default:
+				$this->filters[$field . '.' . $operator] = $value;
+				break;
 		}
-
-		$this->filters[$field . '.' . $operator] = $value;
 
 		return $this;
 	}

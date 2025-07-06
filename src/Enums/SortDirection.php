@@ -34,10 +34,16 @@ enum SortDirection: string {
 	 * @return SortDirection Противоположное направление сортировки
 	 */
 	public function reverse(): SortDirection {
-		return match ($this) {
-			self::ASC  => self::DESC,
-			self::DESC => self::ASC,
-		};
+		static $cache = [];
+
+		if (!isset($cache[$this->value])) {
+			$cache[$this->value] = match ($this) {
+				self::ASC  => self::DESC,
+				self::DESC => self::ASC,
+			};
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
@@ -49,10 +55,16 @@ enum SortDirection: string {
 	 * @return string Символ направления сортировки ('↑' для ASC, '↓' для DESC)
 	 */
 	public function getSymbol(): string {
-		return match ($this) {
-			self::ASC  => '↑',
-			self::DESC => '↓',
-		};
+		static $cache = [];
+
+		if (!isset($cache[$this->value])) {
+			$cache[$this->value] = match ($this) {
+				self::ASC  => '↑',
+				self::DESC => '↓',
+			};
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
@@ -64,10 +76,16 @@ enum SortDirection: string {
 	 * @return string Описание направления сортировки на русском языке
 	 */
 	public function getDescription(): string {
-		return match ($this) {
-			self::ASC  => 'По возрастанию',
-			self::DESC => 'По убыванию',
-		};
+		static $cache = [];
+
+		if (!isset($cache[$this->value])) {
+			$cache[$this->value] = match ($this) {
+				self::ASC  => 'По возрастанию',
+				self::DESC => 'По убыванию',
+			};
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
@@ -79,10 +97,16 @@ enum SortDirection: string {
 	 * @return string Краткое описание направления
 	 */
 	public function getShortDescription(): string {
-		return match ($this) {
-			self::ASC  => 'А→Я',
-			self::DESC => 'Я→А',
-		};
+		static $cache = [];
+
+		if (!isset($cache[$this->value])) {
+			$cache[$this->value] = match ($this) {
+				self::ASC  => 'А→Я',
+				self::DESC => 'Я→А',
+			};
+		}
+
+		return $cache[$this->value];
 	}
 
 	/**
@@ -114,7 +138,14 @@ enum SortDirection: string {
 	 * @return SortDirection Экземпляр SortDirection
 	 */
 	public static function fromString(string $value, ?SortDirection $default = null): SortDirection {
-		return self::tryFrom(strtolower($value)) ?? $default ?? self::ASC;
+		static $cache = [];
+		$key = strtolower($value) . '_' . ($default ? $default->value : 'null');
+
+		if (!isset($cache[$key])) {
+			$cache[$key] = self::tryFrom(strtolower($value)) ?? $default ?? self::ASC;
+		}
+
+		return $cache[$key];
 	}
 
 	/**
@@ -126,6 +157,12 @@ enum SortDirection: string {
 	 * @return array Массив всех направлений SortDirection
 	 */
 	public static function getAllDirections(): array {
-		return [self::ASC, self::DESC];
+		static $directions = null;
+
+		if ($directions === null) {
+			$directions = [self::ASC, self::DESC];
+		}
+
+		return $directions;
 	}
 }

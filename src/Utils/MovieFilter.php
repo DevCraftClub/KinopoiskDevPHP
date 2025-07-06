@@ -12,6 +12,8 @@ namespace KinopoiskDev\Utils;
  */
 class MovieFilter {
 
+	use SortManager;
+
 	/**
 	 * Массив параметров фильтрации
 	 */
@@ -790,7 +792,12 @@ class MovieFilter {
 	 * @return array
 	 */
 	public function getFilters(): array {
-		return $this->filters;
+		$filters = $this->filters;
+		$sortString = $this->getSortString();
+		if ($sortString !== null) {
+			$filters['sort'] = $sortString;
+		}
+		return $filters;
 	}
 
 	/**
@@ -800,6 +807,7 @@ class MovieFilter {
 	 */
 	public function reset(): self {
 		$this->filters = [];
+		$this->clearSort();
 
 		return $this;
 	}

@@ -2,6 +2,9 @@
 
 namespace KinopoiskDev\Responses;
 
+use KinopoiskDev\Models\Movie;
+use KinopoiskDev\Utils\DataManager;
+
 /**
  * Объект-контейнер для ответа API с данными о фильмах и информацией о пагинации
  *
@@ -17,51 +20,41 @@ namespace KinopoiskDev\Responses;
  * @see       \KinopoiskDev\Responses\ErrorResponseDto Для обработки ошибок API
  *
  */
-class MovieDocsResponseDto {
+class MovieDocsResponseDto extends BaseDocsResponseDto {
 
 	/**
-	 * Конструктор для создания объекта ответа с данными о фильмах
+	 * Создает экземпляр DTO из массива данных API
 	 *
-	 * Создает новый экземпляр MovieDocsResponseDto с параметрами пагинации
-	 * и массивом документов фильмов, полученных из API Kinopoisk.dev
+	 * Фабричный метод для создания объекта MovieDocsResponseDto из массива данных,
+	 * полученных от API Kinopoisk.dev. Метод использует значения по умолчанию
+	 * для всех параметров пагинации в случае их отсутствия в исходных данных.
+	 * Массив docs остается без преобразования и передается как есть.
 	 *
-	 * @see MovieDocsResponseDto::fromArray() Для создания объекта из массива
-	 *      данных API
-	 * @see MovieDocsResponseDto::toArray() Для преобразования объекта в массив
+	 * @since  1.0.0
+	 * @see    \KinopoiskDev\Models\Movie Класс модели фильма для элементов массива docs
+	 * @see    \KinopoiskDev\Responses\BaseDocsResponseDto::__construct() Конструктор с параметрами
 	 *
-	 * @param   int                                 $limit  Максимальное количество фильмов на одной странице
-	 * @param   int                                 $page   Текущий номер страницы (начинается с 1)
-	 * @param   int                                 $pages  Общее количество страниц с результатами
+	 * @see    \KinopoiskDev\Responses\BaseResponseDto::fromArray() Родительский абстрактный метод
 	 *
-	 * @param   \KinopoiskDev\Models\SearchMovie[]  $docs   Массив документов фильмов, полученных из API
-	 * @param   int                                 $total  Общее количество фильмов в базе данных по заданным критериям
+	 * @param   array  $data  Ассоциативный массив с данными от API, содержащий ключи:
+	 *                        - docs: array - массив данных фильмов (остается без преобразования)
+	 *                        - total: int - общее количество фильмов в результате (по умолчанию 0)
+	 *                        - limit: int - максимальное количество элементов на странице (по умолчанию 10)
+	 *                        - page: int - номер текущей страницы, начиная с 1 (по умолчанию 1)
+	 *                        - pages: int - общее количество страниц (по умолчанию 0)
+	 *
+	 * @return static Новый экземпляр MovieDocsResponseDto с установленными данными пагинации
+	 *
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public function __construct(
-		public readonly array $docs = [],
-		public readonly int   $total = 0,
-		public readonly int   $limit = 10,
-		public readonly int   $page = 1,
-		public readonly int   $pages = 0,
-	) {}
-
-	public static function fromArray(array $data): MovieDocsResponseDto {
-		return new self(
-			docs : $data['docs'],
-			total: $data['total'],
-			limit: $data['limit'],
-			page : $data['page'],
-			pages: $data['pages'],
+	public static function fromArray(array $data): static {
+		return new static(
+			docs : DataManager::parseObjectArray($data, 'docs', Movie::class),
+			total: $data['total'] ?? 0,
+			limit: $data['limit'] ?? 10,
+			page : $data['page'] ?? 1,
+			pages: $data['pages'] ?? 0,
 		);
-	}
-
-	public function toArray(): array {
-		return [
-			'docs'  => $this->docs,
-			'total' => $this->total,
-			'limit' => $this->limit,
-			'page'  => $this->page,
-			'pages' => $this->pages,
-		];
 	}
 
 }

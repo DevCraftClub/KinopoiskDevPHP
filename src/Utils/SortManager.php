@@ -36,69 +36,10 @@ trait SortManager {
 	protected array $sortCriteriaByField = [];
 
 	/**
-	 * Добавляет критерий сортировки
-	 *
-	 * Добавляет новый критерий сортировки к текущему набору.
-	 * Если критерий для указанного поля уже существует, он будет заменен.
-	 *
-	 * @param SortCriteria $criteria Критерий сортировки
-	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
-	 */
-	public function addSortCriteria(SortCriteria $criteria): static {
-		$fieldKey = $criteria->field->value;
-
-		// Если критерий для этого поля уже существует, удаляем его из основного массива
-		if (isset($this->sortCriteriaByField[$fieldKey])) {
-			$this->sortCriteria = array_filter(
-				$this->sortCriteria,
-				fn(SortCriteria $c) => $c->field !== $criteria->field
-			);
-		}
-
-		// Добавляем новый критерий
-		$this->sortCriteria[] = $criteria;
-		$this->sortCriteriaByField[$fieldKey] = $criteria;
-
-		return $this;
-	}
-
-	/**
-	 * Добавляет сортировку по указанному полю
-	 *
-	 * @param SortField $field Поле для сортировки
-	 * @param SortDirection|null $direction Направление сортировки (по умолчанию используется рекомендуемое)
-	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
-	 */
-	public function sortBy(SortField $field, ?SortDirection $direction = null): static {
-		$direction = $direction ?? $field->getDefaultDirection();
-		$criteria = new SortCriteria($field, $direction);
-		return $this->addSortCriteria($criteria);
-	}
-
-	/**
-	 * Добавляет сортировку по возрастанию
-	 *
-	 * @param SortField $field Поле для сортировки
-	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
-	 */
-	public function sortByAsc(SortField $field): static {
-		return $this->sortBy($field, SortDirection::ASC);
-	}
-
-	/**
-	 * Добавляет сортировку по убыванию
-	 *
-	 * @param SortField $field Поле для сортировки
-	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
-	 */
-	public function sortByDesc(SortField $field): static {
-		return $this->sortBy($field, SortDirection::DESC);
-	}
-
-	/**
 	 * Удаляет сортировку по указанному полю
 	 *
-	 * @param SortField $field Поле для удаления из сортировки
+	 * @param   SortField  $field  Поле для удаления из сортировки
+	 *
 	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
 	 */
 	public function removeSortByField(SortField $field): static {
@@ -112,21 +53,10 @@ trait SortManager {
 			// Удаляем из основного массива
 			$this->sortCriteria = array_filter(
 				$this->sortCriteria,
-				fn(SortCriteria $criteria) => $criteria->field !== $field
+				fn (SortCriteria $criteria) => $criteria->field !== $field,
 			);
 		}
 
-		return $this;
-	}
-
-	/**
-	 * Очищает все критерии сортировки
-	 *
-	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
-	 */
-	public function clearSort(): static {
-		$this->sortCriteria = [];
-		$this->sortCriteriaByField = [];
 		return $this;
 	}
 
@@ -136,7 +66,8 @@ trait SortManager {
 	 * Если сортировка по полю существует, меняет направление на противоположное.
 	 * Если сортировки нет, добавляет с направлением по умолчанию.
 	 *
-	 * @param SortField $field Поле для переключения сортировки
+	 * @param   SortField  $field  Поле для переключения сортировки
+	 *
 	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
 	 */
 	public function toggleSort(SortField $field): static {
@@ -144,7 +75,7 @@ trait SortManager {
 
 		// Если критерий для этого поля существует, меняем направление
 		if (isset($this->sortCriteriaByField[$fieldKey])) {
-			$criteria = $this->sortCriteriaByField[$fieldKey];
+			$criteria         = $this->sortCriteriaByField[$fieldKey];
 			$reversedCriteria = $criteria->reverse();
 
 			// Обновляем в ассоциативном массиве
@@ -166,9 +97,53 @@ trait SortManager {
 	}
 
 	/**
+	 * Добавляет сортировку по указанному полю
+	 *
+	 * @param   SortField           $field      Поле для сортировки
+	 * @param   SortDirection|null  $direction  Направление сортировки (по умолчанию используется рекомендуемое)
+	 *
+	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
+	 */
+	public function sortBy(SortField $field, ?SortDirection $direction = NULL): static {
+		$direction = $direction ?? $field->getDefaultDirection();
+		$criteria  = new SortCriteria($field, $direction);
+
+		return $this->addSortCriteria($criteria);
+	}
+
+	/**
+	 * Добавляет критерий сортировки
+	 *
+	 * Добавляет новый критерий сортировки к текущему набору.
+	 * Если критерий для указанного поля уже существует, он будет заменен.
+	 *
+	 * @param   SortCriteria  $criteria  Критерий сортировки
+	 *
+	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
+	 */
+	public function addSortCriteria(SortCriteria $criteria): static {
+		$fieldKey = $criteria->field->value;
+
+		// Если критерий для этого поля уже существует, удаляем его из основного массива
+		if (isset($this->sortCriteriaByField[$fieldKey])) {
+			$this->sortCriteria = array_filter(
+				$this->sortCriteria,
+				fn (SortCriteria $c) => $c->field !== $criteria->field,
+			);
+		}
+
+		// Добавляем новый критерий
+		$this->sortCriteria[]                 = $criteria;
+		$this->sortCriteriaByField[$fieldKey] = $criteria;
+
+		return $this;
+	}
+
+	/**
 	 * Проверяет, установлена ли сортировка по указанному полю
 	 *
-	 * @param SortField $field Поле для проверки
+	 * @param   SortField  $field  Поле для проверки
+	 *
 	 * @return bool true, если сортировка по полю установлена, false в противном случае
 	 */
 	public function hasSortBy(SortField $field): bool {
@@ -178,11 +153,12 @@ trait SortManager {
 	/**
 	 * Возвращает направление сортировки для указанного поля
 	 *
-	 * @param SortField $field Поле для получения направления
+	 * @param   SortField  $field  Поле для получения направления
+	 *
 	 * @return SortDirection|null Направление сортировки или null, если сортировка не установлена
 	 */
 	public function getSortDirection(SortField $field): ?SortDirection {
-		return $this->sortCriteriaByField[$field->value]->direction ?? null;
+		return $this->sortCriteriaByField[$field->value]->direction ?? NULL;
 	}
 
 	/**
@@ -199,7 +175,8 @@ trait SortManager {
 	 *
 	 * Заменяет текущие критерии сортировки новым набором.
 	 *
-	 * @param SortCriteria[] $criteria Массив критериев сортировки
+	 * @param   SortCriteria[]  $criteria  Массив критериев сортировки
+	 *
 	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
 	 */
 	public function setSortCriteria(array $criteria): static {
@@ -212,13 +189,27 @@ trait SortManager {
 				$this->addSortCriteria($criterion);
 			}
 		}
+
+		return $this;
+	}
+
+	/**
+	 * Очищает все критерии сортировки
+	 *
+	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
+	 */
+	public function clearSort(): static {
+		$this->sortCriteria        = [];
+		$this->sortCriteriaByField = [];
+
 		return $this;
 	}
 
 	/**
 	 * Добавляет множественные критерии сортировки из массива строк
 	 *
-	 * @param array $sorts Массив строк в формате "field:direction" или просто "field"
+	 * @param   array  $sorts  Массив строк в формате "field:direction" или просто "field"
+	 *
 	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
 	 *
 	 * @example
@@ -233,9 +224,9 @@ trait SortManager {
 	public function addMultipleSort(array $sorts): static {
 		foreach ($sorts as $sort) {
 			if (is_string($sort)) {
-				$parts = explode(':', $sort, 2);
-				$field = $parts[0];
-				$direction = $parts[1] ?? null;
+				$parts     = explode(':', $sort, 2);
+				$field     = $parts[0];
+				$direction = $parts[1] ?? NULL;
 
 				$criteria = SortCriteria::fromStrings($field, $direction);
 				if ($criteria) {
@@ -245,6 +236,7 @@ trait SortManager {
 				$this->addSortCriteria($sort);
 			}
 		}
+
 		return $this;
 	}
 
@@ -258,12 +250,12 @@ trait SortManager {
 	 */
 	public function getSortString(): ?string {
 		if (empty($this->sortCriteria)) {
-			return null;
+			return NULL;
 		}
 
 		$sortStrings = array_map(
-			fn(SortCriteria $criteria) => $criteria->toApiString(),
-			$this->sortCriteria
+			fn (SortCriteria $criteria) => $criteria->toApiString(),
+			$this->sortCriteria,
 		);
 
 		return implode(',', $sortStrings);
@@ -293,7 +285,7 @@ trait SortManager {
 	 * @return SortCriteria|null Первый критерий или null, если критерии отсутствуют
 	 */
 	public function getFirstSortCriteria(): ?SortCriteria {
-		return $this->sortCriteria[0] ?? null;
+		return $this->sortCriteria[0] ?? NULL;
 	}
 
 	/**
@@ -302,20 +294,7 @@ trait SortManager {
 	 * @return SortCriteria|null Последний критерий или null, если критерии отсутствуют
 	 */
 	public function getLastSortCriteria(): ?SortCriteria {
-		return end($this->sortCriteria) ?: null;
-	}
-
-	/**
-	 * Предустановленные методы сортировки для популярных случаев
-	 */
-
-	/**
-	 * Сортировка по рейтингу Кинопоиска (по убыванию)
-	 *
-	 * @return $this
-	 */
-	public function sortByKinopoiskRating(): static {
-		return $this->sortByDesc(SortField::RATING_KP);
+		return end($this->sortCriteria) ? : NULL;
 	}
 
 	/**
@@ -328,13 +307,19 @@ trait SortManager {
 	}
 
 	/**
-	 * Сортировка по году выпуска (по убыванию - сначала новые)
+	 * Добавляет сортировку по убыванию
 	 *
-	 * @return $this
+	 * @param   SortField  $field  Поле для сортировки
+	 *
+	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
 	 */
-	public function sortByYear(): static {
-		return $this->sortByDesc(SortField::YEAR);
+	public function sortByDesc(SortField $field): static {
+		return $this->sortBy($field, SortDirection::DESC);
 	}
+
+	/**
+	 * Предустановленные методы сортировки для популярных случаев
+	 */
 
 	/**
 	 * Сортировка по году выпуска (по возрастанию - сначала старые)
@@ -343,6 +328,17 @@ trait SortManager {
 	 */
 	public function sortByYearOldFirst(): static {
 		return $this->sortByAsc(SortField::YEAR);
+	}
+
+	/**
+	 * Добавляет сортировку по возрастанию
+	 *
+	 * @param   SortField  $field  Поле для сортировки
+	 *
+	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
+	 */
+	public function sortByAsc(SortField $field): static {
+		return $this->sortBy($field, SortDirection::ASC);
 	}
 
 	/**
@@ -389,8 +385,27 @@ trait SortManager {
 	 * @return $this
 	 */
 	public function sortByBest(): static {
-		return $this->sortByKinopoiskRating()
-		            ->sortByYear();
+		return $this
+			->sortByKinopoiskRating()
+			->sortByYear();
+	}
+
+	/**
+	 * Сортировка по году выпуска (по убыванию - сначала новые)
+	 *
+	 * @return $this
+	 */
+	public function sortByYear(): static {
+		return $this->sortByDesc(SortField::YEAR);
+	}
+
+	/**
+	 * Сортировка по рейтингу Кинопоиска (по убыванию)
+	 *
+	 * @return $this
+	 */
+	public function sortByKinopoiskRating(): static {
+		return $this->sortByDesc(SortField::RATING_KP);
 	}
 
 	/**
@@ -400,15 +415,16 @@ trait SortManager {
 	 */
 	public function exportSortCriteria(): array {
 		return array_map(
-			fn(SortCriteria $criteria) => $criteria->toArray(),
-			$this->sortCriteria
+			fn (SortCriteria $criteria) => $criteria->toArray(),
+			$this->sortCriteria,
 		);
 	}
 
 	/**
 	 * Импорт критериев сортировки из массива
 	 *
-	 * @param array $data Массив с данными о критериях сортировки
+	 * @param   array  $data  Массив с данными о критериях сортировки
+	 *
 	 * @return $this
 	 */
 	public function importSortCriteria(array $data): static {
@@ -426,4 +442,5 @@ trait SortManager {
 
 		return $this;
 	}
+
 }

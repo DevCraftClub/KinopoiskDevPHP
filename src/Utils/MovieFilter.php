@@ -34,6 +34,62 @@ class MovieFilter {
 	}
 
 	/**
+	 * Добавляет произвольный фильтр
+	 *
+	 * @param   string  $field     Поле для фильтрации
+	 * @param   mixed   $value     Значение фильтра
+	 * @param   string  $operator  Оператор сравнения
+	 *
+	 * @return $this
+	 */
+	public function addFilter(string $field, mixed $value, string $operator = 'eq'): self {
+		// Оптимизированная обработка различных типов фильтров
+		switch ($operator) {
+			// Обработка диапазонов
+			case 'range':
+				if (is_array($value) && count($value) === 2) {
+					$this->filters[$field] = $value[0] . '-' . $value[1];
+				}
+				break;
+
+			// Обработка включения/исключения для жанров и стран
+			case 'include':
+			case 'exclude':
+				// Быстрая проверка на жанры или страны
+				$isGenreOrCountry = str_starts_with($field, 'genres.name') || str_starts_with($field, 'countries.name');
+				if ($isGenreOrCountry) {
+					$prefix = ($operator === 'include') ? '+' : '!';
+
+					if (is_array($value)) {
+						if (!isset($this->filters[$field])) {
+							$this->filters[$field] = [];
+						}
+
+						// Предварительно выделяем память для массива
+						$count = count($value);
+						if ($count > 0) {
+							// Используем array_map вместо цикла для лучшей производительности
+							$prefixedValues        = array_map(fn ($item) => $prefix . $item, $value);
+							$this->filters[$field] = array_merge($this->filters[$field], $prefixedValues);
+						}
+					} else {
+						$this->filters[$field][] = $prefix . $value;
+					}
+					break;
+				}
+			// Если не жанр/страна, обрабатываем как обычный фильтр
+			// Намеренно пропускаем break, чтобы перейти к default
+
+			// Обработка обычных фильтров
+			default:
+				$this->filters[$field . '.' . $operator] = $value;
+				break;
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Добавляет фильтр по внешнему ID фильма
 	 *
 	 * @param   array  $externalId  Массив внешних ID (imdb, tmdb, kpHD)
@@ -751,72 +807,17 @@ class MovieFilter {
 	}
 
 	/**
-	 * Добавляет произвольный фильтр
-	 *
-	 * @param   string  $field     Поле для фильтрации
-	 * @param   mixed   $value     Значение фильтра
-	 * @param   string  $operator  Оператор сравнения
-	 *
-	 * @return $this
-	 */
-	public function addFilter(string $field, mixed $value, string $operator = 'eq'): self {
-		// Оптимизированная обработка различных типов фильтров
-		switch ($operator) {
-			// Обработка диапазонов
-			case 'range':
-				if (is_array($value) && count($value) === 2) {
-					$this->filters[$field] = $value[0] . '-' . $value[1];
-				}
-				break;
-
-			// Обработка включения/исключения для жанров и стран
-			case 'include':
-			case 'exclude':
-				// Быстрая проверка на жанры или страны
-				$isGenreOrCountry = str_starts_with($field, 'genres.name') || str_starts_with($field, 'countries.name');
-				if ($isGenreOrCountry) {
-					$prefix = ($operator === 'include') ? '+' : '!';
-
-					if (is_array($value)) {
-						if (!isset($this->filters[$field])) {
-							$this->filters[$field] = [];
-						}
-
-						// Предварительно выделяем память для массива
-						$count = count($value);
-						if ($count > 0) {
-							// Используем array_map вместо цикла для лучшей производительности
-							$prefixedValues = array_map(fn($item) => $prefix . $item, $value);
-							$this->filters[$field] = array_merge($this->filters[$field], $prefixedValues);
-						}
-					} else {
-						$this->filters[$field][] = $prefix . $value;
-					}
-					break;
-				}
-				// Если не жанр/страна, обрабатываем как обычный фильтр
-				// Намеренно пропускаем break, чтобы перейти к default
-
-			// Обработка обычных фильтров
-			default:
-				$this->filters[$field . '.' . $operator] = $value;
-				break;
-		}
-
-		return $this;
-	}
-
-	/**
 	 * Возвращает массив фильтров
 	 *
 	 * @return array
 	 */
 	public function getFilters(): array {
-		$filters = $this->filters;
+		$filters    = $this->filters;
 		$sortString = $this->getSortString();
-		if ($sortString !== null) {
+		if ($sortString !== NULL) {
 			$filters['sort'] = $sortString;
 		}
+
 		return $filters;
 	}
 

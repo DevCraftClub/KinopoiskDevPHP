@@ -6,27 +6,30 @@ use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
-use KinopoiskDev\Models\Movie;
 use Lombok\Getter;
 use Lombok\Helper;
 use Lombok\Setter;
-use Dotenv;
+use Psr\Cache\InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 #[Setter, Getter]
 class Kinopoisk extends Helper {
 
-	private const BASE_URL = 'https://api.kinopoisk.dev';
-	private const API_VERSION = 'v1.4';
-	private const APP_VERSION = '1.0.0';
+	private const string BASE_URL    = 'https://api.kinopoisk.dev';
+
+	private const string API_VERSION = 'v1.4';
+
+	private const string APP_VERSION = '1.0.0';
 
 	private HttpClient $httpClient;
-	private string $apiToken;
+	private string     $apiToken;
+	private bool       $useCache = FALSE;
 
 	/**
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public function __construct(?string $apiToken = NULL, ?HttpClient $httpClient = NULL) {
+	public function __construct(?string $apiToken = NULL, ?HttpClient $httpClient = NULL, bool $useCache = FALSE) {
 		parent::__construct();
 
 		$this->setApiToken($apiToken);
@@ -34,6 +37,8 @@ class Kinopoisk extends Helper {
 		if (!$this->getApiToken()) {
 			throw new KinopoiskDevException('Ключ API не установлен!', 401);
 		}
+
+		$this->setUseCache($useCache);
 
 		$this->httpClient = $httpClient ?? new HttpClient([
 			'base_uri' => self::BASE_URL,
@@ -49,24 +54,50 @@ class Kinopoisk extends Helper {
 	/**
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	protected function makeRequest(string $method, string $endpoint, array $queryParams = [], ?string $apiVersion = null): ResponseInterface {
+	protected function makeRequest(string $method, string $endpoint, array $queryParams = [], ?string $apiVersion = NULL): ResponseInterface {
 		try {
+			$cache = null;
+			$cacheItem = null;
 			$version = $apiVersion ?? self::API_VERSION;
-			$url = "/{$version}/{$endpoint}";
+			$cacheKey = md5($method . $endpoint . json_encode($queryParams, JSON_THROW_ON_ERROR) . $version);
 
-			if (!empty($queryParams)) {
-				$url .= '?' . http_build_query($queryParams);
+			if ($this->getUseCache()) {
+				$cache = new FilesystemAdapter();
+				$cacheItem = $cache->getItem($cacheKey);
+				if ($cacheItem->isHit()) {
+					return $cacheItem->get();
+				}
 			}
 
-			$request = new Request($method, $url, [
-				'X-API-KEY' => $this->apiToken,
-			]);
+			try {
+				$url     = "/{$version}/{$endpoint}";
 
-			return $this->httpClient->send($request);
-		}
-		catch (GuzzleException $e) {
+				if (!empty($queryParams)) {
+					$url .= '?' . http_build_query($queryParams);
+				}
+
+				$request = new Request($method, $url, [
+					'X-API-KEY' => $this->apiToken,
+				]);
+
+				$result = $this->httpClient->send($request);
+
+				if ($this->getUseCache()) {
+					$cacheItem->set($result);
+					$cache->save($cacheItem);
+				}
+
+				return $result;
+			} catch (GuzzleException $e) {
+				throw new KinopoiskDevException(
+					"Запрос HTTP увенчался провалом: {$e->getMessage()}",
+					$e->getCode(),
+					$e,
+				);
+			}
+		} catch (\Exception|\JsonException|InvalidArgumentException $e) {
 			throw new KinopoiskDevException(
-				"Запрос HTTP увенчался провалом: {$e->getMessage()}",
+				"Проблемы с инициализацией кеша: {$e->getMessage()}",
 				$e->getCode(),
 				$e,
 			);

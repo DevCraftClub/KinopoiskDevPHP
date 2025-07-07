@@ -19,7 +19,7 @@ abstract class DataManager {
 	 * @see      Country::toArray() Метод преобразования страны в массив
 	 * @see      Person::toArray() Метод преобразования персоны в массив
 	 *
-	 * @param    mixed  $objects  Коллекция объектов для преобразования или любое другое значение.
+	 * @param   mixed  $objects   Коллекция объектов для преобразования или любое другое значение.
 	 *                            Может быть массивом объектов с методом toArray(), null, false или пустым массивом.
 	 *                            Если передан массив, каждый элемент должен содержать метод toArray()
 	 *
@@ -52,6 +52,35 @@ abstract class DataManager {
 	 */
 	public static function getObjectsArray(mixed $objects): array {
 		return $objects ? array_map(fn ($o) => $o->toArray(), $objects) : [];
+	}
+
+	/**
+	 * Автоматически парсит объект из массива данных в зависимости от типа
+	 *
+	 * Универсальный метод для автоматической обработки объектов, который определяет,
+	 * является ли значение по указанному ключу массивом объектов или одиночным объектом,
+	 * и соответственно выбирает подходящий метод парсинга. Используется для автоматизации
+	 * процесса обработки данных API, где одно и то же поле может содержать как массив
+	 * объектов, так и одиночный объект.
+	 *
+	 * @see DataManager::parseObjectArray() Для обработки массива объектов
+	 * @see DataManager::parseObjectData() Для обработки одиночного объекта
+	 *
+	 * @param   array   $data     Массив данных, содержащий информацию для парсинга
+	 * @param   string  $key      Ключ в массиве данных, по которому находится значение для парсинга
+	 * @param   string  $cls      Полное имя класса для создания объектов (должен иметь метод fromArray)
+	 * @param   mixed   $default  Значение по умолчанию, возвращаемое при отсутствии данных (по умолчанию null)
+	 *
+	 * @return  mixed             Массив объектов указанного класса, одиночный объект или значение по умолчанию
+	 *
+	 * @throws  \KinopoiskDev\Exceptions\KinopoiskDevException Если указанный класс не существует или не имеет метода fromArray
+	 */
+	public static function parseObjectAuto(array $data, string $key, string $cls, mixed $default = NULL): mixed {
+		if (is_array($data[$key])) {
+			return self::parseObjectArray($data, $key, $cls, $default);
+		}
+
+		return self::parseObjectData($data, $key, $cls, $default);
 	}
 
 	/**
@@ -128,6 +157,10 @@ abstract class DataManager {
 	 * класса и требуемого метода, возвращая экземпляр объекта указанного класса
 	 * или значение по умолчанию при отсутствии данных.
 	 *
+	 * @see     \KinopoiskDev\Models\Rating::fromArray()     Пример использования с моделью рейтинга
+	 * @see     \KinopoiskDev\Models\Image::fromArray()      Пример использования с моделью изображения
+	 * @see     \KinopoiskDev\Models\ExternalId::fromArray() Пример использования с внешними ID
+	 *
 	 * @param   array   $data     Массив данных для парсинга, содержащий ключи объектов
 	 * @param   string  $key      Ключ в массиве данных для извлечения значения
 	 * @param   string  $cls      Полное имя класса для создания объекта (с пространством имен)
@@ -137,10 +170,6 @@ abstract class DataManager {
 	 *
 	 * @throws  \KinopoiskDev\Exceptions\KinopoiskDevException  Если указанный класс не существует
 	 * @throws  \KinopoiskDev\Exceptions\KinopoiskDevException  Если в классе отсутствует метод fromArray
-	 *
-	 * @see     \KinopoiskDev\Models\Rating::fromArray()     Пример использования с моделью рейтинга
-	 * @see     \KinopoiskDev\Models\Image::fromArray()      Пример использования с моделью изображения
-	 * @see     \KinopoiskDev\Models\ExternalId::fromArray() Пример использования с внешними ID
 	 *
 	 * @example
 	 * ```php
@@ -168,36 +197,8 @@ abstract class DataManager {
 		if (!method_exists($cls, 'fromArray')) {
 			throw new KinopoiskDevException("Класс {$cls} не имеет метода fromArray");
 		}
+
 		return isset($data[$key]) ? $cls::fromArray($data[$key]) : $default;
-	}
-
-	/**
-	 * Автоматически парсит объект из массива данных в зависимости от типа
-	 *
-	 * Универсальный метод для автоматической обработки объектов, который определяет,
-	 * является ли значение по указанному ключу массивом объектов или одиночным объектом,
-	 * и соответственно выбирает подходящий метод парсинга. Используется для автоматизации
-	 * процесса обработки данных API, где одно и то же поле может содержать как массив
-	 * объектов, так и одиночный объект.
-	 *
-	 * @see DataManager::parseObjectArray() Для обработки массива объектов
-	 * @see DataManager::parseObjectData() Для обработки одиночного объекта
-	 *
-	 * @param   array   $data     Массив данных, содержащий информацию для парсинга
-	 * @param   string  $key      Ключ в массиве данных, по которому находится значение для парсинга
-	 * @param   string  $cls      Полное имя класса для создания объектов (должен иметь метод fromArray)
-	 * @param   mixed   $default  Значение по умолчанию, возвращаемое при отсутствии данных (по умолчанию null)
-	 *
-	 * @return  mixed             Массив объектов указанного класса, одиночный объект или значение по умолчанию
-	 *
-	 * @throws  \KinopoiskDev\Exceptions\KinopoiskDevException Если указанный класс не существует или не имеет метода fromArray
-	 */
-	public static function parseObjectAuto(array $data, string $key, string $cls, mixed $default = NULL): mixed {
-		if (is_array($data[$key])) {
-			return self::parseObjectArray($data, $key, $cls, $default);
-		}
-
-		return self::parseObjectData($data, $key, $cls, $default);
 	}
 
 	/**
@@ -208,17 +209,18 @@ abstract class DataManager {
 	 * или значение не может быть преобразовано в enum, возвращается значение по умолчанию.
 	 * Выполняет проверку существования указанного класса enum перед попыткой преобразования.
 	 *
-	 * @param   array   $data       Массив данных, содержащий значения для разбора
-	 * @param   string  $key        Ключ в массиве, значение которого необходимо получить
+	 * @see     \KinopoiskDev\Enums\MovieType Пример использования с enum типов фильмов
+	 * @see     \KinopoiskDev\Enums\FilterField Пример использования с enum полей фильтрации
+	 *
 	 * @param   string  $enumClass  Полное имя класса enum для преобразования значения
 	 * @param   mixed   $default    Значение по умолчанию, возвращаемое при отсутствии ключа или неудачном преобразовании
+	 *
+	 * @param   array   $data       Массив данных, содержащий значения для разбора
+	 * @param   string  $key        Ключ в массиве, значение которого необходимо получить
 	 *
 	 * @return  mixed   Экземпляр enum или значение по умолчанию при неудачном преобразовании
 	 *
 	 * @throws  \KinopoiskDev\Exceptions\KinopoiskDevException Если указанный класс enum не существует
-	 *
-	 * @see     \KinopoiskDev\Enums\MovieType Пример использования с enum типов фильмов
-	 * @see     \KinopoiskDev\Enums\FilterField Пример использования с enum полей фильтрации
 	 *
 	 * @example
 	 * ```php
@@ -244,7 +246,6 @@ abstract class DataManager {
 		}
 
 		return isset($data[$key]) ? $enumClass::tryFrom($data[$key]) : $default;
-
 	}
 
 }

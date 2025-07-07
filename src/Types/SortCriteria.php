@@ -21,13 +21,26 @@ class SortCriteria {
 	/**
 	 * Конструктор для создания критериев сортировки
 	 *
-	 * @param SortField $field Поле для сортировки
-	 * @param SortDirection $direction Направление сортировки
+	 * @param   SortField      $field      Поле для сортировки
+	 * @param   SortDirection  $direction  Направление сортировки
 	 */
 	public function __construct(
-		public readonly SortField $field,
+		public readonly SortField     $field,
 		public readonly SortDirection $direction,
 	) {}
+
+	/**
+	 * Возвращает строковое представление критериев
+	 *
+	 * @return string Человекочитаемое описание критериев сортировки
+	 */
+	public function __toString(): string {
+		return sprintf(
+			'%s (%s)',
+			$this->field->getDescription(),
+			$this->direction->getDescription(),
+		);
+	}
 
 	/**
 	 * Создает критерии сортировки с автоматическим направлением по умолчанию
@@ -35,7 +48,8 @@ class SortCriteria {
 	 * Фабричный метод, который создает SortCriteria используя рекомендуемое
 	 * направление сортировки для указанного поля.
 	 *
-	 * @param SortField $field Поле для сортировки
+	 * @param   SortField  $field  Поле для сортировки
+	 *
 	 * @return self Новый экземпляр SortCriteria с направлением по умолчанию
 	 */
 	public static function create(SortField $field): self {
@@ -45,7 +59,8 @@ class SortCriteria {
 	/**
 	 * Создает критерии сортировки по возрастанию
 	 *
-	 * @param SortField $field Поле для сортировки
+	 * @param   SortField  $field  Поле для сортировки
+	 *
 	 * @return self Новый экземпляр SortCriteria с направлением ASC
 	 */
 	public static function ascending(SortField $field): self {
@@ -55,11 +70,33 @@ class SortCriteria {
 	/**
 	 * Создает критерии сортировки по убыванию
 	 *
-	 * @param SortField $field Поле для сортировки
+	 * @param   SortField  $field  Поле для сортировки
+	 *
 	 * @return self Новый экземпляр SortCriteria с направлением DESC
 	 */
 	public static function descending(SortField $field): self {
 		return new self($field, SortDirection::DESC);
+	}
+
+	/**
+	 * Создает критерии из массива данных
+	 *
+	 * Фабричный метод для создания SortCriteria из ассоциативного массива
+	 * с ключами 'field' и 'direction'.
+	 *
+	 * @param   array  $data  Массив с данными сортировки
+	 *
+	 * @return self|null Новый экземпляр SortCriteria или null при некорректных данных
+	 */
+	public static function fromArray(array $data): ?self {
+		if (!isset($data['field'])) {
+			return NULL;
+		}
+
+		return self::fromStrings(
+			$data['field'],
+			$data['direction'] ?? NULL,
+		);
 	}
 
 	/**
@@ -68,14 +105,15 @@ class SortCriteria {
 	 * Фабричный метод для создания SortCriteria из строковых представлений
 	 * поля и направления сортировки с возможностью указания fallback значений.
 	 *
-	 * @param string $field Строковое значение поля
-	 * @param string|null $direction Строковое значение направления (опционально)
+	 * @param   string       $field      Строковое значение поля
+	 * @param   string|null  $direction  Строковое значение направления (опционально)
+	 *
 	 * @return self|null Новый экземпляр SortCriteria или null при неудачном преобразовании
 	 */
-	public static function fromStrings(string $field, ?string $direction = null): ?self {
+	public static function fromStrings(string $field, ?string $direction = NULL): ?self {
 		$sortField = SortField::tryFrom($field);
 		if (!$sortField) {
-			return null;
+			return NULL;
 		}
 
 		$sortDirection = $direction
@@ -86,33 +124,13 @@ class SortCriteria {
 	}
 
 	/**
-	 * Создает критерии из массива данных
-	 *
-	 * Фабричный метод для создания SortCriteria из ассоциативного массива
-	 * с ключами 'field' и 'direction'.
-	 *
-	 * @param array $data Массив с данными сортировки
-	 * @return self|null Новый экземпляр SortCriteria или null при некорректных данных
-	 */
-	public static function fromArray(array $data): ?self {
-		if (!isset($data['field'])) {
-			return null;
-		}
-
-		return self::fromStrings(
-			$data['field'],
-			$data['direction'] ?? null
-		);
-	}
-
-	/**
 	 * Преобразует критерии в массив
 	 *
 	 * @return array Ассоциативный массив с ключами 'field' и 'direction'
 	 */
 	public function toArray(): array {
 		return [
-			'field' => $this->field->value,
+			'field'     => $this->field->value,
 			'direction' => $this->direction->value,
 		];
 	}
@@ -127,6 +145,7 @@ class SortCriteria {
 	 */
 	public function toApiString(): string {
 		$prefix = $this->direction === SortDirection::DESC ? '-' : '';
+
 		return $prefix . $this->field->value;
 	}
 
@@ -145,7 +164,8 @@ class SortCriteria {
 	/**
 	 * Проверяет, совпадают ли критерии по полю
 	 *
-	 * @param SortCriteria $other Другие критерии для сравнения
+	 * @param   SortCriteria  $other  Другие критерии для сравнения
+	 *
 	 * @return bool true, если поля совпадают, false в противном случае
 	 */
 	public function hasSameField(SortCriteria $other): bool {
@@ -155,24 +175,12 @@ class SortCriteria {
 	/**
 	 * Проверяет полное равенство критериев
 	 *
-	 * @param SortCriteria $other Другие критерии для сравнения
+	 * @param   SortCriteria  $other  Другие критерии для сравнения
+	 *
 	 * @return bool true, если поле и направление совпадают, false в противном случае
 	 */
 	public function equals(SortCriteria $other): bool {
 		return $this->field === $other->field && $this->direction === $other->direction;
-	}
-
-	/**
-	 * Возвращает строковое представление критериев
-	 *
-	 * @return string Человекочитаемое описание критериев сортировки
-	 */
-	public function __toString(): string {
-		return sprintf(
-			'%s (%s)',
-			$this->field->getDescription(),
-			$this->direction->getDescription()
-		);
 	}
 
 	/**
@@ -184,7 +192,7 @@ class SortCriteria {
 		return sprintf(
 			'%s %s',
 			$this->field->getDescription(),
-			$this->direction->getSymbol()
+			$this->direction->getSymbol(),
 		);
 	}
 
@@ -223,4 +231,5 @@ class SortCriteria {
 	public function getFieldDataType(): string {
 		return $this->field->getDataType();
 	}
+
 }

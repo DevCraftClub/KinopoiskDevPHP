@@ -2,11 +2,12 @@
 
 namespace KinopoiskDev\Http;
 
+use KinopoiskDev\Enums\FilterField;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Movie;
-use KinopoiskDev\Responses\MovieDocsResponseDto;
-use KinopoiskDev\Responses\SearchMovieResponseDto;
+use KinopoiskDev\Responses\Api\MovieDocsResponseDto;
+use KinopoiskDev\Responses\Api\SearchMovieResponseDto;
 use KinopoiskDev\Types\MovieSearchFilter;
 
 /**
@@ -67,9 +68,9 @@ class MovieRequests extends Kinopoisk {
 	}
 
 	/**
-	 * ДОБАВЛЕНО: Получает возможные значения для определенного поля
+	 * Получает возможные значения для определенного поля
 	 *
-	 * @api    /v1.4/movie/possible-values-by-field
+	 * @api    /v1/movie/possible-values-by-field
 	 * @link   https://kinopoiskdev.readme.io/reference/moviecontroller_getpossiblevaluesbyfieldname
 	 *
 	 * @param   string  $field  Поле, для которого нужно получить возможные значения
@@ -79,9 +80,22 @@ class MovieRequests extends Kinopoisk {
 	 * @throws \JsonException При ошибках парсинга JSON
 	 */
 	public function getPossibleValuesByField(string $field): array {
+
+		$allowedFields = [
+			FilterField::GENRES,
+			FilterField::COUNTRIES,
+			FilterField::TYPE,
+			FilterField::TYPE_NUMBER,
+			FilterField::STATUS
+		];
+
+		if (!in_array($field, $allowedFields, TRUE)) {
+			throw new KinopoiskDevException('Лишь следующие поля поддерживаются для этого запроса: ' . implode(', ', $allowedFields));
+		}
+
 		$queryParams = ['field' => $field];
 
-		$response = $this->makeRequest('GET', '/movie/possible-values-by-field', $queryParams);
+		$response = $this->makeRequest('GET', '/movie/possible-values-by-field', $queryParams, 'v1');
 		$data     = $this->parseResponse($response);
 
 		return $data;

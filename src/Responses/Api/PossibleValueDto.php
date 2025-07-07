@@ -1,6 +1,8 @@
 <?php
 
-namespace KinopoiskDev\Responses;
+namespace KinopoiskDev\Responses\Api;
+
+use KinopoiskDev\Responses\BaseResponseDto;
 
 /**
  * Класс для представления возможного значения поля
@@ -9,7 +11,7 @@ namespace KinopoiskDev\Responses;
  * включая само значение и вспомогательный slug. Используется для получения
  * списка доступных значений для фильтрации по конкретным полям.
  *
- * @package KinopoiskDev\Models
+ * @package KinopoiskDev\Responses\Api
  * @since   1.0.0
  * @author  Maxim Harder
  * @version 1.0.0

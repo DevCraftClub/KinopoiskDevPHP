@@ -1,8 +1,9 @@
 <?php
 
-namespace KinopoiskDev\Responses;
+namespace KinopoiskDev\Responses\Api;
 
 use KinopoiskDev\Models\Review;
+use KinopoiskDev\Responses\BaseDocsResponseDto;
 use KinopoiskDev\Utils\DataManager;
 
 /**
@@ -13,7 +14,7 @@ use KinopoiskDev\Utils\DataManager;
  * объектов Review. Обеспечивает типизированный доступ к данным рецензий
  * с поддержкой пагинации результатов.
  *
- * @package   KinopoiskDev\Responses
+ * @package   KinopoiskDev\Responses\Api
  * @since     1.0.0
  * @author    Maxim Harder
  * @version   1.0.0

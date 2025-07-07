@@ -4,14 +4,10 @@ namespace KinopoiskDev\Http;
 
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Kinopoisk;
-use KinopoiskDev\Models\Episode;
-use KinopoiskDev\Models\Review;
 use KinopoiskDev\Models\Season;
+use KinopoiskDev\Responses\Api\SeasonDocsResponseDto;
 use KinopoiskDev\Responses\EpisodeDocsResponseDto;
-use KinopoiskDev\Responses\ReviewDocsResponseDto;
-use KinopoiskDev\Responses\SeasonDocsResponseDto;
 use KinopoiskDev\Types\EpisodeSearchFilter;
-use KinopoiskDev\Types\ReviewSearchFilter;
 use KinopoiskDev\Types\SeasonSearchFilter;
 
 /**

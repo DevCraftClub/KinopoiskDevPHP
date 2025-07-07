@@ -14,9 +14,9 @@ namespace KinopoiskDev\Responses;
  * @author    Maxim Harder
  *
  * @version   1.0.0
- * @see       \KinopoiskDev\Responses\MovieDocsResponseDto
- * @see       \KinopoiskDev\Responses\PersonDocsResponseDto
- * @see       \KinopoiskDev\Responses\SearchMovieResponseDto
+ * @see       \KinopoiskDev\Responses\Api\MovieDocsResponseDto
+ * @see       \KinopoiskDev\Responses\Api\PersonDocsResponseDto
+ * @see       \KinopoiskDev\Responses\Api\SearchMovieResponseDto
  */
 abstract class BaseResponseDto {
 

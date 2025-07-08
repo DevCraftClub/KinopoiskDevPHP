@@ -6,51 +6,53 @@ use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Season;
 use KinopoiskDev\Responses\Api\SeasonDocsResponseDto;
-use KinopoiskDev\Responses\EpisodeDocsResponseDto;
-use KinopoiskDev\Types\EpisodeSearchFilter;
 use KinopoiskDev\Types\SeasonSearchFilter;
 
 /**
- * Klasse für Season-spezifische API-Anfragen
+ * Класс для API-запросов, связанных с сезонами
  *
- * Diese Klasse bietet Methoden für alle Season-Endpunkte der Kinopoisk.dev API.
+ * Этот класс предоставляет методы для всех конечных точек сезонов API Kinopoisk.dev.
+ * Позволяет получать информацию о сезонах сериалов, их эпизодах и связанных данных.
  *
  * @package KinopoiskDev\Http
  * @since   1.0.0
  * @author  Maxim Harder
  * @version 1.0.0
+ * @see     \KinopoiskDev\Models\Season Для структуры данных сезона
+ * @see     \KinopoiskDev\Types\SeasonSearchFilter Для фильтрации запросов
  */
 class SeasonRequests extends Kinopoisk {
 
 	/**
-	 * Holt eine Season nach ihrer ID
+	 * Получает сезон по его ID
 	 *
 	 * @api  /v1.4/season/{id}
 	 * @link https://kinopoiskdev.readme.io/reference/seasoncontroller_findonev1_4
 	 *
-	 * @param   string  $seasonId  Die eindeutige ID der Season
+	 * @param   int  $seasonId  Уникальный идентификатор сезона
 	 *
-	 * @return Season Die Season mit allen verfügbaren Daten
-	 * @throws KinopoiskDevException Bei API-Fehlern
-	 * @throws \JsonException Bei JSON-Parsing-Fehlern
+	 * @return Season Сезон со всеми доступными данными
+	 * @throws KinopoiskDevException При ошибках API
+	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException При работе с API
 	 */
-	public function getSeasonById(string $seasonId): Season {
-		$response = $this->makeRequest('GET', "/season/{$seasonId}");
+	public function getSeasonById(int $seasonId): Season {
+		$response = $this->makeRequest('GET', "season/{$seasonId}");
 		$data     = $this->parseResponse($response);
 
 		return Season::fromArray($data);
 	}
 
 	/**
-	 * Holt Seasons für einen bestimmten Film/Serie
+	 * Получает сезоны для определенного фильма/сериала
 	 *
-	 * @param   int  $movieId  Film/Serie-ID
-	 * @param   int  $page     Seitennummer
-	 * @param   int  $limit    Ergebnisse pro Seite
+	 * @param   int  $movieId  Идентификатор фильма/сериала
+	 * @param   int  $page     Номер страницы
+	 * @param   int  $limit    Результатов на странице
 	 *
-	 * @return SeasonDocsResponseDto Seasons für den Film/Serie
-	 * @throws KinopoiskDevException Bei API-Fehlern
-	 * @throws \JsonException Bei JSON-Parsing-Fehlern
+	 * @return SeasonDocsResponseDto Сезоны для фильма/сериала
+	 * @throws KinopoiskDevException При ошибках API
+	 * @throws \JsonException При ошибках парсинга JSON
 	 */
 	public function getSeasonsForMovie(int $movieId, int $page = 1, int $limit = 10): SeasonDocsResponseDto {
 		$filters = new SeasonSearchFilter();
@@ -60,22 +62,25 @@ class SeasonRequests extends Kinopoisk {
 	}
 
 	/**
-	 * Sucht Seasons nach verschiedenen Kriterien
+	 * Ищет сезоны по различным критериям
 	 *
 	 * @api    /v1.4/season
-	 * @link   https://kinopoiskdev.readme.io/reference/seasoncontroller_findmanybyqueryv1_4
+	 * @link   https://kinopoiskdev.readme.io/reference/seasoncontroller_findmanyv1_4
 	 *
-	 * @param   SeasonSearchFilter|null  $filters  Filter-Objekt für die Suche
-	 * @param   int                      $page     Seitennummer (Standard: 1)
-	 * @param   int                      $limit    Anzahl Ergebnisse pro Seite (Standard: 10, Max: 250)
+	 * @param   SeasonSearchFilter|null  $filters  Объект фильтра для поиска
+	 * @param   int                      $page     Номер страницы (по умолчанию: 1)
+	 * @param   int                      $limit    Количество результатов на странице (по умолчанию: 10, макс: 250)
 	 *
-	 * @return SeasonDocsResponseDto Suchergebnisse mit Paginierung
-	 * @throws KinopoiskDevException Bei API-Fehlern
-	 * @throws \JsonException Bei JSON-Parsing-Fehlern
+	 * @return SeasonDocsResponseDto Результаты поиска с пагинацией
+	 * @throws KinopoiskDevException При ошибках API
+	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON
 	 */
 	public function searchSeasons(?SeasonSearchFilter $filters = NULL, int $page = 1, int $limit = 10): SeasonDocsResponseDto {
 		if ($limit > 250) {
-			throw new KinopoiskDevException('Limit darf nicht größer als 250 sein');
+			throw new KinopoiskDevException('Лимит не должен превышать 250');
+		}
+		if ($page < 1) {
+			throw new KinopoiskDevException('Номер страницы не должен быть меньше 1');
 		}
 
 		if (is_null($filters)) {
@@ -86,7 +91,7 @@ class SeasonRequests extends Kinopoisk {
 		$filters->addFilter('limit', $limit);
 		$queryParams = $filters->getFilters();
 
-		$response = $this->makeRequest('GET', '/season', $queryParams);
+		$response = $this->makeRequest('GET', 'season', $queryParams);
 		$data     = $this->parseResponse($response);
 
 		return new SeasonDocsResponseDto(
@@ -99,14 +104,14 @@ class SeasonRequests extends Kinopoisk {
 	}
 
 	/**
-	 * Holt eine bestimmte Season-Nummer für einen Film
+	 * Получает определенный сезон по номеру для фильма
 	 *
-	 * @param   int  $movieId       Film/Serie-ID
-	 * @param   int  $seasonNumber  Season-Nummer
+	 * @param   int  $movieId       Идентификатор фильма/сериала
+	 * @param   int  $seasonNumber  Номер сезона
 	 *
-	 * @return Season|null Die Season oder null wenn nicht gefunden
-	 * @throws KinopoiskDevException Bei API-Fehlern
-	 * @throws \JsonException Bei JSON-Parsing-Fehlern
+	 * @return Season|null Сезон или null если не найден
+	 * @throws KinopoiskDevException При ошибках API
+	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON
 	 */
 	public function getSeasonByNumber(int $movieId, int $seasonNumber): ?Season {
 		$filters = new SeasonSearchFilter();

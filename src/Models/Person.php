@@ -40,24 +40,24 @@ readonly class Person extends MeiliPersonEntity {
 	 * @see Person::toArray() Для преобразования объекта в массив
 	 * @see MeiliPersonEntity::__construct() Конструктор родительского класса
 	 *
-	 * @param   int                                $id           Уникальный идентификатор персоны в системе Kinopoisk
-	 * @param   string|null                        $name         Имя персоны на русском языке
-	 * @param   string|null                        $enName       Имя персоны на английском языке
-	 * @param   string|null                        $photo        URL фотографии персоны
-	 * @param   PersonSex|null                     $sex          Пол персоны (enum значение)
-	 * @param   int|null                           $growth       Рост персоны в сантиметрах
-	 * @param   string|null                        $birthday     Дата рождения в формате ISO 8601
-	 * @param   string|null                        $death        Дата смерти в формате ISO 8601
-	 * @param   int|null                           $age          Возраст персоны в годах
-	 * @param   \KinopoiskDev\Models\BirthPlace[]  $birthPlace   Массив мест рождения персоны (пустой массив по умолчанию)
-	 * @param   \KinopoiskDev\Models\DeathPlace[]  $deathPlace   Массив мест смерти персоны (пустой массив по умолчанию)
-	 * @param   PersonProfession[]|null            $profession   Массив профессий персоны (может быть null если профессии неизвестны)
-	 * @param   \KinopoiskDev\Models\Spouses[]     $spouses      Массив данных о супругах персоны
-	 * @param   int                                $countAwards  Количество наград персоны (по умолчанию 0)
-	 * @param   \KinopoiskDev\Models\FactInPerson[]                              $facts        Массив интересных фактов о персоне
-	 * @param   array                              $movies       Массив фильмов с участием персоны
-	 * @param   string|null                        $updatedAt    Дата последнего обновления записи в формате ISO 8601
-	 * @param   string|null                        $createdAt    Дата создания записи в формате ISO 8601
+	 * @param   int                                   $id           Уникальный идентификатор персоны в системе Kinopoisk
+	 * @param   string|null                           $name         Имя персоны на русском языке
+	 * @param   string|null                           $enName       Имя персоны на английском языке
+	 * @param   string|null                           $photo        URL фотографии персоны
+	 * @param   PersonSex|null                        $sex          Пол персоны (enum значение)
+	 * @param   int|null                              $growth       Рост персоны в сантиметрах
+	 * @param   string|null                           $birthday     Дата рождения в формате ISO 8601
+	 * @param   string|null                           $death        Дата смерти в формате ISO 8601
+	 * @param   int|null                              $age          Возраст персоны в годах
+	 * @param   \KinopoiskDev\Models\BirthPlace[]     $birthPlace   Массив мест рождения персоны (пустой массив по умолчанию)
+	 * @param   \KinopoiskDev\Models\DeathPlace[]     $deathPlace   Массив мест смерти персоны (пустой массив по умолчанию)
+	 * @param   PersonProfession[]|null               $profession   Массив профессий персоны (может быть null если профессии неизвестны)
+	 * @param   \KinopoiskDev\Models\Spouses[]        $spouses      Массив данных о супругах персоны
+	 * @param   int                                   $countAwards  Количество наград персоны (по умолчанию 0)
+	 * @param   \KinopoiskDev\Models\FactInPerson[]   $facts        Массив интересных фактов о персоне
+	 * @param   \KinopoiskDev\Models\MovieInPerson[]  $movies       Массив фильмов с участием персоны
+	 * @param   string|null                           $updatedAt    Дата последнего обновления записи в формате ISO 8601
+	 * @param   string|null                           $createdAt    Дата создания записи в формате ISO 8601
 	 */
 
 	public function __construct(

@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace KinopoiskDev\Responses;
+namespace KinopoiskDev\Responses\Errors;
+
+use KinopoiskDev\Responses\BaseResponseDto;
 
 /**
  * DTO для представления ответа об ошибке авторизации API
@@ -12,7 +14,7 @@ namespace KinopoiskDev\Responses;
  * Наследуется от BaseResponseDto и предоставляет предустановленные
  * значения для типичных ошибок авторизации.
  *
- * @package KinopoiskDev\Responses
+ * @package KinopoiskDev\Responses\Errors
  * @since   1.0.0
  * @author  Maxim Harder
  * @version 1.0.0

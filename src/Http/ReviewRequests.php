@@ -5,8 +5,7 @@ namespace KinopoiskDev\Http;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Review;
-use KinopoiskDev\Models\ReviewInfo;
-use KinopoiskDev\Responses\ReviewDocsResponseDto;
+use KinopoiskDev\Responses\Api\ReviewDocsResponseDto;
 use KinopoiskDev\Types\ReviewSearchFilter;
 
 /**

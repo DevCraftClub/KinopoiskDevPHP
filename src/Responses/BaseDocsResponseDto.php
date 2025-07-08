@@ -17,8 +17,8 @@ use KinopoiskDev\Utils\DataManager;
  * @author    Maxim Harder
  *
  * @version   1.0.0
- * @see       \KinopoiskDev\Responses\MovieDocsResponseDto
- * @see       \KinopoiskDev\Responses\PersonDocsResponseDto
+ * @see       \KinopoiskDev\Responses\Api\MovieDocsResponseDto
+ * @see       \KinopoiskDev\Responses\Api\PersonDocsResponseDto
  * @see       \KinopoiskDev\Responses\BaseResponseDto
  */
 abstract class BaseDocsResponseDto extends BaseResponseDto {

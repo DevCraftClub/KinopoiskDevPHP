@@ -1,8 +1,9 @@
 <?php
 
-namespace KinopoiskDev\Responses;
+namespace KinopoiskDev\Responses\Api;
 
 use KinopoiskDev\Models\Season;
+use KinopoiskDev\Responses\BaseDocsResponseDto;
 use KinopoiskDev\Utils\DataManager;
 
 /**
@@ -13,7 +14,7 @@ use KinopoiskDev\Utils\DataManager;
  * объектов Season. Обеспечивает безопасное преобразование данных API в типизированные
  * объекты PHP с поддержкой пагинации результатов поиска.
  *
- * @package   KinopoiskDev\Responses
+ * @package   KinopoiskDev\Responses\Api
  * @since     1.0.0
  * @author    Maxim Harder
  * @version   1.0.0

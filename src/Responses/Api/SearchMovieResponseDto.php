@@ -1,8 +1,9 @@
 <?php
 
-namespace KinopoiskDev\Responses;
+namespace KinopoiskDev\Responses\Api;
 
 use KinopoiskDev\Models\SearchMovie;
+use KinopoiskDev\Responses\BaseDocsResponseDto;
 use KinopoiskDev\Utils\DataManager;
 
 /**
@@ -12,7 +13,7 @@ use KinopoiskDev\Utils\DataManager;
  * коллекцию фильмов с поддержкой пагинации. Содержит массив документов фильмов
  * и метаданные для постраничной навигации.
  *
- * @package   KinopoiskDev\Responses
+ * @package   KinopoiskDev\Responses\Api
  * @author    Maxim Harder
  * @copyright MIT
  * @version   1.0.0

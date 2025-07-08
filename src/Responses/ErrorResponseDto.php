@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace KinopoiskDev\Responses;
 
+use Lombok\Getter;
+use Lombok\Setter;
+
 /**
  * DTO для представления ответа об ошибке API
  *
@@ -31,9 +34,9 @@ class ErrorResponseDto extends BaseResponseDto {
 	 * @param   string  $error       Краткое техническое описание типа ошибки (например, "Bad Request", "Unauthorized")
 	 */
 	public function __construct(
-		public readonly int    $statusCode,
-		public readonly string $message,
-		public readonly string $error,
+		#[Getter] public readonly int    $statusCode,
+		#[Getter] public readonly string $message,
+		#[Getter] public readonly string $error,
 	) {}
 
 	/**

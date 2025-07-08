@@ -5,7 +5,7 @@ namespace KinopoiskDev\Http;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Person;
-use KinopoiskDev\Responses\PersonDocsResponseDto;
+use KinopoiskDev\Responses\Api\PersonDocsResponseDto;
 use KinopoiskDev\Types\PersonSearchFilter;
 
 /**

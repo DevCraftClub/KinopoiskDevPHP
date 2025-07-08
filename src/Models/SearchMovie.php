@@ -30,7 +30,7 @@ use KinopoiskDev\Enums\RatingMpaa;
  * @see     \KinopoiskDev\Models\Votes Для голосов
  * @link    https://kinopoiskdev.readme.io/reference/moviecontroller_searchmoviesv1_4
  */
-class SearchMovie {
+readonly class SearchMovie implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта результата поиска фильма
@@ -74,35 +74,35 @@ class SearchMovie {
 	 * @param   \KinopoiskDev\Enums\MovieStatus|null   $status             Статус производства фильма
 	 */
 	public function __construct(
-		public readonly int          $id,
-		public readonly ?string      $name = NULL,
-		public readonly ?string      $alternativeName = NULL,
-		public readonly ?string      $enName = NULL,
-		public readonly ?MovieType   $type = NULL,
-		public readonly ?int         $year = NULL,
-		public readonly ?string      $description = NULL,
-		public readonly ?string      $shortDescription = NULL,
-		public readonly ?int         $movieLength = NULL,
-		public readonly ?array       $names = NULL,
-		public readonly ?ExternalId  $externalId = NULL,
-		public readonly ?Logo        $logo = NULL,
-		public readonly ?ShortImage  $poster = NULL,
-		public readonly ?ShortImage  $backdrop = NULL,
-		public readonly ?Rating      $rating = NULL,
-		public readonly ?Votes       $votes = NULL,
-		public readonly ?array       $genres = NULL,
-		public readonly ?array       $countries = NULL,
-		public readonly ?array       $releaseYears = NULL,
-		public readonly ?bool        $isSeries = NULL,
-		public readonly ?bool        $ticketsOnSale = NULL,
-		public readonly ?int         $totalSeriesLength = NULL,
-		public readonly ?int         $seriesLength = NULL,
-		public readonly ?RatingMpaa  $ratingMpaa = NULL,
-		public readonly ?int         $ageRating = NULL,
-		public readonly ?int         $top10 = NULL,
-		public readonly ?int         $top250 = NULL,
-		public readonly ?int         $typeNumber = NULL,
-		public readonly ?MovieStatus $status = NULL,
+		public int          $id,
+		public ?string      $name = NULL,
+		public ?string      $alternativeName = NULL,
+		public ?string      $enName = NULL,
+		public ?MovieType   $type = NULL,
+		public ?int         $year = NULL,
+		public ?string      $description = NULL,
+		public ?string      $shortDescription = NULL,
+		public ?int         $movieLength = NULL,
+		public ?array       $names = NULL,
+		public ?ExternalId  $externalId = NULL,
+		public ?Logo        $logo = NULL,
+		public ?ShortImage  $poster = NULL,
+		public ?ShortImage  $backdrop = NULL,
+		public ?Rating      $rating = NULL,
+		public ?Votes       $votes = NULL,
+		public ?array       $genres = NULL,
+		public ?array       $countries = NULL,
+		public ?array       $releaseYears = NULL,
+		public ?bool        $isSeries = NULL,
+		public ?bool        $ticketsOnSale = NULL,
+		public ?int         $totalSeriesLength = NULL,
+		public ?int         $seriesLength = NULL,
+		public ?RatingMpaa  $ratingMpaa = NULL,
+		public ?int         $ageRating = NULL,
+		public ?int         $top10 = NULL,
+		public ?int         $top250 = NULL,
+		public ?int         $typeNumber = NULL,
+		public ?MovieStatus $status = NULL,
 
 	) {}
 

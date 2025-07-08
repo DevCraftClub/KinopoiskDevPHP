@@ -22,7 +22,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\NetworkItem Для отдельных элементов сети
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма
  */
-class Networks {
+readonly class Networks implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта коллекции сетей
@@ -50,7 +50,7 @@ class Networks {
 	 * ```
 	 */
 	public function __construct(
-		public readonly ?array $items = NULL,
+		public ?array $items = NULL,
 	) {}
 
 	/**

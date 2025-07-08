@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
-class YearRange {
+readonly class YearRange implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта диапазона годов
@@ -34,8 +34,8 @@ class YearRange {
 	 * @param   int|null  $end    Конечный год диапазона или null
 	 */
 	public function __construct(
-		public readonly ?int $start = null,
-		public readonly ?int $end = null,
+		public ?int $start = null,
+		public ?int $end = null,
 	) {}
 
 	/**

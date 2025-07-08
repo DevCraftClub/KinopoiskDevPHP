@@ -21,7 +21,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\MovieAward Для наград фильмов
  * @see     \KinopoiskDev\Models\PersonAward Для наград персон
  */
-class Nomination {
+readonly class Nomination implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта номинации
@@ -34,8 +34,8 @@ class Nomination {
 	 * @param   string|null           $title  Название номинации (например, "Лучший фильм", "Лучший актер")
 	 */
 	public function __construct(
-		public readonly ?NominationAward $award = NULL,
-		public readonly ?string          $title = NULL,
+		public ?NominationAward $award = NULL,
+		public ?string          $title = NULL,
 	) {}
 
 	/**

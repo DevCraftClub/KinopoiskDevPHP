@@ -21,7 +21,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма
  * @link    https://kinopoiskdev.readme.io/reference/moviecontroller_findmanyawardsv1_4
  */
-class MovieAward {
+readonly class MovieAward implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта награды фильма
@@ -37,12 +37,56 @@ class MovieAward {
 	 * @param   int|null         $movieId     ID фильма (может отсутствовать в некоторых контекстах)
 	 */
 	public function __construct(
-		public readonly ?Nomination $nomination = null,
-		public readonly ?bool       $winning = null,
-		public readonly ?string     $updatedAt = null,
-		public readonly ?string     $createdAt = null,
-		public readonly ?int        $movieId = null,
+		public ?Nomination $nomination = NULL,
+		public ?bool       $winning = NULL,
+		public ?string     $updatedAt = NULL,
+		public ?string     $createdAt = NULL,
+		public ?int        $movieId = NULL,
 	) {}
+
+	/**
+	 * Возвращает строковое представление награды
+	 *
+	 * Формирует читаемое представление награды, включающее информацию
+	 * о номинации и статусе победы.
+	 *
+	 * @return string Строковое представление награды
+	 */
+	public function __toString(): string {
+		$parts = [];
+
+		if ($this->nomination && $this->nomination->hasInfo()) {
+			$parts[] = (string) $this->nomination;
+		}
+
+		$parts[] = "[{$this->getWinningStatus()}]";
+
+		return implode(' ', $parts);
+	}
+
+	/**
+	 * Проверяет, установлена ли информация о награде
+	 *
+	 * @return bool true если есть информация о номинации или статусе победы, иначе false
+	 */
+	public function hasInfo(): bool {
+		return ($this->nomination !== NULL && $this->nomination->hasInfo()) || $this->winning !== NULL;
+	}
+
+	/**
+	 * Возвращает статус награды в текстовом виде
+	 *
+	 * @return string Статус награды ("Победа", "Номинация", "Неизвестно")
+	 */
+	public function getWinningStatus(): string {
+		if ($this->winning === TRUE) {
+			return 'Победа';
+		} elseif ($this->winning === FALSE) {
+			return 'Номинация';
+		}
+
+		return 'Неизвестно';
+	}
 
 	/**
 	 * Создает объект MovieAward из массива данных API
@@ -64,10 +108,10 @@ class MovieAward {
 	public static function fromArray(array $data): self {
 		return new self(
 			nomination: DataManager::parseObjectData($data, 'nomination', Nomination::class),
-			winning: $data['winning'] ?? null,
-			updatedAt: $data['updatedAt'] ?? null,
-			createdAt: $data['createdAt'] ?? null,
-			movieId: $data['movieId'] ?? null,
+			winning   : $data['winning'] ?? NULL,
+			updatedAt : $data['updatedAt'] ?? NULL,
+			createdAt : $data['createdAt'] ?? NULL,
+			movieId   : $data['movieId'] ?? NULL,
 		);
 	}
 
@@ -96,7 +140,7 @@ class MovieAward {
 	 * @return bool true если фильм победил в номинации, иначе false
 	 */
 	public function isWinning(): bool {
-		return $this->winning === true;
+		return $this->winning === TRUE;
 	}
 
 	/**
@@ -105,50 +149,7 @@ class MovieAward {
 	 * @return bool true если фильм был только номинирован, иначе false
 	 */
 	public function isNominationOnly(): bool {
-		return $this->winning === false;
+		return $this->winning === FALSE;
 	}
 
-	/**
-	 * Возвращает статус награды в текстовом виде
-	 *
-	 * @return string Статус награды ("Победа", "Номинация", "Неизвестно")
-	 */
-	public function getWinningStatus(): string {
-		if ($this->winning === true) {
-			return 'Победа';
-		} elseif ($this->winning === false) {
-			return 'Номинация';
-		}
-
-		return 'Неизвестно';
-	}
-
-	/**
-	 * Возвращает строковое представление награды
-	 *
-	 * Формирует читаемое представление награды, включающее информацию
-	 * о номинации и статусе победы.
-	 *
-	 * @return string Строковое представление награды
-	 */
-	public function __toString(): string {
-		$parts = [];
-
-		if ($this->nomination && $this->nomination->hasInfo()) {
-			$parts[] = (string) $this->nomination;
-		}
-
-		$parts[] = "[{$this->getWinningStatus()}]";
-
-		return implode(' ', $parts);
-	}
-
-	/**
-	 * Проверяет, установлена ли информация о награде
-	 *
-	 * @return bool true если есть информация о номинации или статусе победы, иначе false
-	 */
-	public function hasInfo(): bool {
-		return ($this->nomination !== null && $this->nomination->hasInfo()) || $this->winning !== null;
-	}
 }

@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о сериалах
  */
-class SeasonInfo {
+readonly class SeasonInfo implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта информации о сезоне
@@ -34,8 +34,8 @@ class SeasonInfo {
 	 * @param   int|null  $episodesCount  Количество эпизодов в сезоне
 	 */
 	public function __construct(
-		public readonly ?int $number = null,
-		public readonly ?int $episodesCount = null,
+		public ?int $number = null,
+		public ?int $episodesCount = null,
 	) {}
 
 	/**

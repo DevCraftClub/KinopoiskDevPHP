@@ -5,6 +5,8 @@ namespace KinopoiskDev\Http;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Person;
+use KinopoiskDev\Models\PersonAward;
+use KinopoiskDev\Responses\Api\PersonAwardDocsResponseDto;
 use KinopoiskDev\Responses\Api\PersonDocsResponseDto;
 use KinopoiskDev\Types\PersonSearchFilter;
 
@@ -39,9 +41,10 @@ class PersonRequests extends Kinopoisk {
 	 * @return Person Объект персоны со всеми доступными данными
 	 * @throws KinopoiskDevException При ошибках API или проблемах с сетью
 	 * @throws \JsonException При ошибках парсинга JSON-ответа
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
 	 */
 	public function getPersonById(int $personId): Person {
-		$response = $this->makeRequest('GET', "/person/{$personId}");
+		$response = $this->makeRequest('GET', "person/{$personId}");
 		$data     = $this->parseResponse($response);
 
 		return Person::fromArray($data);
@@ -64,10 +67,16 @@ class PersonRequests extends Kinopoisk {
 	 * @return PersonDocsResponseDto Результаты поиска с информацией о пагинации
 	 * @throws KinopoiskDevException При ошибках API
 	 * @throws \JsonException При ошибках парсинга JSON-ответа
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
 	 */
 	public function searchByName(string $name, int $page = 1, int $limit = 10): PersonDocsResponseDto {
 		$filters = new PersonSearchFilter();
 		$filters->addFilter('query', $name);
+		$filters->addFilter('page', $page);
+		$filters->addFilter('limit', $limit);
+
+		$response = $this->makeRequest('GET', 'person/search', $filters->getFilters());
+		$data     = $this->parseResponse($response);
 
 		return $this->searchPersons($filters, $page, $limit);
 	}
@@ -163,31 +172,61 @@ class PersonRequests extends Kinopoisk {
 	}
 
 	/**
-	 * Получает список режиссёров
+	 * Получает список наград персон с фильтрацией и пагинацией
 	 *
-	 * Удобный метод для получения списка персон с профессией "режиссёр".
-	 * Является обёрткой над методом getPersonsByProfession().
+	 * Возвращает список наград персон от API Kinopoisk.dev с возможностью фильтрации
+	 * по различным параметрам и поддержкой пагинации. Метод выполняет запрос к эндпоинту
+	 * /person/awards через API версии 1.4, применяет валидацию параметров пагинации
+	 * и преобразует полученные данные в объекты PersonAward.
 	 *
-	 * @see    PersonRequests::getPersonsByProfession() Для получения персон других профессий
+	 * @api    /v1.4/person/awards
+	 * @since  1.0.0
 	 *
-	 * @param   int  $limit  Количество результатов на странице (максимум 250)
+	 * @see    \KinopoiskDev\Types\PersonSearchFilter Для параметров фильтрации
+	 * @see    \KinopoiskDev\Models\PersonAward Для структуры данных наград персон
+	 * @see    \KinopoiskDev\Responses\PersonAwardDocsResponseDto Для структуры ответа
+	 * @link   https://kinopoiskdev.readme.io/reference/personcontroller_findmanyawardsv1_4
 	 *
-	 * @param   int  $page   Номер страницы результатов (начиная с 1)
+	 * @param   PersonSearchFilter|null  $filters  Фильтры для поиска наград персон.
+	 *                                             Если null, создается пустой фильтр.
+	 *                                             Поддерживает фильтрацию по возрасту, полу,
+	 *                                             месту рождения, профессии и другим параметрам.
+	 * @param   int                      $page     Номер страницы для пагинации (начиная с 1).
+	 *                                             Значение должно быть положительным числом.
+	 * @param   int                      $limit    Максимальное количество элементов на странице.
+	 *                                             Значение не должно превышать 250.
 	 *
-	 * @return PersonDocsResponseDto Список режиссёров с информацией о пагинации
-	 * @throws \JsonException При ошибках парсинга JSON-ответа
-	 * @throws KinopoiskDevException При ошибках API
+	 * @return  PersonAwardDocsResponseDto Объект ответа, содержащий:
+	 *                                    - docs: массив объектов PersonAward с данными о наградах
+	 *                                    - total: общее количество наград в результате
+	 *                                    - limit: примененное ограничение на количество элементов
+	 *                                    - page: текущая страница
+	 *                                    - pages: общее количество страниц
+	 *
+	 * @throws  \KinopoiskDev\Exceptions\KinopoiskDevException|\KinopoiskDev\Exceptions\KinopoiskResponseException|\JsonException
+	 *          - Если параметр $limit превышает 250
+	 *          - Если параметр $page меньше 1
+	 *          - При ошибках HTTP-запроса к API
+	 *          - При ошибках парсинга ответа от API
+	 *          - При ошибках создания объектов PersonAward из данных API
+	 *
+	 * @example
+	 * ```php
+	 * // Получение первых 10 наград персон
+	 * $awards = $kinopoisk->getPersonAwards();
+	 *
+	 * // Получение наград с фильтрацией по профессии
+	 * $filter = new PersonSearchFilter();
+	 * $filter->profession('актер');
+	 * $awards = $kinopoisk->getPersonAwards($filter, 1, 20);
+	 *
+	 * // Получение наград живых персон с ограничением по возрасту
+	 * $filter = new PersonSearchFilter();
+	 * $filter->onlyAlive()->age(30, 'gte');
+	 * $awards = $kinopoisk->getPersonAwards($filter, 2, 50);
+	 * ```
 	 */
-	public function getDirectors(int $page = 1, int $limit = 10): PersonDocsResponseDto {
-		return $this->getPersonsByProfession('режиссер', $page, $limit);
-	}
-
-	/**
-	 * @api  /v1.4/person/awards
-	 * @link https://kinopoiskdev.readme.io/reference/personcontroller_findmanyawardsv1_4
-	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
-	 */
-	public function getPersonAwards(?PersonSearchFilter $filters, int $page = 1, int $limit = 10) {
+	public function getPersonAwards(?PersonSearchFilter $filters, int $page = 1, int $limit = 10): PersonAwardDocsResponseDto {
 		if ($limit > 250) {
 			throw new KinopoiskDevException('Limit не должен превышать 250');
 		}
@@ -200,7 +239,15 @@ class PersonRequests extends Kinopoisk {
 		}
 
 		$response = $this->makeRequest('GET', '/person/awards', $filters->getFilters());
+		$data     = $this->parseResponse($response);
 
+		return new PersonAwardDocsResponseDto(
+			docs : array_map(fn ($personData) => PersonAward::fromArray($personData), $data['docs'] ?? []),
+			total: $data['total'] ?? 0,
+			limit: $data['limit'] ?? $limit,
+			page : $data['page'] ?? $page,
+			pages: $data['pages'] ?? 1,
+		);
 	}
 
 }

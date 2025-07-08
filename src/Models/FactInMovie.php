@@ -17,7 +17,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie Основная модель фильма
  * @see     \KinopoiskDev\Models\SearchMovie Поисковая модель фильма
  */
-class FactInMovie {
+readonly class FactInMovie implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта факта о фильме
@@ -39,9 +39,71 @@ class FactInMovie {
 	 * ```
 	 */
 	public function __construct(
-		public readonly string  $value,
-		public readonly ?string $type = NULL,
-		public readonly ?bool   $spoiler = NULL,
+		public string  $value,
+		public ?string $type = NULL,
+		public ?bool   $spoiler = NULL,
 	) {}
+
+	/**
+	 * Создает объект факта о фильме из массива данных API
+	 *
+	 * Фабричный метод для создания экземпляра класса FactInMovie из массива данных,
+	 * полученных от API Kinopoisk.dev. Метод безопасно обрабатывает отсутствующие
+	 * значения полей type и spoiler, устанавливая их в null при отсутствии в исходных данных.
+	 * Используется для десериализации данных фактов о фильмах, полученных от API.
+	 *
+	 * @see FactInMovie::toArray() Для обратного преобразования объекта в массив
+	 * @see FactInMovie::__construct() Конструктор класса с описанием параметров
+	 *
+	 * @param   array  $data  Ассоциативный массив с данными факта от API, содержащий ключи:
+	 *                        - value: string - обязательное поле с текстом факта
+	 *                        - type: string|null - опциональный тип факта (по умолчанию null)
+	 *                        - spoiler: bool|null - опциональный флаг спойлера (по умолчанию null)
+	 *
+	 * @return self Новый экземпляр FactInMovie с данными из массива
+	 *
+	 * @throws \TypeError Если поле 'value' отсутствует в массиве или имеет неправильный тип
+	 *
+	 * @example
+	 * ```php
+	 * $data = [
+	 *     'value' => 'Актёр получил травму во время съёмок',
+	 *     'type' => 'блупер',
+	 *     'spoiler' => false
+	 * ];
+	 * $fact = FactInMovie::fromArray($data);
+	 * ```
+	 */
+	public static function fromArray(array $data): self {
+		return new self(
+			value  : $data['value'],
+			type   : $data['type'] ?? NULL,
+			spoiler: $data['spoiler'] ?? NULL,
+		);
+	}
+
+	/**
+	 * Преобразует объект в массив данных
+	 *
+	 * Конвертирует текущий экземпляр класса FactInMovie в ассоциативный массив,
+	 * содержащий все основные свойства объекта. Используется для сериализации
+	 * данных при отправке запросов к API или для экспорта данных в JSON.
+	 * Возвращает массив с тремя основными полями: значение факта, тип и статус спойлера.
+	 *
+	 * @see FactInMovie::fromArray() Для создания объекта из массива данных
+	 * @see FactInMovie::__construct() Для инициализации объекта с данными
+	 *
+	 * @return array Ассоциативный массив с данными факта о фильме, содержащий ключи:
+	 *               - value: string - текстовое содержимое факта
+	 *               - type: string|null - тип факта (null если не определен)
+	 *               - spoiler: bool|null - признак спойлера (null если не определен)
+	 */
+	public function toArray(): array {
+		return [
+			'value'   => $this->value,
+			'type'    => $this->type,
+			'spoiler' => $this->spoiler,
+		];
+	}
 
 }

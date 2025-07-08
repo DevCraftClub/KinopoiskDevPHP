@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Image Для полной информации об изображении
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
-class ShortImage {
+readonly class ShortImage implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта упрощенного изображения
@@ -35,8 +35,8 @@ class ShortImage {
 	 * @param   string|null  $previewUrl  URL превью изображения
 	 */
 	public function __construct(
-		public readonly ?string $url = NULL,
-		public readonly ?string $previewUrl = NULL,
+		public ?string $url = NULL,
+		public ?string $previewUrl = NULL,
 	) {}
 
 	/**

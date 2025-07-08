@@ -25,7 +25,7 @@ use KinopoiskDev\Enums\MovieType;
  * @see     \KinopoiskDev\Models\ShortImage Для изображений
  * @see     \KinopoiskDev\Models\Rating Для рейтингов
  */
-class LinkedMovie {
+readonly class LinkedMovie implements BaseModel {
 
 	/**
 	 * Конструктор для создания экземпляра связанного фильма
@@ -45,14 +45,14 @@ class LinkedMovie {
 	 * @param   int|null         $year             Год выпуска фильма или null если не указан
 	 */
 	public function __construct(
-		public readonly int         $id,
-		public readonly ?string     $name = NULL,
-		public readonly ?string     $enName = NULL,
-		public readonly ?string     $alternativeName = NULL,
-		public readonly ?MovieType  $type = NULL,
-		public readonly ?ShortImage $poster = NULL,
-		public readonly ?Rating     $rating = NULL,
-		public readonly ?int        $year = NULL,
+		public int         $id,
+		public ?string     $name = NULL,
+		public ?string     $enName = NULL,
+		public ?string     $alternativeName = NULL,
+		public ?MovieType  $type = NULL,
+		public ?ShortImage $poster = NULL,
+		public ?Rating     $rating = NULL,
+		public ?int        $year = NULL,
 	) {}
 
 	/**

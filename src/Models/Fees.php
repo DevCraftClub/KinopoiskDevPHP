@@ -21,7 +21,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Budget Для информации о бюджете фильма
  * @see     \KinopoiskDev\Models\CurrencyValue Для структуры денежных значений
  */
-class Fees {
+readonly class Fees implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта кассовых сборов
@@ -38,9 +38,9 @@ class Fees {
 	 * @param   CurrencyValue|null  $usa     Кассовые сборы фильма в США (null если не указаны)
 	 */
 	public function __construct(
-		public readonly ?CurrencyValue $world = NULL,
-		public readonly ?CurrencyValue $russia = NULL,
-		public readonly ?CurrencyValue $usa = NULL,
+		public ?CurrencyValue $world = NULL,
+		public ?CurrencyValue $russia = NULL,
+		public ?CurrencyValue $usa = NULL,
 	) {}
 
 	/**

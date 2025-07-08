@@ -20,7 +20,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\Season Для информации о сезонах
  * @see     \KinopoiskDev\Models\ShortImage Для кадров из эпизодов
  */
-class Episode {
+readonly class Episode implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта эпизода
@@ -39,14 +39,14 @@ class Episode {
 	 * @param   string|null      $enDescription  Описание эпизода на английском языке
 	 */
 	public function __construct(
-		public readonly ?int        $number = null,
-		public readonly ?string     $name = null,
-		public readonly ?string     $enName = null,
-		public readonly ?string     $date = null, // deprecated
-		public readonly ?string     $description = null,
-		public readonly ?ShortImage $still = null,
-		public readonly ?string     $airDate = null,
-		public readonly ?string     $enDescription = null,
+		public ?int        $number = NULL,
+		public ?string     $name = NULL,
+		public ?string     $enName = NULL,
+		public ?string     $date = NULL, // deprecated
+		public ?string     $description = NULL,
+		public ?ShortImage $still = NULL,
+		public ?string     $airDate = NULL,
+		public ?string     $enDescription = NULL,
 	) {}
 
 	/**
@@ -63,14 +63,14 @@ class Episode {
 	 */
 	public static function fromArray(array $data): self {
 		return new self(
-			number        : $data['number'] ?? null,
-			name          : $data['name'] ?? null,
-			enName        : $data['enName'] ?? null,
-			date          : $data['date'] ?? null,
-			description   : $data['description'] ?? null,
-			still         : DataManager::parseObjectData($data, 'still', ShortImage::class),
-			airDate       : $data['airDate'] ?? null,
-			enDescription : $data['enDescription'] ?? null,
+			number       : $data['number'] ?? NULL,
+			name         : $data['name'] ?? NULL,
+			enName       : $data['enName'] ?? NULL,
+			date         : $data['date'] ?? NULL,
+			description  : $data['description'] ?? NULL,
+			still        : DataManager::parseObjectData($data, 'still', ShortImage::class),
+			airDate      : $data['airDate'] ?? NULL,
+			enDescription: $data['enDescription'] ?? NULL,
 		);
 	}
 
@@ -130,6 +130,7 @@ class Episode {
 	 * @return bool true если кадр доступен, иначе false
 	 */
 	public function hasStill(): bool {
-		return $this->still !== null && ($this->still->url !== null || $this->still->previewUrl !== null);
+		return $this->still !== NULL && ($this->still->url !== NULL || $this->still->previewUrl !== NULL);
 	}
+
 }

@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Person Для работы с персонами
  * @see     \KinopoiskDev\Models\PersonPlaceValue Для более детальной географической информации
  */
-class PersonPlace {
+readonly class PersonPlace implements BaseModel {
 
 	/**
 	 * Строковое значение места рождения или смерти персоны
@@ -31,7 +31,7 @@ class PersonPlace {
 	 * @var string $value Место рождения/смерти персоны (например, "Москва, Россия")
 	 */
 	public function __construct(
-		public readonly string $value,
+		public string $value,
 	) {}
 
 	/**

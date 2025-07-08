@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\VideoTypes Для коллекции видеоматериалов
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
-class Video {
+readonly class Video implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта видеоматериала
@@ -38,11 +38,11 @@ class Video {
 	 * @param   string|null  $type  Тип видеоматериала (например, трейлер, тизер)
 	 */
 	public function __construct(
-		public readonly ?string $url = NULL,
-		public readonly ?string $name = NULL,
-		public readonly ?string $site = NULL,
-		public readonly ?int    $size = NULL,
-		public readonly ?string $type = NULL,
+		public ?string $url = NULL,
+		public ?string $name = NULL,
+		public ?string $site = NULL,
+		public ?int    $size = NULL,
+		public ?string $type = NULL,
 	) {}
 
 	/**

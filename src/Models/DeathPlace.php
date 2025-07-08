@@ -17,4 +17,4 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\BirthPlace Класс для места рождения персоны
  * @see     \KinopoiskDev\Models\Person Основной класс модели персоны
  */
-class DeathPlace extends PersonPlace {}
+readonly class DeathPlace extends PersonPlace {}

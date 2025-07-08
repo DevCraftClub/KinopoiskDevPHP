@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма
  * @link    https://kinopoiskdev.readme.io/reference/reviewcontroller_findmanyv1_4
  */
-class Review {
+readonly class Review implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта рецензии
@@ -41,19 +41,19 @@ class Review {
 	 * @param   int|null     $userRating      Пользовательский рейтинг
 	 */
 	public function __construct(
-		public readonly int     $id,
-		public readonly int     $movieId,
-		public readonly int     $authorId,
-		public readonly int     $reviewLikes,
-		public readonly int     $reviewDislikes,
-		public readonly string  $updatedAt,
-		public readonly string  $createdAt,
-		public readonly ?string $title = NULL,
-		public readonly ?string $type = NULL,
-		public readonly ?string $review = NULL,
-		public readonly ?string $date = NULL,
-		public readonly ?string $author = NULL,
-		public readonly ?int    $userRating = NULL,
+		public int     $id,
+		public int     $movieId,
+		public int     $authorId,
+		public int     $reviewLikes,
+		public int     $reviewDislikes,
+		public string  $updatedAt,
+		public string  $createdAt,
+		public ?string $title = NULL,
+		public ?string $type = NULL,
+		public ?string $review = NULL,
+		public ?string $date = NULL,
+		public ?string $author = NULL,
+		public ?int    $userRating = NULL,
 	) {}
 
 	/**

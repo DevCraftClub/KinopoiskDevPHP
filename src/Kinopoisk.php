@@ -147,9 +147,7 @@ class Kinopoisk extends Helper {
 		$data = json_decode($body, TRUE, 512, JSON_THROW_ON_ERROR);
 
 		if (json_last_error() !== JSON_ERROR_NONE) {
-			throw new KinopoiskDevException(
-				'Невозможно разобрать JSON данные: ' . json_last_error_msg(),
-			);
+			throw new KinopoiskDevException('Невозможно разобрать JSON данные: ' . json_last_error_msg());
 		}
 
 		return $data;
@@ -169,6 +167,13 @@ class Kinopoisk extends Helper {
 			HttpStatusCode::FORBIDDEN    => throw new KinopoiskResponseException(ForbiddenErrorResponseDto::class),
 			HttpStatusCode::NOT_FOUND    => throw new KinopoiskResponseException(NotFoundErrorResponseDto::class),
 			default                      => NULL,
+		};
+
+		match($rawStatusCode) {
+			401 => throw new KinopoiskResponseException(UnauthorizedErrorResponseDto::class),
+			403 => throw new KinopoiskResponseException(ForbiddenErrorResponseDto::class),
+			404 => throw new KinopoiskResponseException(NotFoundErrorResponseDto::class),
+			default => NULL,
 		};
 	}
 

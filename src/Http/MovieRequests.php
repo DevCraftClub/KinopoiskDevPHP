@@ -4,11 +4,16 @@ namespace KinopoiskDev\Http;
 
 use KinopoiskDev\Enums\FilterField;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
+use KinopoiskDev\Exceptions\KinopoiskResponseException;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Movie;
+use KinopoiskDev\Models\MovieAward;
+use KinopoiskDev\Responses\Api\MovieAwardDocsResponseDto;
 use KinopoiskDev\Responses\Api\MovieDocsResponseDto;
+use KinopoiskDev\Responses\Api\PossibleValueDto;
 use KinopoiskDev\Responses\Api\SearchMovieResponseDto;
 use KinopoiskDev\Types\MovieSearchFilter;
+use KinopoiskDev\Utils\DataManager;
 
 /**
  * Класс для API-запросов, связанных с фильмами
@@ -76,17 +81,16 @@ class MovieRequests extends Kinopoisk {
 	 * @param   string  $field  Поле, для которого нужно получить возможные значения
 	 *
 	 * @return array Массив с возможными значениями для поля
-	 * @throws KinopoiskDevException При ошибках API
+	 * @throws KinopoiskDevException|KinopoiskResponseException При ошибках API
 	 * @throws \JsonException При ошибках парсинга JSON
 	 */
 	public function getPossibleValuesByField(string $field): array {
-
 		$allowedFields = [
 			FilterField::GENRES,
 			FilterField::COUNTRIES,
 			FilterField::TYPE,
 			FilterField::TYPE_NUMBER,
-			FilterField::STATUS
+			FilterField::STATUS,
 		];
 
 		if (!in_array($field, $allowedFields, TRUE)) {
@@ -95,28 +99,41 @@ class MovieRequests extends Kinopoisk {
 
 		$queryParams = ['field' => $field];
 
-		$response = $this->makeRequest('GET', '/movie/possible-values-by-field', $queryParams, 'v1');
+		$response = $this->makeRequest('GET', 'movie/possible-values-by-field', $queryParams, 'v1');
 		$data     = $this->parseResponse($response);
 
-		return $data;
+		return array_map(fn (PossibleValueDto $value) => $value->toArray(), $data);
 	}
 
 	/**
-	 * ИЗМЕНЕНО: Исправленный метод наград
-	 * Получает награды фильмов
+	 * Получает награды фильмов с возможностью фильтрации и пагинации
 	 *
-	 * @api    /v1.4/movie/awards
-	 * @link   https://kinopoiskdev.readme.io/reference/moviecontroller_findawardsv1_4
+	 * Выполняет запрос к API Kinopoisk.dev для получения списка наград фильмов
+	 * с поддержкой расширенной фильтрации и постраничной навигации.
+	 * Автоматически создает объект фильтра при отсутствии переданного параметра.
 	 *
-	 * @param   MovieSearchFilter|null  $filters  Фильтры для поиска наград
-	 * @param   int                     $page     Номер страницы
-	 * @param   int                     $limit    Результатов на странице
+	 * @api     /v1.4/movie/awards
+	 * @since   1.0.0
+	 * @version 1.0.0
 	 *
-	 * @return MovieDocsResponseDto Фильмы с наградами
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
+	 * @see     \KinopoiskDev\Types\MovieSearchFilter Класс для настройки фильтрации наград
+	 * @see     \KinopoiskDev\Responses\Api\MovieAwardDocsResponseDto Структура ответа API
+	 * @see     \KinopoiskDev\Models\MovieAward Модель отдельной награды фильма
+	 * @link    https://kinopoiskdev.readme.io/reference/moviecontroller_findawardsv1_4
+	 *
+	 * @param   MovieSearchFilter|null  $filters  Объект фильтрации для поиска наград по различным критериям (жанры, страны, годы, рейтинги и т.д.).
+	 *                                            При значении null создается новый экземпляр MovieSearchFilter без фильтров
+	 * @param   int                     $page     Номер запрашиваемой страницы результатов, начиная с 1 (по умолчанию 1)
+	 * @param   int                     $limit    Максимальное количество результатов на одной странице (по умолчанию 10, максимум ограничен API до 250)
+	 *
+	 * @return MovieAwardDocsResponseDto Объект ответа, содержащий массив наград фильмов и метаданные пагинации (общее количество,
+	 *                                   количество страниц, текущая страница)
+	 *
+	 * @throws KinopoiskDevException     При ошибках валидации данных, неправильных параметрах запроса или проблемах с инициализацией объектов
+	 * @throws KinopoiskResponseException При ошибках HTTP-запроса к API (401, 403, 404)
+	 * @throws \JsonException            При ошибках парсинга JSON-ответа от API, некорректном формате данных или повреждении ответа
 	 */
-	public function getMovieAwards(?MovieSearchFilter $filters = NULL, int $page = 1, int $limit = 10): MovieDocsResponseDto {
+	public function getMovieAwards(?MovieSearchFilter $filters = NULL, int $page = 1, int $limit = 10): MovieAwardDocsResponseDto {
 		if (is_null($filters)) {
 			$filters = new MovieSearchFilter();
 		}
@@ -125,12 +142,11 @@ class MovieRequests extends Kinopoisk {
 		$filters->addFilter('limit', $limit);
 		$queryParams = $filters->getFilters();
 
-		// KORRIGIERT: Verwendung des korrekten Endpunkts
-		$response = $this->makeRequest('GET', '/movie/awards', $queryParams);
+		$response = $this->makeRequest('GET', 'movie/awards', $queryParams);
 		$data     = $this->parseResponse($response);
 
-		return new MovieDocsResponseDto(
-			docs : array_map(fn ($movieData) => Movie::fromArray($movieData), $data['docs'] ?? []),
+		return new MovieAwardDocsResponseDto(
+			docs : DataManager::parseObjectArray($data, 'docs', MovieAward::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? $limit,
 			page : $data['page'] ?? $page,
@@ -139,7 +155,7 @@ class MovieRequests extends Kinopoisk {
 	}
 
 	/**
-	 * ДОБАВЛЕНО: Ищет фильмы только по названию (упрощенный поиск)
+	 * Ищет фильмы только по названию (упрощенный поиск)
 	 *
 	 * @api  /v1.4/movie/search
 	 * @link https://kinopoiskdev.readme.io/reference/moviecontroller_searchmoviev1_4
@@ -167,27 +183,6 @@ class MovieRequests extends Kinopoisk {
 	}
 
 	/**
-	 * Получает фильмы с высоким рейтингом на Кинопоиске
-	 *
-	 * @param   float  $minRating  Минимальный рейтинг (по умолчанию: 7.0)
-	 * @param   int    $page       Номер страницы
-	 * @param   int    $limit      Результатов на странице
-	 *
-	 * @return MovieDocsResponseDto Фильмы с высоким рейтингом
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
-	 */
-	public function getTopRatedMovies(float $minRating = 7.0, int $page = 1, int $limit = 10): MovieDocsResponseDto {
-		$filters = new MovieSearchFilter();
-		$filters
-			->withMinRating($minRating, 'kp')
-			->withMinVotes(1000, 'kp')
-			->sortByKinopoiskRating();
-
-		return $this->searchMovies($filters, $page, $limit);
-	}
-
-	/**
 	 * Ищет фильмы по различным критериям
 	 *
 	 * @api    /v1.4/movie
@@ -198,7 +193,7 @@ class MovieRequests extends Kinopoisk {
 	 * @param   int                     $limit    Количество результатов на странице (по умолчанию: 10, макс: 250)
 	 *
 	 * @return MovieDocsResponseDto Результаты поиска с пагинацией
-	 * @throws KinopoiskDevException При ошибках API
+	 * @throws KinopoiskDevException|KinopoiskResponseException При ошибках API
 	 * @throws \JsonException При ошибках парсинга JSON
 	 */
 	public function searchMovies(?MovieSearchFilter $filters = NULL, int $page = 1, int $limit = 10): MovieDocsResponseDto {
@@ -217,7 +212,7 @@ class MovieRequests extends Kinopoisk {
 		$filters->addFilter('limit', $limit);
 		$queryParams = $filters->getFilters();
 
-		$response = $this->makeRequest('GET', '/movie', $queryParams);
+		$response = $this->makeRequest('GET', 'movie', $queryParams);
 		$data     = $this->parseResponse($response);
 
 		return new MovieDocsResponseDto(
@@ -230,7 +225,7 @@ class MovieRequests extends Kinopoisk {
 	}
 
 	/**
-	 * ДОБАВЛЕНО: Получает новейшие фильмы
+	 *  Получает новейшие фильмы
 	 *
 	 * @param   int|null  $year   Год (по умолчанию: текущий год)
 	 * @param   int       $page   Номер страницы
@@ -238,10 +233,10 @@ class MovieRequests extends Kinopoisk {
 	 *
 	 * @return MovieDocsResponseDto Новейшие фильмы
 	 * @throws \JsonException При ошибках парсинга JSON
-	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException При ошибках API
+	 * @throws KinopoiskDevException|KinopoiskResponseException При ошибках API
 	 */
 	public function getLatestMovies(?int $year = NULL, int $page = 1, int $limit = 10): MovieDocsResponseDto {
-		$year = $year ?? date('Y');
+		$year = $year ?? (int) date('Y');
 
 		$filters = new MovieSearchFilter();
 		$filters
@@ -261,6 +256,7 @@ class MovieRequests extends Kinopoisk {
 	 * @return MovieDocsResponseDto Фильмы указанного жанра
 	 * @throws KinopoiskDevException При ошибках API
 	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
 	 */
 	public function getMoviesByGenre(string|array $genres, int $page = 1, int $limit = 10): MovieDocsResponseDto {
 		$filters = new MovieSearchFilter();
@@ -281,6 +277,7 @@ class MovieRequests extends Kinopoisk {
 	 * @return MovieDocsResponseDto Фильмы из указанной страны
 	 * @throws KinopoiskDevException При ошибках API
 	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
 	 */
 	public function getMoviesByCountry(string|array $countries, int $page = 1, int $limit = 10): MovieDocsResponseDto {
 		$filters = new MovieSearchFilter();
@@ -302,6 +299,7 @@ class MovieRequests extends Kinopoisk {
 	 * @return MovieDocsResponseDto Фильмы из указанного периода
 	 * @throws KinopoiskDevException При ошибках API
 	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
 	 */
 	public function getMoviesByYearRange(int $fromYear, int $toYear, int $page = 1, int $limit = 10): MovieDocsResponseDto {
 		$filters = new MovieSearchFilter();

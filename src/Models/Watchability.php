@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\WatchabilityItem Для отдельных элементов доступности
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
-class Watchability {
+readonly class Watchability implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта доступности просмотра
@@ -35,7 +35,7 @@ class Watchability {
 	 * @param   array  $items  Массив объектов WatchabilityItem с информацией о платформах
 	 */
 	public function __construct(
-		public readonly array $items = [],
+		public array $items = [],
 	) {}
 
 	/**

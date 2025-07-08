@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  * @see     \KinopoiskDev\Models\LinkedMovie Для связанных фильмов с названиями
  */
-class Name {
+readonly class Name implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта названия фильма
@@ -35,9 +35,9 @@ class Name {
 	 * @param   string|null  $type      Тип названия (например, "официальное", "рабочее", "альтернативное") или null
 	 */
 	public function __construct(
-		public readonly string  $name,
-		public readonly ?string $language = NULL,
-		public readonly ?string $type = NULL,
+		public string  $name,
+		public ?string $language = NULL,
+		public ?string $type = NULL,
 	) {}
 
 	/**

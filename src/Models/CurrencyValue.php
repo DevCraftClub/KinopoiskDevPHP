@@ -20,7 +20,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Budget Для информации о бюджете фильма
  * @see     \KinopoiskDev\Models\Fees Для информации о кассовых сборах
  */
-class CurrencyValue {
+readonly class CurrencyValue implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта денежного значения
@@ -36,8 +36,8 @@ class CurrencyValue {
 	 * @param   string|null  $currency  Код валюты (например, USD, RUB, EUR) или null если не указана
 	 */
 	public function __construct(
-		public readonly ?int    $value = NULL,
-		public readonly ?string $currency = NULL,
+		public ?int    $value = NULL,
+		public ?string $currency = NULL,
 	) {}
 
 	/**

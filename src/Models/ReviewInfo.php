@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
-class ReviewInfo {
+readonly class ReviewInfo implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта информации о рецензиях
@@ -35,9 +35,9 @@ class ReviewInfo {
 	 * @param   string|null  $percentage     Процент положительных рецензий в виде строки
 	 */
 	public function __construct(
-		public readonly ?int    $count = NULL,
-		public readonly ?int    $positiveCount = NULL,
-		public readonly ?string $percentage = NULL,
+		public ?int    $count = NULL,
+		public ?int    $positiveCount = NULL,
+		public ?string $percentage = NULL,
 	) {}
 
 	/**

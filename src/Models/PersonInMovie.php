@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Person Для полной информации о персоне
  * @see     \KinopoiskDev\Models\Movie Для информации о фильме
  */
-class PersonInMovie {
+readonly class PersonInMovie implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта персоны в фильме
@@ -40,13 +40,13 @@ class PersonInMovie {
 	 * @param   string|null  $enProfession  Профессия персоны на английском языке
 	 */
 	public function __construct(
-		public readonly int     $id,
-		public readonly ?string $photo = NULL,
-		public readonly ?string $name = NULL,
-		public readonly ?string $enName = NULL,
-		public readonly ?string $description = NULL,
-		public readonly ?string $profession = NULL,
-		public readonly ?string $enProfession = NULL,
+		public int     $id,
+		public ?string $photo = NULL,
+		public ?string $name = NULL,
+		public ?string $enName = NULL,
+		public ?string $description = NULL,
+		public ?string $profession = NULL,
+		public ?string $enProfession = NULL,
 	) {}
 
 	/**

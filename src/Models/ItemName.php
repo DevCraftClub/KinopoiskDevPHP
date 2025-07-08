@@ -22,7 +22,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма
  * @link    https://kinopoiskdev.readme.io/reference/moviecontroller_getpossiblevaluesbyfieldname
  */
-class ItemName {
+readonly class ItemName implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта названия элемента
@@ -37,7 +37,7 @@ class ItemName {
 	 * @param   string  $name  Строковое представление названия элемента
 	 */
 	public function __construct(
-		public readonly string $name,
+		public string $name,
 	) {}
 
 	/**

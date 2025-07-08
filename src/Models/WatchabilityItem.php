@@ -20,7 +20,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Watchability Для коллекции элементов доступности
  * @see     \KinopoiskDev\Models\Logo Для работы с логотипами сервисов
  */
-class WatchabilityItem {
+readonly class WatchabilityItem implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта элемента доступности просмотра
@@ -38,9 +38,9 @@ class WatchabilityItem {
 	 * @param   string       $url   URL для перехода на страницу просмотра (обязательный параметр)
 	 */
 	public function __construct(
-		public readonly ?string $name = null,
-		public readonly Logo $logo,
-		public readonly string $url,
+		public ?string $name = null,
+		public Logo $logo,
+		public string $url,
 	) {}
 
 	/**

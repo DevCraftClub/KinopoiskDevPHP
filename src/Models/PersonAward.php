@@ -22,7 +22,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\Person Для основной модели персоны
  * @link    https://kinopoiskdev.readme.io/reference/personcontroller_findmanyawardsv1_4
  */
-class PersonAward {
+readonly class PersonAward implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта награды персоны
@@ -38,12 +38,12 @@ class PersonAward {
 	 * @param   Movie|null       $movie       Связанный фильм за который получена награда
 	 */
 	public function __construct(
-		public readonly int         $personId,
-		public readonly ?Nomination $nomination = NULL,
-		public readonly ?bool       $winning = NULL,
-		public readonly ?string     $updatedAt = NULL,
-		public readonly ?string     $createdAt = NULL,
-		public readonly ?Movie      $movie = NULL,
+		public int         $personId,
+		public ?Nomination $nomination = NULL,
+		public ?bool       $winning = NULL,
+		public ?string     $updatedAt = NULL,
+		public ?string     $createdAt = NULL,
+		public ?Movie      $movie = NULL,
 	) {}
 
 	/**

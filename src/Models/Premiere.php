@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
-class Premiere {
+readonly class Premiere implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта информации о премьерах
@@ -39,13 +39,13 @@ class Premiere {
 	 * @param   string|null  $dvd      Дата релиза на DVD в формате ISO
 	 */
 	public function __construct(
-		public readonly ?string $country = NULL,
-		public readonly ?string $world = NULL,
-		public readonly ?string $russia = NULL,
-		public readonly ?string $digital = NULL,
-		public readonly ?string $cinema = NULL,
-		public readonly ?string $bluray = NULL,
-		public readonly ?string $dvd = NULL,
+		public ?string $country = NULL,
+		public ?string $world = NULL,
+		public ?string $russia = NULL,
+		public ?string $digital = NULL,
+		public ?string $cinema = NULL,
+		public ?string $bluray = NULL,
+		public ?string $dvd = NULL,
 	) {}
 
 	/**

@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie::getRating() Для получения рейтинга фильма
  * @see     \KinopoiskDev\Models\Votes Для информации о количестве голосов
  */
-class Rating {
+readonly class Rating implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта рейтингов
@@ -39,12 +39,12 @@ class Rating {
 	 * @param   float|null  $await               Рейтинг ожидания (от 0.0 до 100.0)
 	 */
 	public function __construct(
-		public readonly ?float $kp = NULL,
-		public readonly ?float $imdb = NULL,
-		public readonly ?float $tmdb = NULL,
-		public readonly ?float $filmCritics = NULL,
-		public readonly ?float $russianFilmCritics = NULL,
-		public readonly ?float $await = NULL,
+		public ?float $kp = NULL,
+		public ?float $imdb = NULL,
+		public ?float $tmdb = NULL,
+		public ?float $filmCritics = NULL,
+		public ?float $russianFilmCritics = NULL,
+		public ?float $await = NULL,
 	) {}
 
 	/**

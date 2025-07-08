@@ -22,7 +22,7 @@ use Lombok\Getter;
  * @see     \KinopoiskDev\Models\LinkedMovie Для связанных фильмов с внешними идентификаторами
  * @see     \KinopoiskDev\Models\Movie Для использования внешних идентификаторов в фильмах
  */
-class ExternalId {
+readonly class ExternalId implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта внешних идентификаторов
@@ -39,9 +39,9 @@ class ExternalId {
 	 * @param   int|null     $tmdb  Идентификатор фильма в системе TMDB (null если не указан)
 	 */
 	public function __construct(
-		#[Getter] public readonly ?string $kpHD = NULL,
-		#[Getter] public readonly ?string $imdb = NULL,
-		#[Getter] public readonly ?int    $tmdb = NULL,
+		#[Getter] public ?string $kpHD = NULL,
+		#[Getter] public ?string $imdb = NULL,
+		#[Getter] public ?int    $tmdb = NULL,
 	) {}
 
 	/**

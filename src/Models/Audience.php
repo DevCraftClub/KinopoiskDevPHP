@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Rating Для информации о рейтингах
  * @see     \KinopoiskDev\Models\Fees Для информации о кассовых сборах
  */
-class Audience {
+readonly class Audience implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта данных об аудитории
@@ -35,8 +35,8 @@ class Audience {
 	 * @param   int|null     $count    Количество зрителей (null если данные отсутствуют)
 	 */
 	public function __construct(
-		public readonly ?int    $count = NULL,
-		public readonly ?string $country = NULL,
+		public ?int    $count = NULL,
+		public ?string $country = NULL,
 	) {}
 
 	/**

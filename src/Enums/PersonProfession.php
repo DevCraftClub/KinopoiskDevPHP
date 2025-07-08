@@ -76,4 +76,40 @@ enum PersonProfession: string {
 		};
 	}
 
+	/**
+	 * Возвращает название профессии на английском языке
+	 */
+	public function getEnglishName(): string {
+		return match ($this) {
+			self::ACTOR       => 'actor',
+			self::DIRECTOR    => 'director',
+			self::WRITER      => 'writer',
+			self::PRODUCER    => 'producer',
+			self::COMPOSER    => 'composer',
+			self::OPERATOR    => 'operator',
+			self::DESIGN      => 'designer',
+			self::EDITOR      => 'editor',
+			self::VOICE_ACTOR => 'voice actor',
+			self::OTHER       => 'other',
+		};
+	}
+
+	/**
+	 * Возвращает множественное название профессии на английском языке
+	 */
+	public function getEnglishPluralName(): string {
+		return match ($this) {
+			self::ACTOR       => 'actors',
+			self::DIRECTOR    => 'directors',
+			self::WRITER      => 'writers',
+			self::PRODUCER    => 'producers',
+			self::COMPOSER    => 'composers',
+			self::OPERATOR    => 'operators',
+			self::DESIGN      => 'designers',
+			self::EDITOR      => 'editors',
+			self::VOICE_ACTOR => 'voice actors',
+			self::OTHER       => 'others',
+		};
+	}
+
 }

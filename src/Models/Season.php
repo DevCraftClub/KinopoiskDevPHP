@@ -21,7 +21,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма/сериала
  * @link    https://kinopoiskdev.readme.io/reference/seasoncontroller_findmanyv1_4
  */
-class Season {
+readonly class Season implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта сезона
@@ -45,19 +45,19 @@ class Season {
 	 * @param   string|null          $createdAt      Дата создания записи
 	 */
 	public function __construct(
-		public readonly int          $movieId,
-		public readonly ?int         $number = null,
-		public readonly ?int         $episodesCount = null,
-		public readonly array        $episodes = [],
-		public readonly ?ShortImage  $poster = null,
-		public readonly ?string      $name = null,
-		public readonly ?string      $enName = null,
-		public readonly ?int         $duration = null,
-		public readonly ?string      $description = null,
-		public readonly ?string      $enDescription = null,
-		public readonly ?string      $airDate = null,
-		public readonly ?string      $updatedAt = null,
-		public readonly ?string      $createdAt = null,
+		public int          $movieId,
+		public ?int         $number = null,
+		public ?int         $episodesCount = null,
+		public array        $episodes = [],
+		public ?ShortImage  $poster = null,
+		public ?string      $name = null,
+		public ?string      $enName = null,
+		public ?int         $duration = null,
+		public ?string      $description = null,
+		public ?string      $enDescription = null,
+		public ?string      $airDate = null,
+		public ?string      $updatedAt = null,
+		public ?string      $createdAt = null,
 	) {}
 
 	/**

@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\MovieAward Для наград фильмов
  * @see     \KinopoiskDev\Models\PersonAward Для наград персон
  */
-class NominationAward {
+readonly class NominationAward implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта награды номинации
@@ -32,8 +32,8 @@ class NominationAward {
 	 * @param   int|null     $year   Год вручения награды
 	 */
 	public function __construct(
-		public readonly ?string $title = null,
-		public readonly ?int    $year = null,
+		public ?string $title = null,
+		public ?int    $year = null,
 	) {}
 
 	/**

@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie::getVotes() Для получения голосов фильма
  * @see     \KinopoiskDev\Models\Rating Для информации о рейтингах
  */
-class Votes {
+readonly class Votes implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта голосов
@@ -39,12 +39,12 @@ class Votes {
 	 * @param   int|null  $await              Количество голосов ожидания
 	 */
 	public function __construct(
-		public readonly ?int $kp = NULL,
-		public readonly ?int $imdb = NULL,
-		public readonly ?int $tmdb = NULL,
-		public readonly ?int $filmCritics = NULL,
-		public readonly ?int $russianFilmCritics = NULL,
-		public readonly ?int $await = NULL,
+		public ?int $kp = NULL,
+		public ?int $imdb = NULL,
+		public ?int $tmdb = NULL,
+		public ?int $filmCritics = NULL,
+		public ?int $russianFilmCritics = NULL,
+		public ?int $await = NULL,
 	) {}
 
 	/**

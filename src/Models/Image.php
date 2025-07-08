@@ -23,7 +23,7 @@ use Lombok\Getter;
  * @see     \KinopoiskDev\Models\ShortImage Для упрощенной модели изображений
  * @see     \KinopoiskDev\Models\Logo Для логотипов
  */
-class Image {
+readonly class Image implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта изображения
@@ -38,10 +38,10 @@ class Image {
 	 * @param   int|null     $width       Ширина изображения в пикселях (null если неизвестна)
 	 */
 	public function __construct(
-		#[Getter] public readonly ?string $url = NULL,
-		#[Getter] public readonly ?string $previewUrl = NULL,
-		#[Getter] public readonly ?int    $height = NULL,
-		#[Getter] public readonly ?int    $width = NULL,
+		#[Getter] public ?string $url = NULL,
+		#[Getter] public ?string $previewUrl = NULL,
+		#[Getter] public ?int    $height = NULL,
+		#[Getter] public ?int    $width = NULL,
 	) {}
 
 	/**

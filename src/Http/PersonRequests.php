@@ -39,9 +39,10 @@ class PersonRequests extends Kinopoisk {
 	 * @return Person Объект персоны со всеми доступными данными
 	 * @throws KinopoiskDevException При ошибках API или проблемах с сетью
 	 * @throws \JsonException При ошибках парсинга JSON-ответа
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
 	 */
 	public function getPersonById(int $personId): Person {
-		$response = $this->makeRequest('GET', "/person/{$personId}");
+		$response = $this->makeRequest('GET', "person/{$personId}");
 		$data     = $this->parseResponse($response);
 
 		return Person::fromArray($data);
@@ -64,10 +65,16 @@ class PersonRequests extends Kinopoisk {
 	 * @return PersonDocsResponseDto Результаты поиска с информацией о пагинации
 	 * @throws KinopoiskDevException При ошибках API
 	 * @throws \JsonException При ошибках парсинга JSON-ответа
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
 	 */
 	public function searchByName(string $name, int $page = 1, int $limit = 10): PersonDocsResponseDto {
 		$filters = new PersonSearchFilter();
 		$filters->addFilter('query', $name);
+		$filters->addFilter('page', $page);
+		$filters->addFilter('limit', $limit);
+
+		$response = $this->makeRequest('GET', 'person/search', $filters->getFilters());
+		$data     = $this->parseResponse($response);
 
 		return $this->searchPersons($filters, $page, $limit);
 	}

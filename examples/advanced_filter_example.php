@@ -3,7 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use KinopoiskDev\Http\MovieRequests;
-use KinopoiskDev\Types\MovieSearchFilter;
+use KinopoiskDev\Filter\MovieSearchFilter;
 use KinopoiskDev\Utils\MovieFilter;
 
 // Инициализация клиента API с токеном

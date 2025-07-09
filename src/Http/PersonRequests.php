@@ -8,7 +8,7 @@ use KinopoiskDev\Models\Person;
 use KinopoiskDev\Models\PersonAward;
 use KinopoiskDev\Responses\Api\PersonAwardDocsResponseDto;
 use KinopoiskDev\Responses\Api\PersonDocsResponseDto;
-use KinopoiskDev\Types\PersonSearchFilter;
+use KinopoiskDev\Filter\PersonSearchFilter;
 
 /**
  * Класс для API-запросов, связанных с персонами
@@ -23,7 +23,7 @@ use KinopoiskDev\Types\PersonSearchFilter;
  *
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Person Для структуры данных персоны
- * @see     \KinopoiskDev\Types\PersonSearchFilter Для фильтрации запросов
+ * @see     \KinopoiskDev\Filter\PersonSearchFilter Для фильтрации запросов
  */
 class PersonRequests extends Kinopoisk {
 
@@ -182,7 +182,7 @@ class PersonRequests extends Kinopoisk {
 	 * @api    /v1.4/person/awards
 	 * @since  1.0.0
 	 *
-	 * @see    \KinopoiskDev\Types\PersonSearchFilter Для параметров фильтрации
+	 * @see    \KinopoiskDev\Filter\PersonSearchFilter Для параметров фильтрации
 	 * @see    \KinopoiskDev\Models\PersonAward Для структуры данных наград персон
 	 * @see    \KinopoiskDev\Responses\PersonAwardDocsResponseDto Для структуры ответа
 	 * @link   https://kinopoiskdev.readme.io/reference/personcontroller_findmanyawardsv1_4

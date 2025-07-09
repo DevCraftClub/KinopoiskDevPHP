@@ -90,7 +90,7 @@ $filter->excludeCountries(['Франция']);
 Класс `MovieSearchFilter` расширяет базовый `MovieFilter` и предоставляет дополнительные методы для удобного поиска:
 
 ```php
-use KinopoiskDev\Types\MovieSearchFilter;
+use KinopoiskDev\Filter\MovieSearchFilter;
 
 $searchFilter = new MovieSearchFilter();
 $searchFilter->searchByName('Властелин')                // Поиск по названию

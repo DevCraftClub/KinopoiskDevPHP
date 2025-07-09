@@ -6,7 +6,7 @@ use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Season;
 use KinopoiskDev\Responses\Api\SeasonDocsResponseDto;
-use KinopoiskDev\Types\SeasonSearchFilter;
+use KinopoiskDev\Filter\SeasonSearchFilter;
 
 /**
  * Класс для API-запросов, связанных с сезонами
@@ -19,7 +19,7 @@ use KinopoiskDev\Types\SeasonSearchFilter;
  * @author  Maxim Harder
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Season Для структуры данных сезона
- * @see     \KinopoiskDev\Types\SeasonSearchFilter Для фильтрации запросов
+ * @see     \KinopoiskDev\Filter\SeasonSearchFilter Для фильтрации запросов
  */
 class SeasonRequests extends Kinopoisk {
 

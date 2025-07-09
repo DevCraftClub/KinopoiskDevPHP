@@ -2,11 +2,12 @@
 
 namespace KinopoiskDev\Http;
 
+use KinopoiskDev\Enums\StudioType;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Studio;
 use KinopoiskDev\Responses\Api\StudioDocsResponseDto;
-use KinopoiskDev\Types\StudioSearchFilter;
+use KinopoiskDev\Filter\StudioSearchFilter;
 
 /**
  * Класс для API-запросов, связанных со студиями
@@ -20,7 +21,7 @@ use KinopoiskDev\Types\StudioSearchFilter;
  * @author  Maxim Harder
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Studio Для структуры данных студии
- * @see     \KinopoiskDev\Types\StudioSearchFilter Для фильтрации запросов
+ * @see     \KinopoiskDev\Filter\StudioSearchFilter Для фильтрации запросов
  */
 class StudioRequests extends Kinopoisk {
 
@@ -39,7 +40,7 @@ class StudioRequests extends Kinopoisk {
 	 *
 	 * @return StudioDocsResponseDto Результаты поиска с информацией о пагинации
 	 * @throws KinopoiskDevException При ошибках API или превышении лимитов
-	 * @throws \JsonException При ошибках парсинга JSON-ответа
+	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON-ответа
 	 */
 	public function searchStudios(?StudioSearchFilter $filters = NULL, int $page = 1, int $limit = 10): StudioDocsResponseDto {
 		if ($limit > 250) {
@@ -81,7 +82,7 @@ class StudioRequests extends Kinopoisk {
 	 *
 	 * @return StudioDocsResponseDto Студии указанного типа
 	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON
 	 */
 	public function getStudiosByType(string $type, int $page = 1, int $limit = 10): StudioDocsResponseDto {
 		$filters = new StudioSearchFilter();
@@ -100,10 +101,10 @@ class StudioRequests extends Kinopoisk {
 	 *
 	 * @return StudioDocsResponseDto Производственные студии
 	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON
 	 */
 	public function getProductionStudios(int $page = 1, int $limit = 10): StudioDocsResponseDto {
-		return $this->getStudiosByType('Производство', $page, $limit);
+		return $this->getStudiosByType(StudioType::PRODUCTION->value, $page, $limit);
 	}
 
 	/**
@@ -116,10 +117,10 @@ class StudioRequests extends Kinopoisk {
 	 *
 	 * @return StudioDocsResponseDto Студии дубляжа
 	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON
 	 */
 	public function getDubbingStudios(int $page = 1, int $limit = 10): StudioDocsResponseDto {
-		return $this->getStudiosByType('Студия дубляжа', $page, $limit);
+		return $this->getStudiosByType(StudioType::DUBBING_STUDIO->value, $page, $limit);
 	}
 
 	/**
@@ -133,7 +134,7 @@ class StudioRequests extends Kinopoisk {
 	 *
 	 * @return StudioDocsResponseDto Студии с подходящими названиями
 	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON
 	 */
 	public function getStudiosByTitle(string $title, int $page = 1, int $limit = 10): StudioDocsResponseDto {
 		$filters = new StudioSearchFilter();
@@ -153,7 +154,7 @@ class StudioRequests extends Kinopoisk {
 	 *
 	 * @return StudioDocsResponseDto Студии, связанные с фильмом
 	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON
 	 */
 	public function getStudiosForMovie(int $movieId, int $page = 1, int $limit = 10): StudioDocsResponseDto {
 		$filters = new StudioSearchFilter();

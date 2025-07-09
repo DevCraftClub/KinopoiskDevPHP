@@ -4,7 +4,7 @@ namespace KinopoiskDev\Utils;
 
 use KinopoiskDev\Enums\SortDirection;
 use KinopoiskDev\Enums\SortField;
-use KinopoiskDev\Types\SortCriteria;
+use KinopoiskDev\Filter\SortCriteria;
 
 /**
  * Trait для добавления функциональности сортировки к фильтрам

@@ -3,11 +3,11 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use KinopoiskDev\Http\MovieRequests;
-use KinopoiskDev\Types\MovieSearchFilter;
+use KinopoiskDev\Filter\MovieSearchFilter;
 use KinopoiskDev\Utils\MovieFilter;
 use KinopoiskDev\Enums\SortField;
 use KinopoiskDev\Enums\SortDirection;
-use KinopoiskDev\Types\SortCriteria;
+use KinopoiskDev\Filter\SortCriteria;
 
 // Инициализация клиента API с токеном
 $token = getenv('KINOPOISK_TOKEN') ?: 'YOUR_API_TOKEN';

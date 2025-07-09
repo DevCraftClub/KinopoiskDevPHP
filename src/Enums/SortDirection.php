@@ -139,7 +139,7 @@ enum SortDirection: string {
 	 */
 	public static function fromString(string $value, ?SortDirection $default = null): SortDirection {
 		static $cache = [];
-		$key = strtolower($value) . '_' . ($default ? $default->value : 'null');
+		$key = strtolower($value) . '_' . ($default->value ?? 'null');
 
 		if (!isset($cache[$key])) {
 			$cache[$key] = self::tryFrom(strtolower($value)) ?? $default ?? self::ASC;

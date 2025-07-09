@@ -1,6 +1,6 @@
 <?php
 
-namespace KinopoiskDev\Types;
+namespace KinopoiskDev\Filter;
 
 use KinopoiskDev\Enums\SortDirection;
 use KinopoiskDev\Enums\SortField;
@@ -11,7 +11,7 @@ use KinopoiskDev\Enums\SortField;
  * Инкапсулирует информацию о поле сортировки и направлении,
  * предоставляя удобные методы для работы с параметрами сортировки.
  *
- * @package KinopoiskDev\Types
+ * @package KinopoiskDev\Filter
  * @since   1.0.0
  * @author  Maxim Harder
  * @version 1.0.0

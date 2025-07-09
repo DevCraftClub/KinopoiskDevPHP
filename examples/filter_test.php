@@ -2,11 +2,11 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use KinopoiskDev\Types\ImageSearchFilter;
-use KinopoiskDev\Types\MovieSearchFilter;
-use KinopoiskDev\Types\PersonSearchFilter;
-use KinopoiskDev\Types\ReviewSearchFilter;
-use KinopoiskDev\Types\SeasonSearchFilter;
+use KinopoiskDev\Filter\ImageSearchFilter;
+use KinopoiskDev\Filter\MovieSearchFilter;
+use KinopoiskDev\Filter\PersonSearchFilter;
+use KinopoiskDev\Filter\ReviewSearchFilter;
+use KinopoiskDev\Filter\SeasonSearchFilter;
 
 // Test ImageSearchFilter
 echo "Testing ImageSearchFilter:\n";

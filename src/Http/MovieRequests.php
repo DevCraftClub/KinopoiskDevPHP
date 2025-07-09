@@ -12,7 +12,7 @@ use KinopoiskDev\Responses\Api\MovieAwardDocsResponseDto;
 use KinopoiskDev\Responses\Api\MovieDocsResponseDto;
 use KinopoiskDev\Responses\Api\PossibleValueDto;
 use KinopoiskDev\Responses\Api\SearchMovieResponseDto;
-use KinopoiskDev\Types\MovieSearchFilter;
+use KinopoiskDev\Filter\MovieSearchFilter;
 use KinopoiskDev\Utils\DataManager;
 
 /**
@@ -116,7 +116,7 @@ class MovieRequests extends Kinopoisk {
 	 * @since   1.0.0
 	 * @version 1.0.0
 	 *
-	 * @see     \KinopoiskDev\Types\MovieSearchFilter Класс для настройки фильтрации наград
+	 * @see     \KinopoiskDev\Filter\MovieSearchFilter Класс для настройки фильтрации наград
 	 * @see     \KinopoiskDev\Responses\Api\MovieAwardDocsResponseDto Структура ответа API
 	 * @see     \KinopoiskDev\Models\MovieAward Модель отдельной награды фильма
 	 * @link    https://kinopoiskdev.readme.io/reference/moviecontroller_findawardsv1_4

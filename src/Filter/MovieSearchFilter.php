@@ -1,6 +1,6 @@
 <?php
 
-namespace KinopoiskDev\Types;
+namespace KinopoiskDev\Filter;
 
 use KinopoiskDev\Utils\MovieFilter;
 use KinopoiskDev\Utils\FilterTrait;

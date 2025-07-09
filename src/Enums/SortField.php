@@ -17,13 +17,13 @@ namespace KinopoiskDev\Enums;
 enum SortField: string {
 
 	// Основные поля для сортировки
-	case ID                = 'id';
-	case NAME              = 'name';
-	case EN_NAME           = 'enName';
-	case ALTERNATIVE_NAME  = 'alternativeName';
-	case YEAR              = 'year';
-	case CREATED_AT        = 'createdAt';
-	case UPDATED_AT        = 'updatedAt';
+	case ID               = 'id';
+	case NAME             = 'name';
+	case EN_NAME          = 'enName';
+	case ALTERNATIVE_NAME = 'alternativeName';
+	case YEAR             = 'year';
+	case CREATED_AT       = 'createdAt';
+	case UPDATED_AT       = 'updatedAt';
 
 	// Рейтинги
 	case RATING_KP                   = 'rating.kp';
@@ -56,41 +56,59 @@ enum SortField: string {
 	case PREMIERE_RUSSIA = 'premiere.russia';
 	case PREMIERE_USA    = 'premiere.usa';
 
-	/**
-	 * Возвращает тип данных поля для валидации
-	 *
-	 * Определяет тип данных поля сортировки для обеспечения корректной
-	 * валидации и обработки параметров сортировки.
-	 *
-	 * @return string Тип данных поля ('number', 'string', 'date')
-	 */
-	public function getDataType(): string {
-		// Используем статический кеш для оптимизации
-		static $cache = [];
+	// Студии
+	case TYPE = 'type';
 
-		if (isset($cache[$this->value])) {
-			return $cache[$this->value];
+	case TITLE = 'title';
+
+	/**
+	 * Возвращает все поля рейтингов
+	 *
+	 * Статический метод для получения всех доступных полей рейтингов.
+	 * Используется для создания интерфейсов выбора рейтинговых полей.
+	 *
+	 * @return array Массив всех рейтинговых полей SortField
+	 */
+	public static function getRatingFields(): array {
+		static $fields = NULL;
+
+		if ($fields === NULL) {
+			$fields = [
+				self::RATING_KP,
+				self::RATING_IMDB,
+				self::RATING_TMDB,
+				self::RATING_FILM_CRITICS,
+				self::RATING_RUSSIAN_FILM_CRITICS,
+				self::RATING_AWAIT,
+			];
 		}
 
-		$result = match ($this) {
-			// Числовые поля
-			self::ID, self::YEAR, self::MOVIE_LENGTH, self::SERIES_LENGTH,
-			self::TOTAL_SERIES_LENGTH, self::AGE_RATING, self::TOP_10, self::TOP_250,
-			self::RATING_KP, self::RATING_IMDB, self::RATING_TMDB,
-			self::RATING_FILM_CRITICS, self::RATING_RUSSIAN_FILM_CRITICS, self::RATING_AWAIT,
-			self::VOTES_KP, self::VOTES_IMDB, self::VOTES_TMDB,
-			self::VOTES_FILM_CRITICS, self::VOTES_RUSSIAN_FILM_CRITICS, self::VOTES_AWAIT => 'number',
+		return $fields;
+	}
 
-			// Строковые поля
-			self::NAME, self::EN_NAME, self::ALTERNATIVE_NAME => 'string',
+	/**
+	 * Возвращает все поля голосов
+	 *
+	 * Статический метод для получения всех доступных полей голосов.
+	 * Используется для создания интерфейсов выбора полей голосов.
+	 *
+	 * @return array Массив всех полей голосов SortField
+	 */
+	public static function getVotesFields(): array {
+		static $fields = NULL;
 
-			// Поля дат
-			self::CREATED_AT, self::UPDATED_AT, self::PREMIERE_WORLD,
-			self::PREMIERE_RUSSIA, self::PREMIERE_USA => 'date',
-		};
+		if ($fields === NULL) {
+			$fields = [
+				self::VOTES_KP,
+				self::VOTES_IMDB,
+				self::VOTES_TMDB,
+				self::VOTES_FILM_CRITICS,
+				self::VOTES_RUSSIAN_FILM_CRITICS,
+				self::VOTES_AWAIT,
+			];
+		}
 
-		$cache[$this->value] = $result;
-		return $result;
+		return $fields;
 	}
 
 	/**
@@ -110,37 +128,40 @@ enum SortField: string {
 		}
 
 		$result = match ($this) {
-			self::ID                            => 'ID фильма',
-			self::NAME                          => 'Название (русское)',
-			self::EN_NAME                       => 'Название (английское)',
-			self::ALTERNATIVE_NAME              => 'Альтернативное название',
-			self::YEAR                          => 'Год выпуска',
-			self::CREATED_AT                    => 'Дата создания',
-			self::UPDATED_AT                    => 'Дата обновления',
-			self::RATING_KP                     => 'Рейтинг Кинопоиска',
-			self::RATING_IMDB                   => 'Рейтинг IMDB',
-			self::RATING_TMDB                   => 'Рейтинг TMDB',
-			self::RATING_FILM_CRITICS           => 'Рейтинг кинокритиков',
-			self::RATING_RUSSIAN_FILM_CRITICS   => 'Рейтинг российских кинокритиков',
-			self::RATING_AWAIT                  => 'Рейтинг ожидания',
-			self::VOTES_KP                      => 'Голоса Кинопоиска',
-			self::VOTES_IMDB                    => 'Голоса IMDB',
-			self::VOTES_TMDB                    => 'Голоса TMDB',
-			self::VOTES_FILM_CRITICS            => 'Голоса кинокритиков',
-			self::VOTES_RUSSIAN_FILM_CRITICS    => 'Голоса российских кинокритиков',
-			self::VOTES_AWAIT                   => 'Голоса ожидания',
-			self::MOVIE_LENGTH                  => 'Длительность фильма',
-			self::SERIES_LENGTH                 => 'Длительность серии',
-			self::TOTAL_SERIES_LENGTH           => 'Общая длительность сериала',
-			self::AGE_RATING                    => 'Возрастной рейтинг',
-			self::TOP_10                        => 'Позиция в топ-10',
-			self::TOP_250                       => 'Позиция в топ-250',
-			self::PREMIERE_WORLD                => 'Дата мировой премьеры',
-			self::PREMIERE_RUSSIA               => 'Дата премьеры в России',
-			self::PREMIERE_USA                  => 'Дата премьеры в США',
+			self::ID                          => 'ID фильма',
+			self::NAME                        => 'Название (русское)',
+			self::EN_NAME                     => 'Название (английское)',
+			self::ALTERNATIVE_NAME            => 'Альтернативное название',
+			self::YEAR                        => 'Год выпуска',
+			self::CREATED_AT                  => 'Дата создания',
+			self::UPDATED_AT                  => 'Дата обновления',
+			self::RATING_KP                   => 'Рейтинг Кинопоиска',
+			self::RATING_IMDB                 => 'Рейтинг IMDB',
+			self::RATING_TMDB                 => 'Рейтинг TMDB',
+			self::RATING_FILM_CRITICS         => 'Рейтинг кинокритиков',
+			self::RATING_RUSSIAN_FILM_CRITICS => 'Рейтинг российских кинокритиков',
+			self::RATING_AWAIT                => 'Рейтинг ожидания',
+			self::VOTES_KP                    => 'Голоса Кинопоиска',
+			self::VOTES_IMDB                  => 'Голоса IMDB',
+			self::VOTES_TMDB                  => 'Голоса TMDB',
+			self::VOTES_FILM_CRITICS          => 'Голоса кинокритиков',
+			self::VOTES_RUSSIAN_FILM_CRITICS  => 'Голоса российских кинокритиков',
+			self::VOTES_AWAIT                 => 'Голоса ожидания',
+			self::MOVIE_LENGTH                => 'Длительность фильма',
+			self::SERIES_LENGTH               => 'Длительность серии',
+			self::TOTAL_SERIES_LENGTH         => 'Общая длительность сериала',
+			self::AGE_RATING                  => 'Возрастной рейтинг',
+			self::TOP_10                      => 'Позиция в топ-10',
+			self::TOP_250                     => 'Позиция в топ-250',
+			self::PREMIERE_WORLD              => 'Дата мировой премьеры',
+			self::PREMIERE_RUSSIA             => 'Дата премьеры в России',
+			self::PREMIERE_USA                => 'Дата премьеры в США',
+			self::TITLE                       => 'Название',
+			self::TYPE                        => 'Тип',
 		};
 
 		$cache[$this->value] = $result;
+
 		return $result;
 	}
 
@@ -199,6 +220,42 @@ enum SortField: string {
 	}
 
 	/**
+	 * Возвращает тип данных поля для валидации
+	 *
+	 * Определяет тип данных поля сортировки для обеспечения корректной
+	 * валидации и обработки параметров сортировки.
+	 *
+	 * @return string Тип данных поля ('number', 'string', 'date')
+	 */
+	public function getDataType(): string {
+		// Используем статический кеш для оптимизации
+		static $cache = [];
+
+		if (isset($cache[$this->value])) {
+			return $cache[$this->value];
+		}
+
+		$result = match ($this) {
+			// Числовые поля
+			self::ID, self::YEAR, self::MOVIE_LENGTH, self::SERIES_LENGTH,
+			self::TOTAL_SERIES_LENGTH, self::AGE_RATING, self::TOP_10, self::TOP_250,
+			self::RATING_KP, self::RATING_IMDB, self::RATING_TMDB,
+			self::RATING_FILM_CRITICS, self::RATING_RUSSIAN_FILM_CRITICS, self::RATING_AWAIT,
+			self::VOTES_KP, self::VOTES_IMDB, self::VOTES_TMDB,
+			self::VOTES_FILM_CRITICS, self::VOTES_RUSSIAN_FILM_CRITICS, self::VOTES_AWAIT => 'number',
+
+			// Поля дат
+			self::CREATED_AT, self::UPDATED_AT, self::PREMIERE_WORLD,
+			self::PREMIERE_RUSSIA, self::PREMIERE_USA                                     => 'date',
+			default                                                                       => 'string',
+		};
+
+		$cache[$this->value] = $result;
+
+		return $result;
+	}
+
+	/**
 	 * Проверяет, является ли поле числовым
 	 *
 	 * Определяет, относится ли поле сортировки к числовому типу данных.
@@ -214,56 +271,6 @@ enum SortField: string {
 		}
 
 		return $cache[$this->value];
-	}
-
-	/**
-	 * Возвращает все поля рейтингов
-	 *
-	 * Статический метод для получения всех доступных полей рейтингов.
-	 * Используется для создания интерфейсов выбора рейтинговых полей.
-	 *
-	 * @return array Массив всех рейтинговых полей SortField
-	 */
-	public static function getRatingFields(): array {
-		static $fields = null;
-
-		if ($fields === null) {
-			$fields = [
-				self::RATING_KP,
-				self::RATING_IMDB,
-				self::RATING_TMDB,
-				self::RATING_FILM_CRITICS,
-				self::RATING_RUSSIAN_FILM_CRITICS,
-				self::RATING_AWAIT,
-			];
-		}
-
-		return $fields;
-	}
-
-	/**
-	 * Возвращает все поля голосов
-	 *
-	 * Статический метод для получения всех доступных полей голосов.
-	 * Используется для создания интерфейсов выбора полей голосов.
-	 *
-	 * @return array Массив всех полей голосов SortField
-	 */
-	public static function getVotesFields(): array {
-		static $fields = null;
-
-		if ($fields === null) {
-			$fields = [
-				self::VOTES_KP,
-				self::VOTES_IMDB,
-				self::VOTES_TMDB,
-				self::VOTES_FILM_CRITICS,
-				self::VOTES_RUSSIAN_FILM_CRITICS,
-				self::VOTES_AWAIT,
-			];
-		}
-
-		return $fields;
 	}
 
 	/**
@@ -294,20 +301,21 @@ enum SortField: string {
 			self::ID,
 				// По убыванию для дат (сначала свежие)
 			self::CREATED_AT, self::UPDATED_AT, self::PREMIERE_WORLD,
-			self::PREMIERE_RUSSIA, self::PREMIERE_USA => SortDirection::DESC,
+			self::PREMIERE_RUSSIA, self::PREMIERE_USA                        => SortDirection::DESC,
 
 			// По возрастанию для топов (меньше = лучше позиция)
-			self::TOP_10, self::TOP_250 => SortDirection::ASC,
+			self::TOP_10, self::TOP_250, self::MOVIE_LENGTH,
+			self::SERIES_LENGTH, self::TOTAL_SERIES_LENGTH, self::AGE_RATING => SortDirection::ASC,
 
 			// По возрастанию для названий (алфавитный порядок)
-			self::NAME, self::EN_NAME, self::ALTERNATIVE_NAME => SortDirection::ASC,
-
+			self::NAME, self::EN_NAME, self::ALTERNATIVE_NAME                => SortDirection::ASC,
 			// По возрастанию для технических параметров
-			self::MOVIE_LENGTH, self::SERIES_LENGTH, self::TOTAL_SERIES_LENGTH,
-			self::AGE_RATING => SortDirection::ASC,
+			default                                                           => SortDirection::DESC,
 		};
 
 		$cache[$this->value] = $result;
+
 		return $result;
 	}
+
 }

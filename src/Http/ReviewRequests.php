@@ -6,7 +6,7 @@ use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Review;
 use KinopoiskDev\Responses\Api\ReviewDocsResponseDto;
-use KinopoiskDev\Types\ReviewSearchFilter;
+use KinopoiskDev\Filter\ReviewSearchFilter;
 
 /**
  * Класс для API-запросов, связанных с рецензиями

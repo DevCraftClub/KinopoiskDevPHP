@@ -1,6 +1,6 @@
 <?php
 
-namespace KinopoiskDev\Types;
+namespace KinopoiskDev\Filter;
 
 use KinopoiskDev\Utils\MovieFilter;
 use KinopoiskDev\Utils\FilterTrait;
@@ -8,7 +8,7 @@ use KinopoiskDev\Utils\FilterTrait;
 /**
  * Класс для фильтров при поиске сезонов
  *
- * @package KinopoiskDev\Types
+ * @package KinopoiskDev\Filter
  * @since   1.0.0
  * @author  Maxim Harder
  * @version 1.0.0

@@ -6,7 +6,7 @@ use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Keyword;
 use KinopoiskDev\Responses\Api\KeywordDocsResponseDto;
-use KinopoiskDev\Types\KeywordSearchFilter;
+use KinopoiskDev\Filter\KeywordSearchFilter;
 
 /**
  * Класс для API-запросов, связанных с ключевыми словами
@@ -20,7 +20,7 @@ use KinopoiskDev\Types\KeywordSearchFilter;
  * @author  Maxim Harder
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Keyword Для структуры данных ключевого слова
- * @see     \KinopoiskDev\Types\KeywordSearchFilter Для фильтрации запросов
+ * @see     \KinopoiskDev\Filter\KeywordSearchFilter Для фильтрации запросов
  */
 class KeywordRequests extends Kinopoisk {
 
@@ -53,9 +53,9 @@ class KeywordRequests extends Kinopoisk {
 			$filters = new KeywordSearchFilter();
 		}
 
-		$filters->addFilter('page', $page);
-		$filters->addFilter('limit', $limit);
 		$queryParams = $filters->getFilters();
+		$queryParams['page'] = $page;
+		$queryParams['limit'] = $limit;
 
 		$response = $this->makeRequest('GET', 'keyword', $queryParams);
 		$data     = $this->parseResponse($response);
@@ -146,7 +146,7 @@ class KeywordRequests extends Kinopoisk {
 	 */
 	public function getPopularKeywords(int $page = 1, int $limit = 10): KeywordDocsResponseDto {
 		$filters = new KeywordSearchFilter();
-		$filters->sortByMovieCount();
+		$filters->sortByPopularity();
 
 		return $this->searchKeywords($filters, $page, $limit);
 	}

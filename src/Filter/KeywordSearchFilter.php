@@ -2,270 +2,260 @@
 
 namespace KinopoiskDev\Filter;
 
+use KinopoiskDev\Enums\SortDirection;
+use KinopoiskDev\Enums\SortField;
+use KinopoiskDev\Utils\FilterTrait;
+use KinopoiskDev\Utils\MovieFilter;
+
 /**
  * Фильтр для поиска ключевых слов
  *
- * Этот класс предоставляет fluent interface для построения фильтров
- * при поиске ключевых слов через API Kinopoisk.dev.
- * Позволяет фильтровать по названию, ID фильмов, датам создания и обновления.
+ * Класс предоставляет методы для создания фильтров поиска ключевых слов
+ * по различным критериям: ID, названию, связанным фильмам, датам и т.д.
+ * Используется в KeywordRequests для формирования параметров запроса к API.
  *
  * @package KinopoiskDev\Filter
  * @since   1.0.0
  * @author  Maxim Harder
  * @version 1.0.0
- * @link    https://kinopoiskdev.readme.io/reference/keywordcontroller_findmanyv1_4
+ *
+ * @see     \KinopoiskDev\Http\KeywordRequests Для использования фильтра
+ * @link    https://api.kinopoisk.dev/documentation-yaml Документация API
  */
-class KeywordSearchFilter {
+class KeywordSearchFilter extends MovieFilter {
+	use FilterTrait;
 
 	/**
-	 * Массив фильтров для API запроса
+	 * Добавляет фильтр по ID ключевого слова
 	 *
-	 * @var array<string, mixed> Ассоциативный массив параметров фильтрации
+	 * @param   int|array  $id        ID ключевого слова или массив ID
+	 * @param   string     $operator  Оператор сравнения (eq, ne, in, nin)
+	 *
+	 * @return $this
 	 */
-	private array $filters = [];
-
-	/**
-	 * Добавляет фильтр к запросу
-	 *
-	 * @param   string  $key    Ключ фильтра
-	 * @param   mixed   $value  Значение фильтра
-	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 */
-	public function addFilter(string $key, mixed $value): self {
-		$this->filters[$key] = $value;
+	public function id(int|array $id, string $operator = 'eq'): self {
+		$this->addFilter('id', $id, $operator);
 		return $this;
 	}
 
 	/**
-	 * Возвращает все установленные фильтры
+	 * Добавляет фильтр по названию ключевого слова
 	 *
-	 * @return array<string, mixed> Массив фильтров для API запроса
+	 * @param   string  $title     Название ключевого слова
+	 * @param   string  $operator  Оператор сравнения (eq, ne, regex)
+	 *
+	 * @return $this
 	 */
-	public function getFilters(): array {
-		return $this->filters;
-	}
-
-	/**
-	 * Очищает все фильтры
-	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 */
-	public function clearFilters(): self {
-		$this->filters = [];
-		return $this;
-	}
-
-	// ==================== ПОИСК ПО ОСНОВНЫМ ПОЛЯМ ====================
-
-	/**
-	 * Фильтрация по ID ключевого слова
-	 *
-	 * @param   int|string|array  $id  ID ключевого слова (можно использовать "!" для исключения)
-	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 * @example $filter->id(123) // поиск по ID 123
-	 * @example $filter->id('!123') // исключить ID 123
-	 * @example $filter->id([123, 456]) // поиск по нескольким ID
-	 */
-	public function id(int|string|array $id): self {
-		$this->filters['id'] = is_array($id) ? $id : [$id];
+	public function title(string $title, string $operator = 'eq'): self {
+		$this->addFilter('title', $title, $operator);
 		return $this;
 	}
 
 	/**
-	 * Фильтрация по названию ключевого слова
+	 * Добавляет фильтр по ID фильма
 	 *
-	 * @param   string|array  $title  Название ключевого слова (можно использовать "!" для исключения)
+	 * Находит все ключевые слова, связанные с указанным фильмом.
 	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 * @example $filter->title('1980-е') // поиск слов содержащих "1980-е"
-	 * @example $filter->title('!ужасы') // исключить слово "ужасы"
-	 * @example $filter->title(['комедия', 'драма']) // поиск нескольких слов
+	 * @param   int|array  $movieId  ID фильма или массив ID фильмов
+	 *
+	 * @return $this
 	 */
-	public function title(string|array $title): self {
-		$this->filters['title'] = is_array($title) ? $title : [$title];
+	public function movieId(int|array $movieId): self {
+		$this->addFilter('movieId', $movieId);
 		return $this;
 	}
 
 	/**
-	 * Фильтрация по ID фильмов, связанных с ключевыми словами
+	 * Добавляет фильтр по дате создания
 	 *
-	 * @param   int|string|array  $movieId  ID фильма (можно использовать "!" для исключения)
+	 * @param   string  $createdAt  Дата создания в ISO формате
+	 * @param   string  $operator   Оператор сравнения (eq, ne, gt, gte, lt, lte)
 	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 * @example $filter->movieId(666) // ключевые слова фильма с ID 666
-	 * @example $filter->movieId('!123') // исключить ключевые слова фильма 123
-	 * @example $filter->movieId([666, 777]) // ключевые слова нескольких фильмов
+	 * @return $this
 	 */
-	public function movieId(int|string|array $movieId): self {
-		$this->filters['movies.id'] = is_array($movieId) ? $movieId : [$movieId];
-		return $this;
-	}
-
-	// ==================== ФИЛЬТРАЦИЯ ПО ДАТАМ ====================
-
-	/**
-	 * Фильтрация по дате обновления записи
-	 *
-	 * @param   string  $date  Дата в формате dd.mm.yyyy или диапазон dd.mm.yyyy-dd.mm.yyyy
-	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 * @example $filter->updatedAt('01.01.2023') // обновлено 1 января 2023
-	 * @example $filter->updatedAt('01.01.2023-31.12.2023') // обновлено в 2023 году
-	 */
-	public function updatedAt(string $date): self {
-		$this->filters['updatedAt'] = [$date];
+	public function createdAt(string $createdAt, string $operator = 'eq'): self {
+		$this->addFilter('createdAt', $createdAt, $operator);
 		return $this;
 	}
 
 	/**
-	 * Фильтрация по дате создания записи
+	 * Добавляет фильтр по дате обновления
 	 *
-	 * @param   string  $date  Дата в формате dd.mm.yyyy или диапазон dd.mm.yyyy-dd.mm.yyyy
+	 * @param   string  $updatedAt  Дата обновления в ISO формате
+	 * @param   string  $operator   Оператор сравнения (eq, ne, gt, gte, lt, lte)
 	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 * @example $filter->createdAt('01.01.2020') // создано 1 января 2020
-	 * @example $filter->createdAt('01.01.2020-31.12.2020') // создано в 2020 году
+	 * @return $this
 	 */
-	public function createdAt(string $date): self {
-		$this->filters['createdAt'] = [$date];
+	public function updatedAt(string $updatedAt, string $operator = 'eq'): self {
+		$this->addFilter('updatedAt', $updatedAt, $operator);
 		return $this;
 	}
 
-	// ==================== СОРТИРОВКА ====================
+	/**
+	 * Поиск ключевых слов по названию с использованием регулярных выражений
+	 *
+	 * @param   string  $query  Поисковый запрос
+	 *
+	 * @return $this
+	 */
+	public function search(string $query): self {
+		$this->addFilter('title', $query, 'regex');
+		return $this;
+	}
+
+	/**
+	 * Фильтр для популярных ключевых слов (связанных с большим количеством фильмов)
+	 *
+	 * Возвращает ключевые слова, которые встречаются в 10 и более фильмах.
+	 *
+	 * @param   int  $minMovieCount  Минимальное количество связанных фильмов
+	 *
+	 * @return $this
+	 */
+	public function onlyPopular(int $minMovieCount = 10): self {
+		$this->addFilter('movieCount', $minMovieCount, 'gte');
+		return $this;
+	}
+
+	/**
+	 * Фильтр для недавно созданных ключевых слов
+	 *
+	 * @param   int  $daysAgo  Количество дней назад от текущей даты
+	 *
+	 * @return $this
+	 */
+	public function recentlyCreated(int $daysAgo = 30): self {
+		$date = date('Y-m-d\TH:i:s.v\Z', strtotime("-{$daysAgo} days"));
+		$this->addFilter('createdAt', $date, 'gte');
+		return $this;
+	}
+
+	/**
+	 * Фильтр для недавно обновленных ключевых слов
+	 *
+	 * @param   int  $daysAgo  Количество дней назад от текущей даты
+	 *
+	 * @return $this
+	 */
+	public function recentlyUpdated(int $daysAgo = 7): self {
+		$date = date('Y-m-d\TH:i:s.v\Z', strtotime("-{$daysAgo} days"));
+		$this->addFilter('updatedAt', $date, 'gte');
+		return $this;
+	}
+
+	/**
+	 * Фильтр по диапазону дат создания
+	 *
+	 * @param   string  $startDate  Начальная дата в ISO формате
+	 * @param   string  $endDate    Конечная дата в ISO формате
+	 *
+	 * @return $this
+	 */
+	public function createdBetween(string $startDate, string $endDate): self {
+		$this->addFilter('createdAt', $startDate, 'gte')
+			 ->addFilter('createdAt', $endDate, 'lte');
+		return $this;
+	}
+
+	/**
+	 * Фильтр по диапазону дат обновления
+	 *
+	 * @param   string  $startDate  Начальная дата в ISO формате
+	 * @param   string  $endDate    Конечная дата в ISO формате
+	 *
+	 * @return $this
+	 */
+	public function updatedBetween(string $startDate, string $endDate): self {
+		$this->addFilter('updatedAt', $startDate, 'gte')
+			 ->addFilter('updatedAt', $endDate, 'lte');
+		return $this;
+	}
+
+	/**
+	 * Выбор определенных полей для возвращения
+	 *
+	 * @param   array  $fields  Массив названий полей
+	 *
+	 * @return $this
+	 */
+	public function selectFields(array $fields): self {
+		$this->filters['selectFields'] = implode(' ', $fields);
+		return $this;
+	}
+
+	/**
+	 * Исключение записей с пустыми значениями в указанных полях
+	 *
+	 * @param   array  $fields  Массив названий полей
+	 *
+	 * @return $this
+	 */
+	public function notNullFields(array $fields): self {
+		foreach ($fields as $field) {
+			$this->addFilter($field, null, 'ne');
+		}
+		return $this;
+	}
+
+	// Методы сортировки
 
 	/**
 	 * Сортировка по ID ключевого слова
 	 *
-	 * @param   string  $direction  Направление сортировки: 'asc' или 'desc'
+	 * @param   string  $direction  Направление сортировки ('asc' или 'desc')
 	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
+	 * @return $this
 	 */
 	public function sortById(string $direction = 'asc'): self {
-		$this->filters['sortField'] = ['id'];
-		$this->filters['sortType'] = [$direction === 'desc' ? '-1' : '1'];
+		$this->sortBy(SortField::ID, SortDirection::fromString($direction));
 		return $this;
 	}
 
 	/**
 	 * Сортировка по названию ключевого слова
 	 *
-	 * @param   string  $direction  Направление сортировки: 'asc' или 'desc'
+	 * @param   string  $direction  Направление сортировки ('asc' или 'desc')
 	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
+	 * @return $this
 	 */
 	public function sortByTitle(string $direction = 'asc'): self {
-		$this->filters['sortField'] = ['title'];
-		$this->filters['sortType'] = [$direction === 'desc' ? '-1' : '1'];
+		$this->sortBy(SortField::TITLE, SortDirection::fromString($direction));
 		return $this;
 	}
 
 	/**
 	 * Сортировка по дате создания
 	 *
-	 * @param   string  $direction  Направление сортировки: 'asc' или 'desc'
+	 * @param   string  $direction  Направление сортировки ('asc' или 'desc')
 	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
+	 * @return $this
 	 */
 	public function sortByCreatedAt(string $direction = 'desc'): self {
-		$this->filters['sortField'] = ['createdAt'];
-		$this->filters['sortType'] = [$direction === 'desc' ? '-1' : '1'];
+		$this->sortBy(SortField::CREATED_AT, SortDirection::fromString($direction));
 		return $this;
 	}
 
 	/**
 	 * Сортировка по дате обновления
 	 *
-	 * @param   string  $direction  Направление сортировки: 'asc' или 'desc'
+	 * @param   string  $direction  Направление сортировки ('asc' или 'desc')
 	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
+	 * @return $this
 	 */
 	public function sortByUpdatedAt(string $direction = 'desc'): self {
-		$this->filters['sortField'] = ['updatedAt'];
-		$this->filters['sortType'] = [$direction === 'desc' ? '-1' : '1'];
-		return $this;
-	}
-
-	// ==================== ДОПОЛНИТЕЛЬНЫЕ НАСТРОЙКИ ====================
-
-	/**
-	 * Указывает, какие поля должны быть возвращены в ответе
-	 *
-	 * @param   array<string>  $fields  Список полей для выборки
-	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 * @example $filter->selectFields(['id', 'title', 'movies'])
-	 */
-	public function selectFields(array $fields): self {
-		$this->filters['selectFields'] = $fields;
+		$this->sortBy(SortField::UPDATED_AT, SortDirection::fromString($direction));
 		return $this;
 	}
 
 	/**
-	 * Указывает, какие поля не должны быть null или пустыми
+	 * Сортировка по популярности (количеству связанных фильмов)
 	 *
-	 * @param   array<string>  $fields  Список полей, которые должны содержать значения
+	 * @param   string  $direction  Направление сортировки ('desc' для самых популярных)
 	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 * @example $filter->notNullFields(['title', 'movies.id'])
+	 * @return $this
 	 */
-	public function notNullFields(array $fields): self {
-		$this->filters['notNullFields'] = $fields;
+	public function sortByPopularity(string $direction = 'desc'): self {
+		$this->addFilter('sort', "movieCount:{$direction}");
 		return $this;
 	}
-
-	// ==================== УДОБНЫЕ МЕТОДЫ ====================
-
-	/**
-	 * Поиск ключевых слов, содержащих указанный текст
-	 *
-	 * @param   string  $searchText  Текст для поиска в названиях ключевых слов
-	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 */
-	public function search(string $searchText): self {
-		return $this->title($searchText);
-	}
-
-	/**
-	 * Поиск только популярных ключевых слов (с указанием полей)
-	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 */
-	public function onlyPopular(): self {
-		return $this->notNullFields(['movies.id'])
-		            ->sortByCreatedAt('desc');
-	}
-
-	/**
-	 * Поиск ключевых слов за последний период
-	 *
-	 * @param   int  $days  Количество дней назад от текущей даты
-	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 */
-	public function recentlyCreated(int $days = 30): self {
-		$fromDate = date('d.m.Y', strtotime("-{$days} days"));
-		$toDate = date('d.m.Y');
-		
-		return $this->createdAt("{$fromDate}-{$toDate}")
-		            ->sortByCreatedAt('desc');
-	}
-
-	/**
-	 * Поиск ключевых слов, недавно обновленных
-	 *
-	 * @param   int  $days  Количество дней назад от текущей даты
-	 *
-	 * @return self Текущий экземпляр для цепочки вызовов
-	 */
-	public function recentlyUpdated(int $days = 7): self {
-		$fromDate = date('d.m.Y', strtotime("-{$days} days"));
-		$toDate = date('d.m.Y');
-		
-		return $this->updatedAt("{$fromDate}-{$toDate}")
-		            ->sortByUpdatedAt('desc');
-	}
-
 }

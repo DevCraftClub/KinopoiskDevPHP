@@ -182,6 +182,70 @@ $popular = $listClient->getPopularLists();
 $genreCollections = $listClient->getListsByCategory('жанровые');
 ```
 
+### Ключевые слова
+
+```php
+use KinopoiskDev\Http\KeywordRequests;
+use KinopoiskDev\Filter\KeywordSearchFilter;
+
+$keywordClient = new KeywordRequests($apiToken);
+
+// Создание фильтра для ключевых слов
+$filter = new KeywordSearchFilter();
+
+// Поиск ключевых слов по названию
+$filter->search('комедия')->sortByTitle();
+$keywords = $keywordClient->searchKeywords($filter, 1, 10);
+
+// Ключевые слова конкретного фильма
+$filter = new KeywordSearchFilter();
+$filter->movieId(666)->sortByPopularity();
+$movieKeywords = $keywordClient->searchKeywords($filter);
+
+// Популярные ключевые слова (связанные с большим количеством фильмов)
+$filter = new KeywordSearchFilter();
+$filter->onlyPopular(20)->sortByPopularity('desc');
+$popularKeywords = $keywordClient->searchKeywords($filter);
+
+// Недавно созданные ключевые слова
+$filter = new KeywordSearchFilter();
+$filter->recentlyCreated(90)->sortByCreatedAt('desc');
+$recentKeywords = $keywordClient->searchKeywords($filter);
+
+// Комплексная фильтрация
+$filter = new KeywordSearchFilter();
+$filter->search('драма')
+       ->onlyPopular(5)
+       ->recentlyUpdated(30)
+       ->selectFields(['id', 'title', 'movies'])
+       ->notNullFields(['title', 'movies'])
+       ->sortByTitle('asc');
+
+$complexResults = $keywordClient->searchKeywords($filter);
+
+// Удобные методы для быстрого доступа
+$keywordsByTitle = $keywordClient->getKeywordsByTitle('ужасы');
+$keywordsForMovie = $keywordClient->getKeywordsForMovie(666);
+$keywordById = $keywordClient->getKeywordById(123);
+$popularKeywords = $keywordClient->getPopularKeywords();
+
+// Анализ результатов с помощью DTO
+$response = $keywordClient->searchKeywords($filter, 1, 20);
+
+// Группировка по популярности
+$groups = $response->groupByPopularity();
+echo "Очень популярные: " . count($groups['very_popular']) . " ключевых слов\n";
+echo "Популярные: " . count($groups['popular']) . " ключевых слов\n";
+
+// Статистика
+$stats = $response->getStatistics();
+echo "Всего ключевых слов: {$stats['total_keywords']}\n";
+echo "Среднее количество фильмов: {$stats['average_movies_per_keyword']}\n";
+
+// Поиск ключевых слов по тексту
+$dramaKeywords = $response->searchByTitle('драма');
+```
+
 ### Другие сущности
 
 ```php
@@ -204,7 +268,7 @@ $studios = $studioClient->getStudios($filter);
 
 // Ключевые слова
 $keywordClient = new KeywordRequests($apiToken);
-$keywords = $keywordClient->getKeywords($filter);
+$keywords = $keywordClient->searchKeywords($filter);
 ```
 
 ## 🔍 Система фильтрации
@@ -246,6 +310,42 @@ $filter->sortByKinopoiskRating()                    // По рейтингу К�
 $filter->withPoster()                               // Только с постером
        ->withTrailer()                              // Только с трейлером
        ->withHighRating(8.0);                       // Высокий рейтинг
+```
+
+### KeywordSearchFilter
+
+```php
+use KinopoiskDev\Filter\KeywordSearchFilter;
+
+$filter = new KeywordSearchFilter();
+
+// Базовые фильтры
+$filter->id(123)                                   // Конкретный ID ключевого слова
+       ->title('комедия')                          // Точное соответствие названия
+       ->search('драм')                            // Поиск по названию (regex)
+       ->movieId(666);                             // Ключевые слова фильма
+
+// Фильтры по дате
+$filter->createdAt('2023-01-01T00:00:00.000Z')    // Дата создания
+       ->updatedAt('2023-12-31T23:59:59.999Z')    // Дата обновления
+       ->createdBetween('2023-01-01', '2023-12-31') // Диапазон создания
+       ->updatedBetween('2023-01-01', '2023-12-31'); // Диапазон обновления
+
+// Удобные фильтры
+$filter->onlyPopular(10)                          // Популярные (10+ фильмов)
+       ->recentlyCreated(30)                      // Созданные за 30 дней
+       ->recentlyUpdated(7);                      // Обновленные за 7 дней
+
+// Выборка полей и фильтрация null
+$filter->selectFields(['id', 'title', 'movies'])  // Выбор полей
+       ->notNullFields(['title', 'movies']);      // Исключение null
+
+// Сортировка
+$filter->sortById('asc')                          // По ID
+       ->sortByTitle('desc')                      // По названию
+       ->sortByCreatedAt('desc')                  // По дате создания
+       ->sortByUpdatedAt('desc')                  // По дате обновления
+       ->sortByPopularity('desc');                // По популярности
 ```
 
 ### Сложные фильтры

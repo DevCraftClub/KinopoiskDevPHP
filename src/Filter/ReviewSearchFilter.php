@@ -93,11 +93,4 @@ class ReviewSearchFilter extends MovieFilter {
 	 *
 	 * @return $this
 	 */
-	public function notNullFields(array $fields): self {
-		foreach ($fields as $field) {
-			$this->addFilter($field, null, 'ne');
-		}
-		return $this;
-	}
-
 }

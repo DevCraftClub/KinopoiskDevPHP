@@ -26,7 +26,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\MeiliPersonEntity Родительский класс
  * @link    https://kinopoiskdev.readme.io/reference/personcontroller_findonev1_4
  */
-readonly class Person extends MeiliPersonEntity {
+class Person extends MeiliPersonEntity {
 
 	/**
 	 * Конструктор для создания объекта персоны

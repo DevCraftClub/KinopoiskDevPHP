@@ -21,7 +21,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see       \KinopoiskDev\Enums\PersonSex Enum для определения пола персоны
  * @see       \KinopoiskDev\Models\Person Основная модель персоны
  */
-readonly class MeiliPersonEntity implements BaseModel {
+class MeiliPersonEntity implements BaseModel {
 
 	/**
 	 * Создает новый экземпляр сущности персоны для MeiliSearch

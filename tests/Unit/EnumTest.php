@@ -48,7 +48,7 @@ class EnumTest extends TestCase
     {
         $personData = [
             'id' => 1,
-            'profession' => [PersonProfession::ACTOR],
+            'profession' => ['actor'],  // Передаем строки, а не enum объекты
             'sex' => 'male',
         ];
         

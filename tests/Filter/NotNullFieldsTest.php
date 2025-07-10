@@ -1,4 +1,4 @@
-<?php
+THIS SHOULD BE A LINTER ERROR<?php
 
 namespace Tests\Filter;
 
@@ -162,10 +162,12 @@ class NotNullFieldsTest extends TestCase
         $this->assertArrayHasKey('name.ne', $filters);
         
         // Проверяем, что другие фильтры тоже присутствуют
-        $this->assertArrayHasKey('year.gte', $filters);
-        $this->assertArrayHasKey('year.lte', $filters);
-        $this->assertArrayHasKey('rating.kp.gte', $filters);
-        $this->assertArrayHasKey('rating.kp.lte', $filters);
+        $this->assertArrayHasKey('year', $filters);
+        $this->assertArrayHasKey('rating.kp', $filters);
+        
+        // Проверяем, что значения диапазонов корректны
+        $this->assertEquals('2020-2024', $filters['year']);
+        $this->assertEquals('7-10', $filters['rating.kp']);
     }
 
     /**

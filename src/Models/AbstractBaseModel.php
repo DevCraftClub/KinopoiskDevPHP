@@ -116,11 +116,11 @@ abstract class AbstractBaseModel implements BaseModel {
 	 * @return static Новый экземпляр с изменениями
 	 * @throws ValidationException При ошибках валидации
 	 */
-	public function with(array $changes): static {
+	public function with(array $changes): self {
 		$currentData = $this->toArray();
 		$newData = array_merge($currentData, $changes);
 
-		return static::fromArray($newData);
+		return self::fromArray($newData);
 	}
 
 	/**

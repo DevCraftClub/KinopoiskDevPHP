@@ -3,7 +3,6 @@
 namespace KinopoiskDev\Models;
 
 use Lombok\Getter;
-use Lombok\Helper;
 use Lombok\Setter;
 
 /**
@@ -19,7 +18,7 @@ use Lombok\Setter;
  * @link    https://kinopoiskdev.readme.io/reference/keywordcontroller_findmanyv1_4
  */
 #[Setter, Getter]
-class Keyword implements BaseModel {
+readonly class Keyword implements BaseModel {
 
 	/**
 	 * Уникальный идентификатор ключевого слова
@@ -59,24 +58,39 @@ class Keyword implements BaseModel {
 	/**
 	 * Конструктор модели ключевого слова
 	 *
-	 * @param int                   $id        Уникальный идентификатор
-	 * @param string|null           $title     Название ключевого слова
-	 * @param MovieFromKeyword[]    $movies    Связанные фильмы
-	 * @param string                $updatedAt Дата последнего обновления
-	 * @param string                $createdAt Дата создания
+	 * @param   int                 $id         Уникальный идентификатор
+	 * @param   string|null         $title      Название ключевого слова
+	 * @param   MovieFromKeyword[]  $movies     Связанные фильмы
+	 * @param   string              $updatedAt  Дата последнего обновления
+	 * @param   string              $createdAt  Дата создания
 	 */
 	public function __construct(
-		int $id,
-		?string $title = null,
-		array $movies = [],
-		string $updatedAt = '',
-		string $createdAt = ''
+		int     $id,
+		?string $title = NULL,
+		array   $movies = [],
+		string  $updatedAt = '',
+		string  $createdAt = '',
 	) {
-		$this->id = $id;
-		$this->title = $title;
-		$this->movies = $movies;
+		$this->id        = $id;
+		$this->title     = $title;
+		$this->movies    = $movies;
 		$this->updatedAt = $updatedAt;
 		$this->createdAt = $createdAt;
+	}
+
+	/**
+	 * Создает объект из JSON строки
+	 *
+	 * @param   string  $json  JSON строка
+	 *
+	 * @return static Экземпляр модели
+	 */
+	public static function fromJson(string $json): static {
+		$data     = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
+		$instance = self::fromArray($data);
+		$instance->validate();
+
+		return $instance;
 	}
 
 	/**
@@ -86,7 +100,7 @@ class Keyword implements BaseModel {
 	 *
 	 * @return static Экземпляр модели ключевого слова
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		$movies = [];
 		if (isset($data['movies']) && is_array($data['movies'])) {
 			foreach ($data['movies'] as $movieData) {
@@ -97,94 +111,12 @@ class Keyword implements BaseModel {
 		}
 
 		return new self(
-			id: $data['id'] ?? 0,
-			title: $data['title'] ?? null,
-			movies: $movies,
+			id       : $data['id'] ?? 0,
+			title    : $data['title'] ?? NULL,
+			movies   : $movies,
 			updatedAt: $data['updatedAt'] ?? '',
-			createdAt: $data['createdAt'] ?? ''
+			createdAt: $data['createdAt'] ?? '',
 		);
-	}
-
-	/**
-	 * Преобразует модель в массив
-	 *
-	 * @return array<string, mixed> Массив данных модели
-	 */
-	public function toArray(bool $includeNulls = true): array {
-		return [
-			'id' => $this->id,
-			'title' => $this->title,
-			'movies' => array_map(fn($movie) => $movie->toArray(), $this->movies),
-			'updatedAt' => $this->updatedAt,
-			'createdAt' => $this->createdAt
-		];
-	}
-
-	/**
-	 * Возвращает количество связанных фильмов
-	 *
-	 * @return int Количество фильмов, использующих это ключевое слово
-	 */
-	public function getMoviesCount(): int {
-		return count($this->movies);
-	}
-
-	/**
-	 * Проверяет, является ли ключевое слово популярным
-	 *
-	 * @param int $threshold Минимальное количество фильмов для считания популярным (по умолчанию 10)
-	 *
-	 * @return bool True, если ключевое слово популярное
-	 */
-	public function isPopular(int $threshold = 10): bool {
-		return $this->getMoviesCount() >= $threshold;
-	}
-
-	/**
-	 * Получает список ID всех связанных фильмов
-	 *
-	 * @return int[] Массив ID фильмов
-	 */
-	public function getMovieIds(): array {
-		return array_map(fn($movie) => $movie->id ?? 0, $this->movies);
-	}
-
-	/**
-	 * Проверяет, связано ли ключевое слово с указанным фильмом
-	 *
-	 * @param int $movieId ID фильма для проверки
-	 *
-	 * @return bool True, если ключевое слово связано с фильмом
-	 */
-	public function isRelatedToMovie(int $movieId): bool {
-		return in_array($movieId, $this->getMovieIds(), true);
-	}
-
-	/**
-	 * Возвращает краткую информацию о ключевом слове
-	 *
-	 * @return string Краткое описание ключевого слова
-	 */
-	public function getSummary(): string {
-		$moviesText = $this->getMoviesCount() > 0 
-			? " ({$this->getMoviesCount()} фильмов)" 
-			: '';
-			
-		return "Ключевое слово \"{$this->title}\"{$moviesText}";
-	}
-
-	/**
-	 * Проверяет, недавно ли было создано ключевое слово
-	 *
-	 * @param int $days Количество дней для считания "недавним" (по умолчанию 30)
-	 *
-	 * @return bool True, если ключевое слово создано недавно
-	 */
-	public function isRecentlyCreated(int $days = 30): bool {
-		$createdTimestamp = strtotime($this->createdAt);
-		$threshold = strtotime("-{$days} days");
-		
-		return $createdTimestamp >= $threshold;
 	}
 
 	/**
@@ -197,26 +129,96 @@ class Keyword implements BaseModel {
 	}
 
 	/**
+	 * Проверяет, является ли ключевое слово популярным
+	 *
+	 * @param   int  $threshold  Минимальное количество фильмов для считания популярным (по умолчанию 10)
+	 *
+	 * @return bool True, если ключевое слово популярное
+	 */
+	public function isPopular(int $threshold = 10): bool {
+		return $this->getMoviesCount() >= $threshold;
+	}
+
+	/**
+	 * Возвращает количество связанных фильмов
+	 *
+	 * @return int Количество фильмов, использующих это ключевое слово
+	 */
+	public function getMoviesCount(): int {
+		return count($this->movies);
+	}
+
+	/**
+	 * Проверяет, связано ли ключевое слово с указанным фильмом
+	 *
+	 * @param   int  $movieId  ID фильма для проверки
+	 *
+	 * @return bool True, если ключевое слово связано с фильмом
+	 */
+	public function isRelatedToMovie(int $movieId): bool {
+		return in_array($movieId, $this->getMovieIds(), TRUE);
+	}
+
+	/**
+	 * Получает список ID всех связанных фильмов
+	 *
+	 * @return int[] Массив ID фильмов
+	 */
+	public function getMovieIds(): array {
+		return array_map(fn ($movie) => $movie->id ?? 0, $this->movies);
+	}
+
+	/**
+	 * Возвращает краткую информацию о ключевом слове
+	 *
+	 * @return string Краткое описание ключевого слова
+	 */
+	public function getSummary(): string {
+		$moviesText = $this->getMoviesCount() > 0
+			? " ({$this->getMoviesCount()} фильмов)"
+			: '';
+
+		return "Ключевое слово \"{$this->title}\"{$moviesText}";
+	}
+
+	/**
+	 * Проверяет, недавно ли было создано ключевое слово
+	 *
+	 * @param   int  $days  Количество дней для считания "недавним" (по умолчанию 30)
+	 *
+	 * @return bool True, если ключевое слово создано недавно
+	 */
+	public function isRecentlyCreated(int $days = 30): bool {
+		$createdTimestamp = strtotime($this->createdAt);
+		$threshold        = strtotime("-{$days} days");
+
+		return $createdTimestamp >= $threshold;
+	}
+
+	/**
 	 * Возвращает JSON представление объекта
 	 *
-	 * @param int $flags Флаги для json_encode
+	 * @param   int  $flags  Флаги для json_encode
+	 *
 	 * @return string JSON строка
 	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
+	public function toJson(int $flags = JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE): string {
 		return json_encode($this->toArray(), $flags);
 	}
 
 	/**
-	 * Создает объект из JSON строки
+	 * Преобразует модель в массив
 	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
+	 * @return array<string, mixed> Массив данных модели
 	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = self::fromArray($data);
-		$instance->validate();
-		return $instance;
+	public function toArray(bool $includeNulls = TRUE): array {
+		return [
+			'id'        => $this->id,
+			'title'     => $this->title,
+			'movies'    => array_map(fn ($movie) => $movie->toArray(), $this->movies),
+			'updatedAt' => $this->updatedAt,
+			'createdAt' => $this->createdAt,
+		];
 	}
 
 }

@@ -64,7 +64,7 @@ readonly class Logo implements BaseModel {
 	 * $logo = Logo::fromArray($logoData);
 	 * ```
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			url: $data['url'] ?? NULL,
 		);

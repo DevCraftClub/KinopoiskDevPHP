@@ -85,7 +85,7 @@ readonly class Networks implements BaseModel {
 	 * $emptyNetworks = Networks::fromArray([]);
 	 * ```
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			items: DataManager::parseObjectArray($data, 'items', NetworkItem::class, NULL),
 		);

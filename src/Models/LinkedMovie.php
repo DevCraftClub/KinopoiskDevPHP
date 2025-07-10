@@ -79,7 +79,7 @@ readonly class LinkedMovie implements BaseModel {
 	 *
 	 * @return self Новый экземпляр класса LinkedMovie с данными из массива
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			id             : $data['id'],
 			name           : $data['name'] ?? NULL,

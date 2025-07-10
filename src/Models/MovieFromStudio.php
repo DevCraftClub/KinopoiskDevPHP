@@ -14,7 +14,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Studio Для основной модели студии
  * @see     \KinopoiskDev\Models\Movie Для полной информации о фильме
  */
-class MovieFromStudio implements BaseModel {
+readonly class MovieFromStudio implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта фильма из студии
@@ -46,7 +46,7 @@ class MovieFromStudio implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\BaseModel Новый экземпляр MovieFromStudio с данными из массива
 	 */
-	public static function fromArray(array $data): \KinopoiskDev\Models\BaseModel {
+	public static function fromArray(array $data): self {
 		return new self(
 			id: $data['id'],
 		);

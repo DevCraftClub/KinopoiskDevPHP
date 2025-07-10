@@ -2,6 +2,7 @@
 
 namespace KinopoiskDev\Http;
 
+use JsonException;
 use KinopoiskDev\Enums\FilterField;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Exceptions\KinopoiskResponseException;
@@ -82,7 +83,7 @@ class MovieRequests extends Kinopoisk {
 	 *
 	 * @return array<array<string, mixed>> Массив возможных значений
 	 * @throws KinopoiskDevException При неподдерживаемом поле
-	 * @throws \\JsonException При ошибках парсинга JSON
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON
 	 */
 	public function getPossibleValuesByField(string $field): array {
 		$allowedFields = [

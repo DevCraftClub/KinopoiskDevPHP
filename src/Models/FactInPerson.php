@@ -59,7 +59,7 @@ readonly class FactInPerson implements BaseModel {
 	 *
 	 * @throws \TypeError При отсутствии обязательного поля 'value' в массиве данных
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			value: $data['value'],
 		);

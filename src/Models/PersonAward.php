@@ -124,7 +124,7 @@ readonly class PersonAward implements BaseModel {
 	 * @return \KinopoiskDev\Models\PersonAward Новый экземпляр класса PersonAward с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			personId  : $data['personId'],
 			nomination: DataManager::parseObjectData($data, 'nomination', Nomination::class),

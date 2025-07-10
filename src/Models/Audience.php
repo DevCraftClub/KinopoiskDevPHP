@@ -55,7 +55,7 @@ readonly class Audience implements BaseModel {
 	 * @return static Новый экземпляр класса Audience
 	 *
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			count  : $data['count'] ?? NULL,
 			country: $data['country'] ?? NULL,

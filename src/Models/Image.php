@@ -150,7 +150,7 @@ readonly class Image implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\Image Новый экземпляр класса Image с данными из массива
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			url       : $data['url'] ?? NULL,
 			previewUrl: $data['previewUrl'] ?? NULL,

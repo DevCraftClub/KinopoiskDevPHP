@@ -101,7 +101,7 @@ readonly class MovieInPerson implements BaseModel {
 	 * $moviePerson = MovieInPerson::fromArray($personData);
 	 * ```
 	 */
-	public static function fromArray(array $data): BaseModel {
+	public static function fromArray(array $data): self {
 		return new self(
 			id             : $data['id'],
 			name           : $data['name'] ?? NULL,

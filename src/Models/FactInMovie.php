@@ -74,7 +74,7 @@ readonly class FactInMovie implements BaseModel {
 	 * $fact = FactInMovie::fromArray($data);
 	 * ```
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			value  : $data['value'],
 			type   : $data['type'] ?? NULL,

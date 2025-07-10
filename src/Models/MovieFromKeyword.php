@@ -38,7 +38,7 @@ readonly class MovieFromKeyword implements BaseModel {
 	 * @param array $data Данные от API
 	 * @return static Новый экземпляр класса
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			id: isset($data['id']) ? (int) $data['id'] : null,
 			name: $data['name'] ?? null,

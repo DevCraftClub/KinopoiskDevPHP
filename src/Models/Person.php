@@ -26,7 +26,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\MeiliPersonEntity Родительский класс
  * @link    https://kinopoiskdev.readme.io/reference/personcontroller_findonev1_4
  */
-class Person extends MeiliPersonEntity {
+readonly class Person extends MeiliPersonEntity {
 
 	/**
 	 * Конструктор для создания объекта персоны
@@ -84,6 +84,23 @@ class Person extends MeiliPersonEntity {
 	}
 
 	/**
+	 * Создает объект из JSON строки
+	 *
+	 * @param   string  $json  JSON строка
+	 *
+	 * @return static Экземпляр модели
+	 * @throws \JsonException При ошибке парсинга
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
+	 */
+	public static function fromJson(string $json): static {
+		$data     = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
+		$instance = static::fromArray($data);
+		$instance->validate();
+
+		return $instance;
+	}
+
+	/**
 	 * Создает объект Person из массива данных API
 	 *
 	 * Фабричный метод для создания экземпляра класса Person из массива данных,
@@ -98,7 +115,7 @@ class Person extends MeiliPersonEntity {
 	 * @return \KinopoiskDev\Models\Person Новый экземпляр класса Person с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			id         : $data['id'],
 			name       : $data['name'] ?? NULL,
@@ -113,13 +130,35 @@ class Person extends MeiliPersonEntity {
 			deathPlace : $data['deathPlace'] ?? [],
 			spouses    : $data['spouses'] ?? [],
 			countAwards: $data['countAwards'] ?? 0,
-			profession : isset($data['profession']) && is_array($data['profession']) ? 
-			array_map(fn($pr) => is_string($pr) ? $pr : $pr->value, $data['profession']) : [],
+			profession : isset($data['profession']) && is_array($data['profession']) ?
+				array_map(fn ($pr) => is_string($pr) ? $pr : $pr->value, $data['profession']) : [],
 			facts      : $data['facts'] ?? [],
 			movies     : $data['movies'] ?? [],
 			updatedAt  : $data['updatedAt'] ?? NULL,
 			createdAt  : $data['createdAt'] ?? NULL,
 		);
+	}
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * @return bool True если данные валидны
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
+	 */
+	public function validate(): bool {
+		return TRUE; // Basic validation - override in specific models if needed
+	}
+
+	/**
+	 * Возвращает JSON представление объекта
+	 *
+	 * @param   int  $flags  Флаги для json_encode
+	 *
+	 * @return string JSON строка
+	 * @throws \JsonException При ошибке сериализации
+	 */
+	public function toJson(int $flags = JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE): string {
+		return json_encode($this->toArray(), $flags);
 	}
 
 	/**
@@ -134,7 +173,7 @@ class Person extends MeiliPersonEntity {
 	 *
 	 * @return array Массив с полными данными о персоне, содержащий все поля объекта
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'id'          => $this->id,
 			'photo'       => $this->photo,
@@ -156,43 +195,5 @@ class Person extends MeiliPersonEntity {
 			'createdAt'   => $this->createdAt,
 		];
 	}
-
-
-	/**
-	 * Валидирует данные модели
-	 *
-	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
-	 */
-	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
-	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

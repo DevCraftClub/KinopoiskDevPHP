@@ -3,7 +3,6 @@
 namespace KinopoiskDev\Models;
 
 use Lombok\Getter;
-use Lombok\Helper;
 use Lombok\Setter;
 
 /**
@@ -19,7 +18,7 @@ use Lombok\Setter;
  * @link    https://kinopoiskdev.readme.io/reference/
  */
 #[Setter, Getter]
-class Lists implements BaseModel {
+readonly class Lists implements BaseModel {
 
 	/**
 	 * Категория коллекции
@@ -73,30 +72,73 @@ class Lists implements BaseModel {
 	/**
 	 * Конструктор модели коллекции
 	 *
-	 * @param string|null      $category    Категория коллекции
-	 * @param string|null      $slug        Уникальный идентификатор коллекции
-	 * @param int|null         $moviesCount Количество фильмов в коллекции
-	 * @param ShortImage|null  $cover       Обложка коллекции
-	 * @param string           $name        Название коллекции
-	 * @param string|null      $updatedAt   Дата последнего обновления
-	 * @param string|null      $createdAt   Дата создания
+	 * @param   string|null      $category     Категория коллекции
+	 * @param   string|null      $slug         Уникальный идентификатор коллекции
+	 * @param   int|null         $moviesCount  Количество фильмов в коллекции
+	 * @param   ShortImage|null  $cover        Обложка коллекции
+	 * @param   string           $name         Название коллекции
+	 * @param   string|null      $updatedAt    Дата последнего обновления
+	 * @param   string|null      $createdAt    Дата создания
 	 */
 	public function __construct(
-		?string $category = null,
-		?string $slug = null,
-		?int $moviesCount = null,
-		?ShortImage $cover = null,
-		string $name = '',
-		?string $updatedAt = null,
-		?string $createdAt = null
+		?string     $category = NULL,
+		?string     $slug = NULL,
+		?int        $moviesCount = NULL,
+		?ShortImage $cover = NULL,
+		string      $name = '',
+		?string     $updatedAt = NULL,
+		?string     $createdAt = NULL,
 	) {
-		$this->category = $category;
-		$this->slug = $slug;
+		$this->category    = $category;
+		$this->slug        = $slug;
 		$this->moviesCount = $moviesCount;
-		$this->cover = $cover;
-		$this->name = $name;
-		$this->updatedAt = $updatedAt;
-		$this->createdAt = $createdAt;
+		$this->cover       = $cover;
+		$this->name        = $name;
+		$this->updatedAt   = $updatedAt;
+		$this->createdAt   = $createdAt;
+	}
+
+	/**
+	 * Создает объект из JSON строки
+	 *
+	 * @param   string  $json  JSON строка
+	 *
+	 * @return static Экземпляр модели
+	 */
+	public static function fromJson(string $json): static {
+		$data     = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
+		$instance = self::fromArray($data);
+		$instance->validate();
+
+		return $instance;
+	}
+
+	/**
+	 * Создает экземпляр модели из массива данных
+	 *
+	 * @param   array<string, mixed>  $data  Массив данных от API
+	 *
+	 * @return static Экземпляр модели коллекции
+	 */
+	public static function fromArray(array $data): self {
+		return new self(
+			category   : $data['category'] ?? NULL,
+			slug       : $data['slug'] ?? NULL,
+			moviesCount: $data['moviesCount'] ?? NULL,
+			cover      : isset($data['cover']) ? ShortImage::fromArray($data['cover']) : NULL,
+			name       : $data['name'] ?? '',
+			updatedAt  : $data['updatedAt'] ?? NULL,
+			createdAt  : $data['createdAt'] ?? NULL,
+		);
+	}
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * @return bool True если данные валидны
+	 */
+	public function validate(): bool {
+		return !empty($this->name);
 	}
 
 	/**
@@ -105,13 +147,13 @@ class Lists implements BaseModel {
 	 * @return string|null URL коллекции или null, если slug отсутствует
 	 */
 	public function getUrl(): ?string {
-		return $this->slug ? "https://www.kinopoisk.ru/lists/{$this->slug}/" : null;
+		return $this->slug ? "https://www.kinopoisk.ru/lists/{$this->slug}/" : NULL;
 	}
 
 	/**
 	 * Проверяет, является ли коллекция популярной (содержит много фильмов)
 	 *
-	 * @param int $threshold Минимальное количество фильмов для считания коллекции популярной (по умолчанию 100)
+	 * @param   int  $threshold  Минимальное количество фильмов для считания коллекции популярной (по умолчанию 100)
 	 *
 	 * @return bool True, если коллекция популярная
 	 */
@@ -125,78 +167,40 @@ class Lists implements BaseModel {
 	 * @return string Краткая информация о коллекции
 	 */
 	public function getSummary(): string {
-		$moviesText = $this->moviesCount ? " ({$this->moviesCount} фильмов)" : '';
+		$moviesText   = $this->moviesCount ? " ({$this->moviesCount} фильмов)" : '';
 		$categoryText = $this->category ? " в категории \"{$this->category}\"" : '';
-		
+
 		return "Коллекция \"{$this->name}\"{$moviesText}{$categoryText}";
-	}
-
-	/**
-	 * Создает экземпляр модели из массива данных
-	 *
-	 * @param array<string, mixed> $data Массив данных от API
-	 * @return static Экземпляр модели коллекции
-	 */
-	public static function fromArray(array $data): static {
-		return new self(
-			category: $data['category'] ?? null,
-			slug: $data['slug'] ?? null,
-			moviesCount: $data['moviesCount'] ?? null,
-			cover: isset($data['cover']) ? ShortImage::fromArray($data['cover']) : null,
-			name: $data['name'] ?? '',
-			updatedAt: $data['updatedAt'] ?? null,
-			createdAt: $data['createdAt'] ?? null
-		);
-	}
-
-	/**
-	 * Преобразует модель в массив
-	 *
-	 * @param bool $includeNulls Включать ли null значения
-	 * @return array<string, mixed> Массив данных модели
-	 */
-	public function toArray(bool $includeNulls = true): array {
-		return [
-			'category' => $this->category,
-			'slug' => $this->slug,
-			'moviesCount' => $this->moviesCount,
-			'cover' => $this->cover?->toArray($includeNulls),
-			'name' => $this->name,
-			'updatedAt' => $this->updatedAt,
-			'createdAt' => $this->createdAt
-		];
-	}
-
-	/**
-	 * Валидирует данные модели
-	 *
-	 * @return bool True если данные валидны
-	 */
-	public function validate(): bool {
-		return !empty($this->name);
 	}
 
 	/**
 	 * Возвращает JSON представление объекта
 	 *
-	 * @param int $flags Флаги для json_encode
+	 * @param   int  $flags  Флаги для json_encode
+	 *
 	 * @return string JSON строка
 	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
+	public function toJson(int $flags = JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE): string {
 		return json_encode($this->toArray(), $flags);
 	}
 
 	/**
-	 * Создает объект из JSON строки
+	 * Преобразует модель в массив
 	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
+	 * @param   bool  $includeNulls  Включать ли null значения
+	 *
+	 * @return array<string, mixed> Массив данных модели
 	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = self::fromArray($data);
-		$instance->validate();
-		return $instance;
+	public function toArray(bool $includeNulls = TRUE): array {
+		return [
+			'category'    => $this->category,
+			'slug'        => $this->slug,
+			'moviesCount' => $this->moviesCount,
+			'cover'       => $this->cover?->toArray($includeNulls),
+			'name'        => $this->name,
+			'updatedAt'   => $this->updatedAt,
+			'createdAt'   => $this->createdAt,
+		];
 	}
 
 }

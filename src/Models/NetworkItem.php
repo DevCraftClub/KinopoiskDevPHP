@@ -87,7 +87,7 @@ readonly class NetworkItem implements BaseModel {
 	 * $emptyNetwork = NetworkItem::fromArray([]); // все поля будут null
 	 * ```
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			name: $data['name'] ?? NULL,
 			logo: DataManager::parseObjectData($data, 'logo', Logo::class),

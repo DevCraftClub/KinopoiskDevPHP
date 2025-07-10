@@ -57,7 +57,7 @@ readonly class Name implements BaseModel {
 	 *
 	 * @return self Новый экземпляр класса Name с данными из массива
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			name    : $data['name'],
 			language: $data['language'] ?? NULL,

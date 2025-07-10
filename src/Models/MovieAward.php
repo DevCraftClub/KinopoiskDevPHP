@@ -105,7 +105,7 @@ readonly class MovieAward implements BaseModel {
 	 * @return \KinopoiskDev\Models\MovieAward Новый экземпляр класса MovieAward с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): static {
+	public static function fromArray(array $data): self {
 		return new self(
 			nomination: DataManager::parseObjectData($data, 'nomination', Nomination::class),
 			winning   : $data['winning'] ?? NULL,

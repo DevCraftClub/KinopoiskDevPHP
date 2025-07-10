@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+         beStrictAboutOutputDuringTests="false"
+         stopOnFailure="false"
+         processIsolation="false"
+         backupGlobals="false"
+         cacheDirectory=".phpunit.cache">
+
+    <!-- Test Suites -->
+    <testsuites>
+        <testsuite name="Unit Tests">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration Tests">
+            <directory>tests/Integration</directory>
+        </testsuite>
+        <testsuite name="All Tests">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <!-- Code Coverage -->
+    <source>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+        <exclude>
+            <directory>src/Exceptions</directory>
+            <file>src/Kinopoisk.php</file>
+        </exclude>
+    </source>
+
+    <!-- Coverage Reports -->
+    <coverage cacheDirectory=".phpunit.cache/code-coverage"
+              includeUncoveredFiles="true">
+        <report>
+            <html outputDirectory="coverage" lowUpperBound="35" highLowerBound="70"/>
+            <clover outputFile="coverage/clover.xml"/>
+            <text outputFile="coverage/coverage.txt"/>
+        </report>
+    </coverage>
+
+    <!-- PHP Configuration -->
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="CACHE_DRIVER" value="array"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="QUEUE_DRIVER" value="sync"/>
+        
+        <!-- API Configuration for testing -->
+        <env name="KINOPOISK_TOKEN" value="YOUR_API_KEY"/>
+        <env name="SKIP_INTEGRATION_TESTS" value="true"/>
+    </php>
+
+    <!-- Extensions and Settings -->
+    <extensions>
+        <!-- Add extensions here if needed -->
+    </extensions>
+
+    <!-- Logging -->
+    <logging>
+        <junit outputFile="coverage/junit.xml"/>
+    </logging>
+
+</phpunit>

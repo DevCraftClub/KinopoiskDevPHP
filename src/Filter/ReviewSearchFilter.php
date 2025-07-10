@@ -86,4 +86,11 @@ class ReviewSearchFilter extends MovieFilter {
 		return $this->type('Нейтральный');
 	}
 
+	/**
+	 * Исключение записей с пустыми значениями в указанных полях
+	 *
+	 * @param   array<string>  $fields  Массив названий полей
+	 *
+	 * @return $this
+	 */
 }

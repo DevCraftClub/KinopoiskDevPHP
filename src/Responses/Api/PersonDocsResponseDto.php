@@ -36,7 +36,7 @@ class PersonDocsResponseDto extends BaseDocsResponseDto {
 	 * @see   \KinopoiskDev\Utils\DataManager::parseObjectArray() Используется для преобразования массива объектов
 	 * @see   \KinopoiskDev\Models\Person::fromArray() Метод создания объектов Person из массива данных
 	 *
-	 * @param   array  $data  Массив данных от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Массив данных от API, содержащий ключи:
 	 *                        - docs: array - массив данных персон для преобразования
 	 *                        - total: int - общее количество персон в результате
 	 *                        - limit: int - максимальное количество элементов на странице
@@ -47,7 +47,7 @@ class PersonDocsResponseDto extends BaseDocsResponseDto {
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException При ошибках валидации класса Person или отсутствии метода fromArray
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			docs : DataManager::parseObjectArray($data, 'docs', Person::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? 10,

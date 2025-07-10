@@ -139,7 +139,7 @@ $url = $this->poster?->url;
 - ✅ Performance benchmarks
 
 ### 2. **Integration Tests** (`tests/Integration/`)
-- ✅ Реальные API запросы с ключом `G3DZPDT-0RF4PH5-Q88SA1A-8BDT9PZ`
+- ✅ Реальные API запросы с ключом `YOUR_API_KEY`
 - ✅ Тестирование всех фильтров и endpoints
 - ✅ Data integrity проверки
 - ✅ Pagination и sorting тесты

@@ -84,14 +84,14 @@ readonly class ExternalId implements BaseModel {
 	 *
 	 * @see ExternalId::toArray() Для обратного преобразования в массив
 	 *
-	 * @param   array  $data  Массив данных о внешних идентификаторах от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Массив данных о внешних идентификаторах от API, содержащий ключи:
 	 *                        - kpHD: string|null - идентификатор Kinopoisk HD
 	 *                        - imdb: string|null - идентификатор IMDB
 	 *                        - tmdb: string|int|null - идентификатор TMDB
 	 *
 	 * @return self Новый экземпляр класса ExternalId с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			kpHD: $data['kpHD'] ?? NULL,
 			imdb: $data['imdb'] ?? NULL,
@@ -108,12 +108,12 @@ readonly class ExternalId implements BaseModel {
 	 *
 	 * @see ExternalId::fromArray() Для создания объекта из массива
 	 *
-	 * @return array Массив с данными о внешних идентификаторах, содержащий ключи:
+	 * @return array<string, mixed> Массив с данными о внешних идентификаторах, содержащий ключи:
 	 *               - kpHD: string|null - идентификатор Kinopoisk HD
 	 *               - imdb: string|null - идентификатор IMDB
 	 *               - tmdb: int|null - идентификатор TMDB
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'kpHD' => $this->kpHD,
 			'imdb' => $this->imdb,
@@ -227,7 +227,7 @@ readonly class ExternalId implements BaseModel {
 	 * @see ExternalId::hasAnyId() Для проверки наличия идентификаторов
 	 * @see ExternalId::toArray() Для получения всех идентификаторов включая null
 	 *
-	 * @return array Ассоциативный массив с доступными идентификаторами, где:
+	 * @return array<string, string|int> Ассоциативный массив с доступными идентификаторами, где:
 	 *               - ключ 'kpHD' содержит идентификатор Kinopoisk HD (если установлен)
 	 *               - ключ 'imdb' содержит идентификатор IMDB (если установлен)
 	 *               - ключ 'tmdb' содержит идентификатор TMDB (если установлен)
@@ -249,5 +249,43 @@ readonly class ExternalId implements BaseModel {
 
 		return $ids;
 	}
+
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * @return bool True если данные валидны
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
+	 */
+	public function validate(): bool {
+		return true; // Basic validation - override in specific models if needed
+	}
+
+	/**
+	 * Возвращает JSON представление объекта
+	 *
+	 * @param int $flags Флаги для json_encode
+	 * @return string JSON строка
+	 * @throws \JsonException При ошибке сериализации
+	 */
+	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
+		return json_encode($this->toArray(), $flags);
+	}
+
+	/**
+	 * Создает объект из JSON строки
+	 *
+	 * @param string $json JSON строка
+	 * @return static Экземпляр модели
+	 * @throws \JsonException При ошибке парсинга
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
+	 */
+	public static function fromJson(string $json): static {
+		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		$instance = static::fromArray($data);
+		$instance->validate();
+		return $instance;
+	}
+
 
 }

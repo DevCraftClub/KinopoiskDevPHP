@@ -67,7 +67,7 @@ enum SortField: string {
 	 * Статический метод для получения всех доступных полей рейтингов.
 	 * Используется для создания интерфейсов выбора рейтинговых полей.
 	 *
-	 * @return array Массив всех рейтинговых полей SortField
+	 * @return array<SortField> Массив всех рейтинговых полей SortField
 	 */
 	public static function getRatingFields(): array {
 		static $fields = NULL;
@@ -92,7 +92,7 @@ enum SortField: string {
 	 * Статический метод для получения всех доступных полей голосов.
 	 * Используется для создания интерфейсов выбора полей голосов.
 	 *
-	 * @return array Массив всех полей голосов SortField
+	 * @return array<SortField> Массив всех полей голосов SortField
 	 */
 	public static function getVotesFields(): array {
 		static $fields = NULL;

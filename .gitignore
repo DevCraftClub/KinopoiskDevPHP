@@ -31,3 +31,15 @@ fabric.properties
 composer.phar
 /vendor/
 composer.lock
+
+# PHPUnit
+/coverage/
+/.phpunit.cache/
+/coverage.txt
+/junit.xml
+/.phpunit.result.cache
+phpunit.xml.bak
+
+# Testing artifacts
+*.log
+.env.testing

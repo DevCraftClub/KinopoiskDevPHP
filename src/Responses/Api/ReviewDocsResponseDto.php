@@ -35,7 +35,7 @@ class ReviewDocsResponseDto extends BaseDocsResponseDto {
 	 * @see   \KinopoiskDev\Utils\DataManager::parseObjectArray() Используется для преобразования массива объектов
 	 * @see   \KinopoiskDev\Models\Review::fromArray() Метод создания объектов Review из массива данных
 	 *
-	 * @param   array  $data  Массив данных от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Массив данных от API, содержащий ключи:
 	 *                        - docs: array - массив данных рецензий для преобразования
 	 *                        - total: int - общее количество рецензий в результате (по умолчанию 0)
 	 *                        - limit: int - максимальное количество элементов на странице (по умолчанию 10)
@@ -46,7 +46,7 @@ class ReviewDocsResponseDto extends BaseDocsResponseDto {
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException При ошибках валидации класса Review или отсутствии метода fromArray
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			docs : DataManager::parseObjectArray($data, 'docs', Review::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? 10,

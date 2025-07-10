@@ -46,7 +46,7 @@ class NotFoundErrorResponseDto extends BaseResponseDto {
 	 * Создает экземпляр DTO ошибки 404 из массива данных API ответа.
 	 * Использует значения по умолчанию для отсутствующих полей в массиве.
 	 *
-	 * @param   array  $data  Ассоциативный массив с данными ошибки из API ответа, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Ассоциативный массив с данными ошибки из API ответа, содержащий ключи:
 	 *                        - statusCode: int - HTTP статус код (по умолчанию 404)
 	 *                        - message: string - сообщение об ошибке
 	 *                        - error: string - техническое описание ошибки
@@ -54,7 +54,7 @@ class NotFoundErrorResponseDto extends BaseResponseDto {
 	 * @return static Экземпляр NotFoundErrorResponseDto с данными ошибки
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			statusCode: $data['statusCode'] ?? 404,
 			message   : $data['message'] ?? 'Запрошенный метод не дал никаких результатов, либо лимит запросов на сегодня был превышен!',
 			error     : $data['error'] ?? 'Not Found',

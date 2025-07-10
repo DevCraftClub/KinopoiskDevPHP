@@ -53,7 +53,7 @@ readonly class Watchability implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\Watchability Новый экземпляр класса Watchability с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		$items = [];
 		if (isset($data['items']) && is_array($data['items'])) {
 			$items = array_map(fn($item) => WatchabilityItem::fromArray($item), $data['items']);
@@ -78,9 +78,47 @@ readonly class Watchability implements BaseModel {
 	 * @return array Массив с данными о доступности просмотра, содержащий ключи:
 	 *               - items: array - массив данных о платформах просмотра
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'items' => array_map(fn($item) => $item->toArray(), $this->items),
 		];
 	}
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * @return bool True если данные валидны
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
+	 */
+	public function validate(): bool {
+		return true; // Basic validation - override in specific models if needed
+	}
+
+	/**
+	 * Возвращает JSON представление объекта
+	 *
+	 * @param int $flags Флаги для json_encode
+	 * @return string JSON строка
+	 * @throws \JsonException При ошибке сериализации
+	 */
+	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
+		return json_encode($this->toArray(), $flags);
+	}
+
+	/**
+	 * Создает объект из JSON строки
+	 *
+	 * @param string $json JSON строка
+	 * @return static Экземпляр модели
+	 * @throws \JsonException При ошибке парсинга
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
+	 */
+	public static function fromJson(string $json): static {
+		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		$instance = static::fromArray($data);
+		$instance->validate();
+		return $instance;
+	}
+
+
 }

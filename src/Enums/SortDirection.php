@@ -154,7 +154,7 @@ enum SortDirection: string {
 	 * Статический метод для получения всех возможных направлений сортировки.
 	 * Используется для создания интерфейсов выбора направления.
 	 *
-	 * @return array Массив всех направлений SortDirection
+	 * @return array<SortDirection> Массив всех направлений SortDirection
 	 */
 	public static function getAllDirections(): array {
 		static $directions = null;

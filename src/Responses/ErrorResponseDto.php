@@ -45,14 +45,14 @@ class ErrorResponseDto extends BaseResponseDto {
 	 * Создает экземпляр DTO ошибки из массива данных API ответа.
 	 * Извлекает обязательные поля statusCode, message и error из массива.
 	 *
-	 * @param   array  $data  Ассоциативный массив с данными ошибки из API ответа
+	 * @param   array<string, mixed>  $data  Ассоциативный массив с данными ошибки из API ответа
 	 *
 	 * @return static Экземпляр ErrorResponseDto с данными ошибки
 	 *
 	 * @throws \InvalidArgumentException Если в массиве отсутствуют обязательные поля
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			statusCode: $data['statusCode'],
 			message   : $data['message'],
 			error     : $data['error'],

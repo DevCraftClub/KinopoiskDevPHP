@@ -376,6 +376,57 @@ $filter->withExcludedCountries(['Россия', 'СССР'])
 $series = $movieClient->searchMovies($filter);
 ```
 
+### Фильтрация пустых полей (notNullFields)
+
+Метод `notNullFields()` позволяет исключить записи с пустыми значениями в указанных полях:
+
+```php
+// Исключение фильмов без постеров и описаний
+$filter = new MovieSearchFilter();
+$filter->withYearBetween(2020, 2024)
+       ->notNullFields(['poster.url', 'description', 'name']);
+
+// Исключение персон без фото
+$personFilter = new PersonSearchFilter();
+$personFilter->onlyActors()
+            ->notNullFields(['photo', 'description']);
+
+// Исключение отзывов без текста
+$reviewFilter = new ReviewSearchFilter();
+$reviewFilter->onlyPositive()
+            ->notNullFields(['review', 'title']);
+
+// Исключение студий без логотипов
+$studioFilter = new StudioSearchFilter();
+$studioFilter->productionStudios()
+            ->notNullFields(['logo.url', 'title']);
+
+// Комплексный пример - фильмы с полной информацией
+$complexFilter = new MovieSearchFilter();
+$complexFilter->withYearBetween(2020, 2024)
+             ->withRatingBetween(8.0, 10.0)
+             ->notNullFields([
+                 'poster.url',
+                 'backdrop.url', 
+                 'description',
+                 'name',
+                 'rating.kp',
+                 'votes.kp',
+                 'year',
+                 'genres.name'
+             ]);
+```
+
+**Поддерживаемые поля для notNullFields:**
+
+- **Фильмы**: `poster.url`, `backdrop.url`, `description`, `name`, `rating.kp`, `votes.kp`, `year`, `genres.name`, `countries.name`, `persons.name`, `budget.value`, `fees.world.value`
+- **Персоны**: `photo`, `description`, `name`, `birthday`, `birthPlace.value`, `profession`
+- **Отзывы**: `review`, `title`, `author`, `type`
+- **Студии**: `logo.url`, `title`, `type`, `subType`
+- **Изображения**: `width`, `height`, `url`, `language`
+- **Сезоны**: `number`, `episodesCount`
+- **Ключевые слова**: `title`, `movies`
+
 ## ⚙️ Конфигурация
 
 ### Кэширование

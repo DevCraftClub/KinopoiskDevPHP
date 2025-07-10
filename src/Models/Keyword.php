@@ -19,7 +19,7 @@ use Lombok\Setter;
  * @link    https://kinopoiskdev.readme.io/reference/keywordcontroller_findmanyv1_4
  */
 #[Setter, Getter]
-class Keyword extends BaseModel {
+class Keyword implements BaseModel {
 
 	/**
 	 * Уникальный идентификатор ключевого слова
@@ -72,8 +72,6 @@ class Keyword extends BaseModel {
 		string $updatedAt = '',
 		string $createdAt = ''
 	) {
-		parent::__construct();
-		
 		$this->id = $id;
 		$this->title = $title;
 		$this->movies = $movies;
@@ -84,7 +82,7 @@ class Keyword extends BaseModel {
 	/**
 	 * Создает экземпляр модели из массива данных
 	 *
-	 * @param   array  $data  Массив данных от API
+	 * @param   array<string, mixed>  $data  Массив данных от API
 	 *
 	 * @return static Экземпляр модели ключевого слова
 	 */
@@ -98,7 +96,7 @@ class Keyword extends BaseModel {
 			}
 		}
 
-		return new static(
+		return new self(
 			id: $data['id'] ?? 0,
 			title: $data['title'] ?? null,
 			movies: $movies,
@@ -112,7 +110,7 @@ class Keyword extends BaseModel {
 	 *
 	 * @return array<string, mixed> Массив данных модели
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'id' => $this->id,
 			'title' => $this->title,
@@ -148,7 +146,7 @@ class Keyword extends BaseModel {
 	 * @return int[] Массив ID фильмов
 	 */
 	public function getMovieIds(): array {
-		return array_map(fn($movie) => $movie->id, $this->movies);
+		return array_map(fn($movie) => $movie->id ?? 0, $this->movies);
 	}
 
 	/**
@@ -187,6 +185,38 @@ class Keyword extends BaseModel {
 		$threshold = strtotime("-{$days} days");
 		
 		return $createdTimestamp >= $threshold;
+	}
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * @return bool True если данные валидны
+	 */
+	public function validate(): bool {
+		return $this->id > 0;
+	}
+
+	/**
+	 * Возвращает JSON представление объекта
+	 *
+	 * @param int $flags Флаги для json_encode
+	 * @return string JSON строка
+	 */
+	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
+		return json_encode($this->toArray(), $flags);
+	}
+
+	/**
+	 * Создает объект из JSON строки
+	 *
+	 * @param string $json JSON строка
+	 * @return static Экземпляр модели
+	 */
+	public static function fromJson(string $json): static {
+		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		$instance = self::fromArray($data);
+		$instance->validate();
+		return $instance;
 	}
 
 }

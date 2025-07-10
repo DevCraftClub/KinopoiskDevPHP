@@ -34,7 +34,7 @@ class SearchMovieResponseDto extends BaseDocsResponseDto {
 	 * @see    \KinopoiskDev\Utils\DataManager::parseObjectArray() Используется для преобразования массива объектов
 	 * @see    \KinopoiskDev\Models\SearchMovie::fromArray() Метод создания объектов SearchMovie из массива данных
 	 *
-	 * @param   array  $data  Массив данных от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Массив данных от API, содержащий ключи:
 	 *                        - docs: array - массив данных поиска фильмов для преобразования
 	 *                        - total: int - общее количество найденных фильмов в результате
 	 *                        - limit: int - максимальное количество элементов на странице (по умолчанию 10)
@@ -45,7 +45,7 @@ class SearchMovieResponseDto extends BaseDocsResponseDto {
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException При ошибках валидации класса SearchMovie или отсутствии метода fromArray
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			docs : DataManager::parseObjectArray($data, 'docs', SearchMovie::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? 10,

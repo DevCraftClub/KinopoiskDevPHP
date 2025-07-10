@@ -208,7 +208,7 @@ trait SortManager {
 	/**
 	 * Добавляет множественные критерии сортировки из массива строк
 	 *
-	 * @param   array  $sorts  Массив строк в формате "field:direction" или просто "field"
+	 * @param   array<string>  $sorts  Массив строк в формате "field:direction" или просто "field"
 	 *
 	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
 	 *
@@ -423,7 +423,7 @@ trait SortManager {
 	/**
 	 * Импорт критериев сортировки из массива
 	 *
-	 * @param   array  $data  Массив с данными о критериях сортировки
+	 * @param   array<string, mixed>  $data  Массив с данными о критериях сортировки
 	 *
 	 * @return $this
 	 */

@@ -20,8 +20,8 @@ interface LoggerInterface {
 	/**
 	 * Записывает сообщение уровня DEBUG
 	 *
-	 * @param   string $message Сообщение для записи
-	 * @param   array  $context Контекстные данные
+	 * @param   string                   $message Сообщение для записи
+	 * @param   array<string, mixed>     $context Контекстные данные
 	 *
 	 * @return void
 	 */
@@ -30,8 +30,8 @@ interface LoggerInterface {
 	/**
 	 * Записывает информационное сообщение
 	 *
-	 * @param   string $message Сообщение для записи
-	 * @param   array  $context Контекстные данные
+	 * @param   string                   $message Сообщение для записи
+	 * @param   array<string, mixed>     $context Контекстные данные
 	 *
 	 * @return void
 	 */
@@ -40,8 +40,8 @@ interface LoggerInterface {
 	/**
 	 * Записывает предупреждение
 	 *
-	 * @param   string $message Сообщение для записи
-	 * @param   array  $context Контекстные данные
+	 * @param   string                   $message Сообщение для записи
+	 * @param   array<string, mixed>     $context Контекстные данные
 	 *
 	 * @return void
 	 */
@@ -50,8 +50,8 @@ interface LoggerInterface {
 	/**
 	 * Записывает сообщение об ошибке
 	 *
-	 * @param   string $message Сообщение для записи
-	 * @param   array  $context Контекстные данные
+	 * @param   string                   $message Сообщение для записи
+	 * @param   array<string, mixed>     $context Контекстные данные
 	 *
 	 * @return void
 	 */
@@ -60,8 +60,8 @@ interface LoggerInterface {
 	/**
 	 * Записывает критическое сообщение
 	 *
-	 * @param   string $message Сообщение для записи
-	 * @param   array  $context Контекстные данные
+	 * @param   string                   $message Сообщение для записи
+	 * @param   array<string, mixed>     $context Контекстные данные
 	 *
 	 * @return void
 	 */

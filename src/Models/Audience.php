@@ -48,14 +48,14 @@ readonly class Audience implements BaseModel {
 	 *
 	 * @see Audience::toArray() Для обратного преобразования в массив
 	 *
-	 * @param   array  $data  Массив данных об аудитории от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Массив данных об аудитории от API, содержащий ключи:
 	 *                        - count: int|null - количество зрителей
 	 *                        - country: string|null - страна сбора данных
 	 *
-	 * @return self Новый экземпляр класса Audience
+	 * @return static Новый экземпляр класса Audience
 	 *
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			count  : $data['count'] ?? NULL,
 			country: $data['country'] ?? NULL,
@@ -70,16 +70,58 @@ readonly class Audience implements BaseModel {
 	 * сериализации данных при отправке запросов к API.
 	 *
 	 * @see Audience::fromArray() Для создания объекта из массива
-	 * @return array Массив с данными об аудитории, содержащий ключи:
+	 * @return array<string, mixed> Массив с данными об аудитории, содержащий ключи:
 	 *               - count: int|null - количество зрителей
 	 *               - country: string|null - страна сбора данных
 	 *
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'count'   => $this->count,
 			'country' => $this->country,
 		];
 	}
+
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * @return bool True если данные валидны
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
+	 */
+	public function validate(): bool {
+		return true; // Basic validation - override in specific models if needed
+	}
+
+	/**
+	 * Возвращает JSON представление объекта
+	 *
+	 * @param int $flags Флаги для json_encode
+	 * @return string JSON строка
+	 * @throws \JsonException При ошибке сериализации
+	 */
+	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
+		$json = json_encode($this->toArray(), $flags);
+		if ($json === false) {
+			throw new \JsonException('Ошибка кодирования JSON');
+		}
+		return $json;
+	}
+
+	/**
+	 * Создает объект из JSON строки
+	 *
+	 * @param string $json JSON строка
+	 * @return static Экземпляр модели
+	 * @throws \JsonException При ошибке парсинга
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
+	 */
+	public static function fromJson(string $json): static {
+		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		$instance = static::fromArray($data);
+		$instance->validate();
+		return $instance;
+	}
+
 
 }

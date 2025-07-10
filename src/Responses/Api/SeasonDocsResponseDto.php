@@ -36,7 +36,7 @@ class SeasonDocsResponseDto extends BaseDocsResponseDto {
 	 * @see    \KinopoiskDev\Models\Season::fromArray() Метод создания объектов Season из массива данных
 	 * @see    \KinopoiskDev\Responses\BaseResponseDto::fromArray() Родительский абстрактный метод
 	 *
-	 * @param   array  $data  Ассоциативный массив данных от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Ассоциативный массив данных от API, содержащий ключи:
 	 *                        - docs: array - массив данных сезонов для преобразования в объекты Season
 	 *                        - total: int - общее количество сезонов в результате поиска (по умолчанию 0)
 	 *                        - limit: int - максимальное количество элементов на странице (по умолчанию 10)
@@ -47,7 +47,7 @@ class SeasonDocsResponseDto extends BaseDocsResponseDto {
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException При ошибках валидации класса Season или отсутствии метода fromArray
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			docs : DataManager::parseObjectArray($data, 'docs', Season::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? 10,

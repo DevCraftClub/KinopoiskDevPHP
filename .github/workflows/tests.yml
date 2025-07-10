@@ -1,0 +1,126 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: self-hosted
+    
+    env:
+      COMPOSER_ALLOW_SUPERUSER: 1
+      COMPOSER_NO_INTERACTION: 1
+    
+    strategy:
+      matrix:
+        php-version: ['8.3']
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set environment variables
+      run: |
+        echo "Setting up environment variables for self-hosted runner..."
+        export HOME=${HOME:-/tmp}
+        export COMPOSER_HOME=${COMPOSER_HOME:-$HOME/.composer}
+        echo "HOME=$HOME" >> $GITHUB_ENV
+        echo "COMPOSER_HOME=$COMPOSER_HOME" >> $GITHUB_ENV
+        echo "TMPDIR=${TMPDIR:-/tmp}" >> $GITHUB_ENV
+        
+        echo "Creating necessary directories..."
+        mkdir -p $HOME
+        mkdir -p $COMPOSER_HOME
+        mkdir -p ${TMPDIR:-/tmp}
+        
+        echo "Environment setup complete."
+        echo "HOME: $HOME"
+        echo "COMPOSER_HOME: $COMPOSER_HOME"
+    
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, gd, zip
+        coverage: xdebug
+    
+    - name: Validate composer.json and composer.lock
+      run: |
+        echo "=== Validating composer.json ==="
+        composer validate --no-check-all --no-check-publish
+        echo "=== Validation complete ==="
+      env:
+        HOME: ${{ env.HOME }}
+        COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
+    
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          vendor
+          ${{ env.COMPOSER_HOME }}/cache
+        key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-${{ matrix.php-version }}-
+          ${{ runner.os }}-php-
+    
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+      env:
+        HOME: ${{ env.HOME }}
+        COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
+    
+    - name: Run unit tests
+      run: |
+        echo "=== Running PHPUnit Tests ==="
+        # Если API ключ не настроен, запускаем только unit тесты
+        if [ -z "$KINOPOISK_TOKEN" ] || [ "$KINOPOISK_TOKEN" = "YOUR_API_KEY" ]; then
+          echo "API key not configured, running only unit tests..."
+          ./vendor/bin/phpunit --testsuite="Unit Tests" --no-coverage
+        else
+          echo "API key configured, running all tests..."
+          composer test
+        fi
+      env:
+        HOME: ${{ env.HOME }}
+        COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
+        KINOPOISK_TOKEN: ${{ vars.KINOPOISK_TEST_API_KEY }}
+        SKIP_INTEGRATION_TESTS: ${{ vars.KINOPOISK_TEST_API_KEY == '' && 'true' || 'false' }}
+    
+    - name: Run PHPStan static analysis
+      run: composer phpstan
+      env:
+        HOME: ${{ env.HOME }}
+        COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
+    
+    - name: Run PHP CodeSniffer
+      run: composer phpcs
+      env:
+        HOME: ${{ env.HOME }}
+        COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
+    
+    - name: Generate test coverage
+      run: |
+        echo "=== Generating Test Coverage ==="
+        # Если API ключ не настроен, генерируем покрытие только для unit тестов
+        if [ -z "$KINOPOISK_TOKEN" ] || [ "$KINOPOISK_TOKEN" = "YOUR_API_KEY" ]; then
+          echo "API key not configured, generating coverage for unit tests only..."
+          ./vendor/bin/phpunit --testsuite="Unit Tests" --coverage-html coverage --coverage-clover coverage/clover.xml
+        else
+          echo "API key configured, generating full coverage..."
+          composer test-coverage
+        fi
+      env:
+        HOME: ${{ env.HOME }}
+        COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
+        KINOPOISK_TOKEN: ${{ vars.KINOPOISK_TEST_API_KEY }}
+        SKIP_INTEGRATION_TESTS: ${{ vars.KINOPOISK_TEST_API_KEY == '' && 'true' || 'false' }}
+    
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage/clover.xml
+        fail_ci_if_error: true

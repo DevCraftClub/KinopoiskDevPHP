@@ -21,7 +21,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see       \KinopoiskDev\Enums\PersonSex Enum для определения пола персоны
  * @see       \KinopoiskDev\Models\Person Основная модель персоны
  */
-readonly class MeiliPersonEntity implements BaseModel {
+class MeiliPersonEntity implements BaseModel {
 
 	/**
 	 * Создает новый экземпляр сущности персоны для MeiliSearch
@@ -100,7 +100,7 @@ readonly class MeiliPersonEntity implements BaseModel {
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException При ошибках валидации enum-класса PersonSex
 	 *
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id        : $data['id'],
 			name      : $data['name'] ?? NULL,
@@ -113,7 +113,8 @@ readonly class MeiliPersonEntity implements BaseModel {
 			age       : $data['age'] ?? NULL,
 			birthPlace: $data['birthPlace'] ?? [],
 			deathPlace: $data['deathPlace'] ?? [],
-			profession: $data['profession'] ? array_map(fn (PersonProfession $pr) => $pr->value, $data['profession']) : [],
+			profession: isset($data['profession']) && is_array($data['profession']) ? 
+			array_map(fn($pr) => is_string($pr) ? $pr : (is_object($pr) ? $pr->value : $pr), $data['profession']) : [],
 		);
 	}
 
@@ -165,7 +166,7 @@ readonly class MeiliPersonEntity implements BaseModel {
 	 *               - birthPlace: array - массив мест рождения
 	 *               - deathPlace: array - массив мест смерти
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'id'           => $this->id,
 			'photo'        => $this->photo,
@@ -195,7 +196,12 @@ readonly class MeiliPersonEntity implements BaseModel {
 	 * @return array Название профессии на русском языке или null, если не задано
 	 */
 	public function getProfessionRu(): array {
-		return array_map(fn (PersonProfession $pr) => $pr->getRussianName(), $this->profession);
+		return array_map(function($professionValue) {
+			$profession = is_string($professionValue) 
+				? PersonProfession::tryFrom($professionValue) 
+				: $professionValue;
+			return $profession?->getRussianName() ?? $professionValue;
+		}, $this->profession ?? []);
 	}
 
 	/**
@@ -210,7 +216,12 @@ readonly class MeiliPersonEntity implements BaseModel {
 	 * @return array Enum значение профессии или null, если не задано
 	 */
 	public function getProfessionEn(): array {
-		return array_map(fn (PersonProfession $pr) => $pr->getEnglishName(), $this->profession);
+		return array_map(function($professionValue) {
+			$profession = is_string($professionValue) 
+				? PersonProfession::tryFrom($professionValue) 
+				: $professionValue;
+			return $profession?->getEnglishName() ?? $professionValue;
+		}, $this->profession ?? []);
 	}
 
 	/**
@@ -507,5 +518,43 @@ readonly class MeiliPersonEntity implements BaseModel {
 	public function isOtherProfession(): bool {
 		return in_array(PersonProfession::OTHER->value, $this->profession, TRUE);
 	}
+
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * @return bool True если данные валидны
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
+	 */
+	public function validate(): bool {
+		return true; // Basic validation - override in specific models if needed
+	}
+
+	/**
+	 * Возвращает JSON представление объекта
+	 *
+	 * @param int $flags Флаги для json_encode
+	 * @return string JSON строка
+	 * @throws \JsonException При ошибке сериализации
+	 */
+	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
+		return json_encode($this->toArray(), $flags);
+	}
+
+	/**
+	 * Создает объект из JSON строки
+	 *
+	 * @param string $json JSON строка
+	 * @return static Экземпляр модели
+	 * @throws \JsonException При ошибке парсинга
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
+	 */
+	public static function fromJson(string $json): static {
+		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		$instance = static::fromArray($data);
+		$instance->validate();
+		return $instance;
+	}
+
 
 }

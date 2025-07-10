@@ -32,8 +32,8 @@ interface HttpClientInterface {
 	/**
 	 * Выполняет GET запрос
 	 *
-	 * @param   string $uri     URI для запроса
-	 * @param   array  $options Опции запроса
+	 * @param   string                   $uri     URI для запроса
+	 * @param   array<string, mixed>     $options Опции запроса
 	 *
 	 * @return ResponseInterface HTTP ответ
 	 * @throws \GuzzleHttp\Exception\GuzzleException При ошибке запроса
@@ -43,8 +43,8 @@ interface HttpClientInterface {
 	/**
 	 * Выполняет POST запрос
 	 *
-	 * @param   string $uri     URI для запроса
-	 * @param   array  $options Опции запроса
+	 * @param   string                   $uri     URI для запроса
+	 * @param   array<string, mixed>     $options Опции запроса
 	 *
 	 * @return ResponseInterface HTTP ответ
 	 * @throws \GuzzleHttp\Exception\GuzzleException При ошибке запроса
@@ -54,8 +54,8 @@ interface HttpClientInterface {
 	/**
 	 * Выполняет PUT запрос
 	 *
-	 * @param   string $uri     URI для запроса
-	 * @param   array  $options Опции запроса
+	 * @param   string                   $uri     URI для запроса
+	 * @param   array<string, mixed>     $options Опции запроса
 	 *
 	 * @return ResponseInterface HTTP ответ
 	 * @throws \GuzzleHttp\Exception\GuzzleException При ошибке запроса
@@ -65,8 +65,8 @@ interface HttpClientInterface {
 	/**
 	 * Выполняет DELETE запрос
 	 *
-	 * @param   string $uri     URI для запроса
-	 * @param   array  $options Опции запроса
+	 * @param   string                   $uri     URI для запроса
+	 * @param   array<string, mixed>     $options Опции запроса
 	 *
 	 * @return ResponseInterface HTTP ответ
 	 * @throws \GuzzleHttp\Exception\GuzzleException При ошибке запроса

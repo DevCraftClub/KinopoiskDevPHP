@@ -53,7 +53,7 @@ readonly class VideoTypes implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\VideoTypes Новый экземпляр класса VideoTypes с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		$trailers = NULL;
 		if (isset($data['trailers']) && is_array($data['trailers'])) {
 			$trailers = array_map(fn ($trailer) => Video::fromArray($trailer), $data['trailers']);
@@ -78,7 +78,7 @@ readonly class VideoTypes implements BaseModel {
 	 * @return array Массив с данными о видеоматериалах, содержащий ключи:
 	 *               - trailers: array|null - массив данных о трейлерах или null
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		$trailers = NULL;
 		if ($this->trailers !== NULL) {
 			$trailers = array_map(fn ($trailer) => $trailer->toArray(), $this->trailers);
@@ -88,5 +88,43 @@ readonly class VideoTypes implements BaseModel {
 			'trailers' => $trailers,
 		];
 	}
+
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * @return bool True если данные валидны
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
+	 */
+	public function validate(): bool {
+		return true; // Basic validation - override in specific models if needed
+	}
+
+	/**
+	 * Возвращает JSON представление объекта
+	 *
+	 * @param int $flags Флаги для json_encode
+	 * @return string JSON строка
+	 * @throws \JsonException При ошибке сериализации
+	 */
+	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
+		return json_encode($this->toArray(), $flags);
+	}
+
+	/**
+	 * Создает объект из JSON строки
+	 *
+	 * @param string $json JSON строка
+	 * @return static Экземпляр модели
+	 * @throws \JsonException При ошибке парсинга
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
+	 */
+	public static function fromJson(string $json): static {
+		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		$instance = static::fromArray($data);
+		$instance->validate();
+		return $instance;
+	}
+
 
 }

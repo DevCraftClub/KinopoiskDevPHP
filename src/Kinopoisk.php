@@ -30,7 +30,7 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
  * @author  Maxim Harder
  * @version 2.0.0
  */
-final readonly class Kinopoisk extends Helper {
+class Kinopoisk extends Helper {
 
 	private const string BASE_URL = 'https://api.kinopoisk.dev';
 	private const string API_VERSION = 'v1.4';
@@ -89,10 +89,10 @@ final readonly class Kinopoisk extends Helper {
 	/**
 	 * Выполняет HTTP запрос к API с поддержкой кэширования
 	 *
-	 * @param   string       $method       HTTP метод
-	 * @param   string       $endpoint     Конечная точка API
-	 * @param   array        $queryParams  Параметры запроса
-	 * @param   string|null  $apiVersion   Версия API
+	 * @param   string                   $method       HTTP метод
+	 * @param   string                   $endpoint     Конечная точка API
+	 * @param   array<string, mixed>     $queryParams  Параметры запроса
+	 * @param   string|null              $apiVersion   Версия API
 	 *
 	 * @return ResponseInterface Ответ от API
 	 * @throws KinopoiskDevException При ошибках запроса
@@ -149,7 +149,7 @@ final readonly class Kinopoisk extends Helper {
 	 *
 	 * @param   ResponseInterface $response HTTP ответ
 	 *
-	 * @return array Декодированные данные
+	 * @return array<string, mixed> Декодированные данные
 	 * @throws KinopoiskDevException При ошибках обработки
 	 * @throws KinopoiskResponseException При ошибках API
 	 */
@@ -243,10 +243,10 @@ final readonly class Kinopoisk extends Helper {
 	/**
 	 * Выполняет HTTP запрос
 	 *
-	 * @param   string $method       HTTP метод
-	 * @param   string $endpoint     Конечная точка
-	 * @param   array  $queryParams  Параметры запроса
-	 * @param   string $version      Версия API
+	 * @param   string                   $method       HTTP метод
+	 * @param   string                   $endpoint     Конечная точка
+	 * @param   array<string, mixed>     $queryParams  Параметры запроса
+	 * @param   string                   $version      Версия API
 	 *
 	 * @return ResponseInterface Ответ
 	 * @throws GuzzleException При ошибке запроса
@@ -279,10 +279,10 @@ final readonly class Kinopoisk extends Helper {
 	/**
 	 * Генерирует ключ для кэширования
 	 *
-	 * @param   string $method       HTTP метод
-	 * @param   string $endpoint     Конечная точка
-	 * @param   array  $queryParams  Параметры запроса
-	 * @param   string $version      Версия API
+	 * @param   string                   $method       HTTP метод
+	 * @param   string                   $endpoint     Конечная точка
+	 * @param   array<string, mixed>     $queryParams  Параметры запроса
+	 * @param   string                   $version      Версия API
 	 *
 	 * @return string Ключ кэша
 	 */

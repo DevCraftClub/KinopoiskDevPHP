@@ -25,13 +25,31 @@ use PHPUnit\Framework\TestCase;
  */
 final class MovieRequestsTest extends TestCase {
 
-	private const string API_TOKEN = 'G3DZPDT-0RF4PH5-Q88SA1A-8BDT9PZ';
+	private const string API_TOKEN = 'YOUR_API_KEY';
+	
+	private function getTestApiToken(): string
+	{
+		return $_ENV['KINOPOISK_TOKEN'] ?? self::API_TOKEN;
+	}
+	
+	private function shouldSkipIntegrationTests(): bool
+	{
+		// Пропускаем интеграционные тесты если:
+		// 1. Явно установлена переменная SKIP_INTEGRATION_TESTS
+		// 2. API ключ не настроен (равен плейсхолдеру)
+		return $_ENV['SKIP_INTEGRATION_TESTS'] === 'true' || 
+			   $this->getTestApiToken() === self::API_TOKEN;
+	}
 
 	private MovieRequests $movieRequests;
 
 	protected function setUp(): void {
+		if ($this->shouldSkipIntegrationTests()) {
+			$this->markTestSkipped('Интеграционные тесты пропущены: не настроен реальный API ключ');
+		}
+		
 		$this->movieRequests = new MovieRequests(
-			apiToken: self::API_TOKEN,
+			apiToken: $this->getTestApiToken(),
 			httpClient: null,
 			useCache: false, // Отключаем кэш для интеграционных тестов
 		);

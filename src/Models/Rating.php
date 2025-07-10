@@ -86,9 +86,9 @@ readonly class Rating implements BaseModel {
 	 *
 	 * @param   array  $data  Массив данных о рейтингах от API
 	 *
-	 * @return \KinopoiskDev\Models\Rating Новый экземпляр класса Rating с данными из массива
+	 * @return static Новый экземпляр класса Rating с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			kp                : isset($data['kp']) ? (float) $data['kp'] : NULL,
 			imdb              : isset($data['imdb']) ? (float) $data['imdb'] : NULL,
@@ -110,10 +110,11 @@ readonly class Rating implements BaseModel {
 	 *
 	 * @see Rating::fromArray() Для создания объекта из массива
 	 *
+	 * @param bool $includeNulls Включать ли null значения в результат
 	 * @return array Массив с данными о рейтингах из различных источников
 	 */
-	public function toArray(): array {
-		return [
+	public function toArray(bool $includeNulls = true): array {
+		$data = [
 			'kp'                 => $this->kp,
 			'imdb'               => $this->imdb,
 			'tmdb'               => $this->tmdb,
@@ -121,6 +122,13 @@ readonly class Rating implements BaseModel {
 			'russianFilmCritics' => $this->russianFilmCritics,
 			'await'              => $this->await,
 		];
+
+		// Удаляем null значения если не нужно их включать
+		if (!$includeNulls) {
+			return array_filter($data, fn($value) => $value !== null);
+		}
+
+		return $data;
 	}
 
 	/**
@@ -305,6 +313,59 @@ readonly class Rating implements BaseModel {
 		}
 
 		return $ratings;
+	}
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * Проверяет корректность рейтингов.
+	 * Все рейтинги должны быть в допустимых диапазонах.
+	 *
+	 * @return bool True если данные валидны
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
+	 */
+	public function validate(): bool {
+		// Валидация рейтингов KP, IMDB, TMDB (0-10)
+		foreach (['kp' => $this->kp, 'imdb' => $this->imdb, 'tmdb' => $this->tmdb] as $name => $rating) {
+			if ($rating !== null && ($rating < self::RATING_MIN || $rating > self::RATING_MAX)) {
+				throw new \KinopoiskDev\Exceptions\ValidationException("Rating {$name} must be between " . self::RATING_MIN . " and " . self::RATING_MAX);
+			}
+		}
+
+		// Валидация рейтингов критиков и ожиданий (0-100)
+		foreach (['filmCritics' => $this->filmCritics, 'russianFilmCritics' => $this->russianFilmCritics, 'await' => $this->await] as $name => $rating) {
+			if ($rating !== null && ($rating < 0 || $rating > 100)) {
+				throw new \KinopoiskDev\Exceptions\ValidationException("Rating {$name} must be between 0 and 100");
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Возвращает JSON представление объекта
+	 *
+	 * @param int $flags Флаги для json_encode
+	 * @return string JSON строка
+	 * @throws \JsonException При ошибке сериализации
+	 */
+	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
+		return json_encode($this->toArray(), $flags);
+	}
+
+	/**
+	 * Создает объект из JSON строки
+	 *
+	 * @param string $json JSON строка
+	 * @return static Экземпляр модели
+	 * @throws \JsonException При ошибке парсинга
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
+	 */
+	public static function fromJson(string $json): static {
+		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		$instance = static::fromArray($data);
+		$instance->validate();
+		return $instance;
 	}
 
 }

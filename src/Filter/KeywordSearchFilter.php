@@ -28,8 +28,8 @@ class KeywordSearchFilter extends MovieFilter {
 	/**
 	 * Добавляет фильтр по ID ключевого слова
 	 *
-	 * @param   int|array  $id        ID ключевого слова или массив ID
-	 * @param   string     $operator  Оператор сравнения (eq, ne, in, nin)
+	 * @param   int|array<int>  $id        ID ключевого слова или массив ID
+	 * @param   string          $operator  Оператор сравнения (eq, ne, in, nin)
 	 *
 	 * @return $this
 	 */
@@ -56,7 +56,7 @@ class KeywordSearchFilter extends MovieFilter {
 	 *
 	 * Находит все ключевые слова, связанные с указанным фильмом.
 	 *
-	 * @param   int|array  $movieId  ID фильма или массив ID фильмов
+	 * @param   int|array<int>  $movieId  ID фильма или массив ID фильмов
 	 *
 	 * @return $this
 	 */
@@ -125,7 +125,9 @@ class KeywordSearchFilter extends MovieFilter {
 	 * @return $this
 	 */
 	public function recentlyCreated(int $daysAgo = 30): self {
-		$date = date('Y-m-d\TH:i:s.v\Z', strtotime("-{$daysAgo} days"));
+		$dateTime = new \DateTime();
+		$dateTime->modify("-{$daysAgo} days");
+		$date = $dateTime->format('Y-m-d\TH:i:s.v\Z');
 		$this->addFilter('createdAt', $date, 'gte');
 		return $this;
 	}
@@ -138,7 +140,11 @@ class KeywordSearchFilter extends MovieFilter {
 	 * @return $this
 	 */
 	public function recentlyUpdated(int $daysAgo = 7): self {
-		$date = date('Y-m-d\TH:i:s.v\Z', strtotime("-{$daysAgo} days"));
+		$timestamp = strtotime("-{$daysAgo} days");
+		if ($timestamp === false) {
+			$timestamp = time() - ($daysAgo * 86400); // fallback calculation
+		}
+		$date = date('Y-m-d\TH:i:s.v\Z', $timestamp);
 		$this->addFilter('updatedAt', $date, 'gte');
 		return $this;
 	}
@@ -174,7 +180,7 @@ class KeywordSearchFilter extends MovieFilter {
 	/**
 	 * Выбор определенных полей для возвращения
 	 *
-	 * @param   array  $fields  Массив названий полей
+	 * @param   array<string>  $fields  Массив названий полей
 	 *
 	 * @return $this
 	 */
@@ -186,7 +192,7 @@ class KeywordSearchFilter extends MovieFilter {
 	/**
 	 * Исключение записей с пустыми значениями в указанных полях
 	 *
-	 * @param   array  $fields  Массив названий полей
+	 * @param   array<string>  $fields  Массив названий полей
 	 *
 	 * @return $this
 	 */
@@ -252,9 +258,9 @@ class KeywordSearchFilter extends MovieFilter {
 	 *
 	 * @param   string  $direction  Направление сортировки ('desc' для самых популярных)
 	 *
-	 * @return $this
+	 * @return static
 	 */
-	public function sortByPopularity(string $direction = 'desc'): self {
+	public function sortByPopularity(string $direction = 'desc'): static {
 		$this->addFilter('sort', "movieCount:{$direction}");
 		return $this;
 	}

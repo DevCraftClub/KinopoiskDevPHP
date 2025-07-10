@@ -125,11 +125,9 @@ class KeywordSearchFilter extends MovieFilter {
 	 * @return $this
 	 */
 	public function recentlyCreated(int $daysAgo = 30): self {
-		$timestamp = strtotime("-{$daysAgo} days");
-		if ($timestamp === false) {
-			$timestamp = time() - ($daysAgo * 86400); // fallback calculation
-		}
-		$date = date('Y-m-d\TH:i:s.v\Z', $timestamp);
+		$dateTime = new \DateTime();
+		$dateTime->modify("-{$daysAgo} days");
+		$date = $dateTime->format('Y-m-d\TH:i:s.v\Z');
 		$this->addFilter('createdAt', $date, 'gte');
 		return $this;
 	}

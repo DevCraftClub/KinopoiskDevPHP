@@ -67,7 +67,7 @@ readonly class PersonPlace implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\PersonPlace Новый экземпляр класса PersonPlace с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			value: $data['value'],
 		);
@@ -87,7 +87,7 @@ readonly class PersonPlace implements BaseModel {
 	 * @return array Массив с данными о месте, содержащий:
 	 *               - value: string - текстовое значение места рождения/смерти
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'value' => $this->value,
 		];

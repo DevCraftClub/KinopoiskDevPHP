@@ -74,7 +74,7 @@ readonly class FactInMovie implements BaseModel {
 	 * $fact = FactInMovie::fromArray($data);
 	 * ```
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			value  : $data['value'],
 			type   : $data['type'] ?? NULL,
@@ -98,7 +98,7 @@ readonly class FactInMovie implements BaseModel {
 	 *               - type: string|null - тип факта (null если не определен)
 	 *               - spoiler: bool|null - признак спойлера (null если не определен)
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'value'   => $this->value,
 			'type'    => $this->type,

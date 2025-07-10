@@ -87,7 +87,7 @@ readonly class NetworkItem implements BaseModel {
 	 * $emptyNetwork = NetworkItem::fromArray([]); // все поля будут null
 	 * ```
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			name: $data['name'] ?? NULL,
 			logo: DataManager::parseObjectData($data, 'logo', Logo::class),
@@ -116,7 +116,7 @@ readonly class NetworkItem implements BaseModel {
 	 * // ['name' => 'Netflix', 'logo' => ['url' => 'https://example.com/logo.png']]
 	 * ```
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'name' => $this->name,
 			'logo' => $this->logo?->toArray(),

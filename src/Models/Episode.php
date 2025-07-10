@@ -61,7 +61,7 @@ readonly class Episode implements BaseModel {
 	 * @return \KinopoiskDev\Models\Episode Новый экземпляр класса Episode с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			number       : $data['number'] ?? NULL,
 			name         : $data['name'] ?? NULL,
@@ -82,7 +82,7 @@ readonly class Episode implements BaseModel {
 	 *
 	 * @return array Массив с данными об эпизоде
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'number'        => $this->number,
 			'name'          => $this->name,

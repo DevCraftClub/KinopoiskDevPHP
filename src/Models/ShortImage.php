@@ -54,7 +54,7 @@ readonly class ShortImage implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\ShortImage Новый экземпляр класса ShortImage с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			url       : $data['url'] ?? NULL,
 			previewUrl: $data['previewUrl'] ?? NULL,
@@ -72,7 +72,7 @@ readonly class ShortImage implements BaseModel {
 	 *
 	 * @return array Массив с данными об изображении, содержащий все поля объекта
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'url'        => $this->url,
 			'previewUrl' => $this->previewUrl,

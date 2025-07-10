@@ -98,7 +98,7 @@ readonly class Person extends MeiliPersonEntity {
 	 * @return \KinopoiskDev\Models\Person Новый экземпляр класса Person с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id         : $data['id'],
 			name       : $data['name'] ?? NULL,
@@ -133,7 +133,7 @@ readonly class Person extends MeiliPersonEntity {
 	 *
 	 * @return array Массив с полными данными о персоне, содержащий все поля объекта
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'id'          => $this->id,
 			'photo'       => $this->photo,

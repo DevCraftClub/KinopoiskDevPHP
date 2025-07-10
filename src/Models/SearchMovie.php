@@ -123,7 +123,7 @@ readonly class SearchMovie implements BaseModel {
 	 *
 	 * @throws  \TypeError  Если обязательный параметр 'id' отсутствует или имеет неверный тип
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id               : $data['id'],
 			name             : $data['name'] ?? NULL,
@@ -170,7 +170,7 @@ readonly class SearchMovie implements BaseModel {
 	 * @return  array  Ассоциативный массив с данными объекта, где ключи соответствуют
 	 *                 именам свойств, а значения - их содержимому
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'id'                => $this->id,
 			'name'              => $this->name,

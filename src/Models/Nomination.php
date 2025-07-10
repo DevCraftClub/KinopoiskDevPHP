@@ -74,7 +74,7 @@ readonly class Nomination implements BaseModel {
 	 * @return \KinopoiskDev\Models\Nomination Новый экземпляр класса Nomination с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			award: DataManager::parseObjectData($data, 'award', NominationAward::class),
 			title: $data['title'] ?? NULL,
@@ -92,7 +92,7 @@ readonly class Nomination implements BaseModel {
 	 *               - award: array|null - данные о награде
 	 *               - title: string|null - название номинации
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'award' => $this->award?->toArray(),
 			'title' => $this->title,

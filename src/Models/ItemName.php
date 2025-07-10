@@ -54,7 +54,7 @@ readonly class ItemName implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\ItemName Новый экземпляр класса ItemName с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			name: $data['name'],
 		);
@@ -73,7 +73,7 @@ readonly class ItemName implements BaseModel {
 	 * @return array Массив с данными о названии элемента, содержащий ключи:
 	 *               - name: string - название элемента
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'name' => $this->name,
 		];

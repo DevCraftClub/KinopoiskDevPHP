@@ -62,7 +62,7 @@ readonly class Fees implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\Fees Новый экземпляр класса Fees с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			world : isset($data['world']) ? CurrencyValue::fromArray($data['world']) : NULL,
 			russia: isset($data['russia']) ? CurrencyValue::fromArray($data['russia']) : NULL,
@@ -86,7 +86,7 @@ readonly class Fees implements BaseModel {
 	 *               - russia: array|null - сборы в России в формате массива
 	 *               - usa: array|null - сборы в США в формате массива
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'world'  => $this->world?->toArray(),
 			'russia' => $this->russia?->toArray(),

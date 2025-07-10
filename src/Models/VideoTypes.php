@@ -53,7 +53,7 @@ readonly class VideoTypes implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\VideoTypes Новый экземпляр класса VideoTypes с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		$trailers = NULL;
 		if (isset($data['trailers']) && is_array($data['trailers'])) {
 			$trailers = array_map(fn ($trailer) => Video::fromArray($trailer), $data['trailers']);
@@ -78,7 +78,7 @@ readonly class VideoTypes implements BaseModel {
 	 * @return array Массив с данными о видеоматериалах, содержащий ключи:
 	 *               - trailers: array|null - массив данных о трейлерах или null
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		$trailers = NULL;
 		if ($this->trailers !== NULL) {
 			$trailers = array_map(fn ($trailer) => $trailer->toArray(), $this->trailers);

@@ -72,7 +72,7 @@ readonly class Season implements BaseModel {
 	 * @return \KinopoiskDev\Models\Season Новый экземпляр класса Season с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			movieId       : $data['movieId'],
 			number        : $data['number'] ?? null,
@@ -98,7 +98,7 @@ readonly class Season implements BaseModel {
 	 *
 	 * @return array Массив с полными данными о сезоне
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'movieId'       => $this->movieId,
 			'number'        => $this->number,

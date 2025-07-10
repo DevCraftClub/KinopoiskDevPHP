@@ -66,7 +66,7 @@ readonly class Votes implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\Votes Новый экземпляр класса Votes с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			kp: isset($data['kp']) ? (int) $data['kp'] : NULL,
 			imdb: isset($data['imdb']) ? (int) $data['imdb'] : NULL,
@@ -90,7 +90,7 @@ readonly class Votes implements BaseModel {
 	 *
 	 * @return array Массив с данными о количестве голосов из различных источников
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'kp'                 => $this->kp,
 			'imdb'               => $this->imdb,

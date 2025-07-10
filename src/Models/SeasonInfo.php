@@ -53,7 +53,7 @@ readonly class SeasonInfo implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\SeasonInfo Новый экземпляр класса SeasonInfo с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			number: $data['number'] ?? null,
 			episodesCount: $data['episodesCount'] ?? null,
@@ -71,7 +71,7 @@ readonly class SeasonInfo implements BaseModel {
 	 *
 	 * @return array Массив с данными о сезоне, содержащий все поля объекта
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'number' => $this->number,
 			'episodesCount' => $this->episodesCount,

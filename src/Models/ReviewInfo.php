@@ -56,7 +56,7 @@ readonly class ReviewInfo implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\ReviewInfo Новый экземпляр класса ReviewInfo с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			count        : $data['count'] ?? NULL,
 			positiveCount: $data['positiveCount'] ?? NULL,
@@ -78,7 +78,7 @@ readonly class ReviewInfo implements BaseModel {
 	 *               - positiveCount: int|null - количество положительных рецензий
 	 *               - percentage: string|null - процент положительных рецензий
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'count'         => $this->count,
 			'positiveCount' => $this->positiveCount,

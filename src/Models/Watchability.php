@@ -53,7 +53,7 @@ readonly class Watchability implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\Watchability Новый экземпляр класса Watchability с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		$items = [];
 		if (isset($data['items']) && is_array($data['items'])) {
 			$items = array_map(fn($item) => WatchabilityItem::fromArray($item), $data['items']);
@@ -78,7 +78,7 @@ readonly class Watchability implements BaseModel {
 	 * @return array Массив с данными о доступности просмотра, содержащий ключи:
 	 *               - items: array - массив данных о платформах просмотра
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'items' => array_map(fn($item) => $item->toArray(), $this->items),
 		];

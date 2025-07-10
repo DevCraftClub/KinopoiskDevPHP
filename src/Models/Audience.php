@@ -55,7 +55,7 @@ readonly class Audience implements BaseModel {
 	 * @return self Новый экземпляр класса Audience
 	 *
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			count  : $data['count'] ?? NULL,
 			country: $data['country'] ?? NULL,
@@ -75,7 +75,7 @@ readonly class Audience implements BaseModel {
 	 *               - country: string|null - страна сбора данных
 	 *
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'count'   => $this->count,
 			'country' => $this->country,

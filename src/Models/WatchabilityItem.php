@@ -60,7 +60,7 @@ readonly class WatchabilityItem implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\WatchabilityItem Новый экземпляр класса WatchabilityItem с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			name: $data['name'] ?? null,
 			logo: Logo::fromArray($data['logo']),
@@ -84,7 +84,7 @@ readonly class WatchabilityItem implements BaseModel {
 	 *               - logo: array - данные о логотипе сервиса
 	 *               - url: string - URL для перехода на страницу просмотра
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'name' => $this->name,
 			'logo' => $this->logo->toArray(),

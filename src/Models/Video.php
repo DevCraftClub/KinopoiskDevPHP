@@ -63,7 +63,7 @@ readonly class Video implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\Video Новый экземпляр класса Video с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			url : $data['url'] ?? NULL,
 			name: $data['name'] ?? NULL,
@@ -84,7 +84,7 @@ readonly class Video implements BaseModel {
 	 *
 	 * @return array Массив с данными о видеоматериале, содержащий все поля объекта
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'url'  => $this->url,
 			'name' => $this->name,

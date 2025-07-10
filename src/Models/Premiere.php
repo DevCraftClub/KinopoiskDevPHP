@@ -68,7 +68,7 @@ readonly class Premiere implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\Premiere Новый экземпляр класса Premiere с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			country: $data['country'] ?? NULL,
 			world  : $data['world'] ?? NULL,
@@ -91,7 +91,7 @@ readonly class Premiere implements BaseModel {
 	 *
 	 * @return array Массив с данными о премьерах, содержащий все поля объекта
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'country' => $this->country,
 			'world'   => $this->world,

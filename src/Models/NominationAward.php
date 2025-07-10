@@ -49,7 +49,7 @@ readonly class NominationAward implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\NominationAward Новый экземпляр класса NominationAward с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			title: $data['title'] ?? null,
 			year: $data['year'] ?? null,
@@ -67,7 +67,7 @@ readonly class NominationAward implements BaseModel {
 	 *               - title: string|null - название награды
 	 *               - year: int|null - год вручения награды
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'title' => $this->title,
 			'year'  => $this->year,

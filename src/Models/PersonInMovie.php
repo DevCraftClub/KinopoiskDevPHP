@@ -69,7 +69,7 @@ readonly class PersonInMovie implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\PersonInMovie Новый экземпляр класса PersonInMovie с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id          : $data['id'],
 			photo       : $data['photo'] ?? NULL,
@@ -92,7 +92,7 @@ readonly class PersonInMovie implements BaseModel {
 	 *
 	 * @return array Массив с данными о персоне в фильме, содержащий все поля объекта
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'id'           => $this->id,
 			'photo'        => $this->photo,

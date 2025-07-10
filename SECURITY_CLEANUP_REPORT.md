@@ -135,10 +135,10 @@ PHP Fatal error: Declaration of KinopoiskDev\Models\Movie::fromArray(array $data
 ```
 
 **Решение:**
-- Исправлена сигнатура метода `fromArray()` в классах `Movie` и `Rating`
+- Исправлена сигнатура метода `fromArray()` во всех 38 Model классах
 - Изменен возвращаемый тип с конкретного класса на `static`
-- Добавлены недостающие методы интерфейса `BaseModel`
 - Обновлена сигнатура `toArray()` с поддержкой параметра `includeNulls`
+- Массовое исправление через автоматизированный скрипт
 
 **Принцип:**
 - Соблюдение Liskov Substitution Principle (LSP)

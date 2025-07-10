@@ -71,7 +71,7 @@ readonly class Spouses implements BaseModel {
 	 *
 	 * @return self Новый экземпляр класса Spouses с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new static(
 			id            : $data['id'],
 			name          : $data['name'],
@@ -103,7 +103,7 @@ readonly class Spouses implements BaseModel {
 	 *               - children: int - количество детей
 	 *               - relation: string - тип отношений
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'id'             => $this->id,
 			'name'           => $this->name,

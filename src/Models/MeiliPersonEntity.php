@@ -100,7 +100,7 @@ readonly class MeiliPersonEntity implements BaseModel {
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException При ошибках валидации enum-класса PersonSex
 	 *
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id        : $data['id'],
 			name      : $data['name'] ?? NULL,
@@ -165,7 +165,7 @@ readonly class MeiliPersonEntity implements BaseModel {
 	 *               - birthPlace: array - массив мест рождения
 	 *               - deathPlace: array - массив мест смерти
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'id'           => $this->id,
 			'photo'        => $this->photo,

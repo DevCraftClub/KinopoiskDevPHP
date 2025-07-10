@@ -150,7 +150,7 @@ readonly class Image implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\Image Новый экземпляр класса Image с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			url       : $data['url'] ?? NULL,
 			previewUrl: $data['previewUrl'] ?? NULL,
@@ -172,7 +172,7 @@ readonly class Image implements BaseModel {
 	 *               - height: int|null - высота изображения
 	 *               - width: int|null - ширина изображения
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'url'        => $this->url,
 			'previewUrl' => $this->previewUrl,

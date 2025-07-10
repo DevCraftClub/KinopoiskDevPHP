@@ -56,7 +56,7 @@ readonly class CurrencyValue implements BaseModel {
 	 *
 	 * @return self Новый экземпляр класса CurrencyValue с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			value   : $data['value'] ?? NULL,
 			currency: $data['currency'] ?? NULL,
@@ -76,7 +76,7 @@ readonly class CurrencyValue implements BaseModel {
 	 *               - value: int|null - денежное значение
 	 *               - currency: string|null - код валюты
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'value'    => $this->value,
 			'currency' => $this->currency,

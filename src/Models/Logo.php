@@ -64,7 +64,7 @@ readonly class Logo implements BaseModel {
 	 * $logo = Logo::fromArray($logoData);
 	 * ```
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			url: $data['url'] ?? NULL,
 		);
@@ -89,7 +89,7 @@ readonly class Logo implements BaseModel {
 	 * $array = $logo->toArray(); // ['url' => 'https://example.com/logo.png']
 	 * ```
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'url' => $this->url,
 		];

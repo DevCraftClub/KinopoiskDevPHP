@@ -91,7 +91,7 @@ readonly class ExternalId implements BaseModel {
 	 *
 	 * @return self Новый экземпляр класса ExternalId с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			kpHD: $data['kpHD'] ?? NULL,
 			imdb: $data['imdb'] ?? NULL,
@@ -113,7 +113,7 @@ readonly class ExternalId implements BaseModel {
 	 *               - imdb: string|null - идентификатор IMDB
 	 *               - tmdb: int|null - идентификатор TMDB
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'kpHD' => $this->kpHD,
 			'imdb' => $this->imdb,

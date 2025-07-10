@@ -53,7 +53,7 @@ readonly class YearRange implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\YearRange Новый экземпляр класса YearRange с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			start: $data['start'] ?? null,
 			end: $data['end'] ?? null,
@@ -73,7 +73,7 @@ readonly class YearRange implements BaseModel {
 	 *               - start: int|null - начальный год диапазона
 	 *               - end: int|null - конечный год диапазона
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'start' => $this->start,
 			'end' => $this->end,

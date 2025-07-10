@@ -67,7 +67,7 @@ readonly class Review implements BaseModel {
 	 *
 	 * @return \KinopoiskDev\Models\Review Новый экземпляр класса Review с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id            : $data['id'],
 			movieId       : $data['movieId'],
@@ -93,7 +93,7 @@ readonly class Review implements BaseModel {
 	 *
 	 * @return array Массив с данными о рецензии
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'id'             => $this->id,
 			'movieId'        => $this->movieId,

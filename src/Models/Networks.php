@@ -85,7 +85,7 @@ readonly class Networks implements BaseModel {
 	 * $emptyNetworks = Networks::fromArray([]);
 	 * ```
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			items: DataManager::parseObjectArray($data, 'items', NetworkItem::class, NULL),
 		);
@@ -116,7 +116,7 @@ readonly class Networks implements BaseModel {
 	 * // ['items' => [['name' => 'Netflix', 'logo' => ['url' => 'https://example.com/netflix.png']]]]
 	 * ```
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'items' => DataManager::getObjectsArray($this->items),
 		];

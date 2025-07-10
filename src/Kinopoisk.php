@@ -135,7 +135,7 @@ class Kinopoisk extends Helper {
 			throw new KinopoiskDevException(
 				message: "Ошибка HTTP запроса: {$e->getMessage()}",
 				code: $e->getCode(),
-				previous: $e instanceof Exception ? $e : new Exception($e->getMessage(), $e->getCode(), $e),
+				previous: $e instanceof \Exception ? $e : new \Exception($e->getMessage(), $e->getCode(), $e),
 			);
 		}
 	}

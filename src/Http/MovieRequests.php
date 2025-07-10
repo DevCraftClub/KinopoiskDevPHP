@@ -82,20 +82,20 @@ class MovieRequests extends Kinopoisk {
 	 *
 	 * @return array<array<string, mixed>> Массив возможных значений
 	 * @throws KinopoiskDevException При неподдерживаемом поле
-	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \\JsonException При ошибках парсинга JSON
 	 */
 	public function getPossibleValuesByField(string $field): array {
 		$allowedFields = [
-			FilterField::GENRES,
-			FilterField::COUNTRIES,
-			FilterField::TYPE,
-			FilterField::TYPE_NUMBER,
-			FilterField::STATUS,
+			FilterField::GENRES->value,
+			FilterField::COUNTRIES->value,
+			FilterField::TYPE->value,
+			FilterField::TYPE_NUMBER->value,
+			FilterField::STATUS->value,
 		];
 
 		if (!in_array($field, $allowedFields, TRUE)) {
-			$fieldNames = array_map(fn(FilterField $f) => $f->value, $allowedFields);
-			throw new KinopoiskDevException('Лишь следующие поля поддерживаются для этого запроса: ' . implode(', ', $fieldNames));
+			$fieldNames = implode(', ', $allowedFields);
+			throw new KinopoiskDevException('Лишь следующие поля поддерживаются для этого запроса: ' . $fieldNames);
 		}
 
 		$queryParams = ['field' => $field];

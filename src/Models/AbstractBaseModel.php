@@ -21,7 +21,7 @@ use ReflectionProperty;
  * @author  Maxim Harder
  * @version 1.0.0
  */
-abstract readonly class AbstractBaseModel implements BaseModel {
+abstract class AbstractBaseModel implements BaseModel {
 
 	private static ?ValidationService $validator = null;
 

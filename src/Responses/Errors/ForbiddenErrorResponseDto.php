@@ -45,12 +45,12 @@ class ForbiddenErrorResponseDto extends BaseResponseDto {
 	 * Создает экземпляр DTO ошибки 403 из массива данных API ответа.
 	 * Использует значения по умолчанию для отсутствующих полей в массиве.
 	 *
-	 * @param   array  $data  Ассоциативный массив с данными ошибки из API ответа
+	 * @param   array<string, mixed>  $data  Ассоциативный массив с данными ошибки из API ответа
 	 *
 	 * @return static Экземпляр ForbiddenErrorResponseDto с данными ошибки
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			statusCode: $data['statusCode'] ?? 403,
 			message   : $data['message'] ?? 'Превышен дневной лимит!',
 			error     : $data['error'] ?? 'Forbidden',

@@ -21,22 +21,23 @@ namespace KinopoiskDev\Models;
  */
 readonly class Rating implements BaseModel {
 
+	private const float RATING_MIN = 0.0;
+	private const float RATING_MAX = 10.0;
+
 	/**
 	 * Конструктор для создания объекта рейтингов
 	 *
-	 * Создает новый экземпляр класса Rating с рейтингами из различных источников.
-	 * Все параметры являются опциональными и могут быть null при отсутствии
-	 * соответствующей информации в источнике данных.
+	 * Создает новый экземпляр класса Rating с указанными параметрами рейтингов.
+	 * Все параметры являются опциональными и могут быть null при отсутствии данных.
 	 *
 	 * @see Rating::fromArray() Для создания объекта из массива данных API
-	 * @see Rating::toArray() Для преобразования объекта в массив
 	 *
-	 * @param   float|null  $kp                  Рейтинг на Кинопоиске (от 0.0 до 10.0)
-	 * @param   float|null  $imdb                Рейтинг на IMDB (от 0.0 до 10.0)
-	 * @param   float|null  $tmdb                Рейтинг на The Movie Database (от 0.0 до 10.0)
-	 * @param   float|null  $filmCritics         Рейтинг кинокритиков (от 0.0 до 100.0)
-	 * @param   float|null  $russianFilmCritics  Рейтинг российских кинокритиков (от 0.0 до 100.0)
-	 * @param   float|null  $await               Рейтинг ожидания (от 0.0 до 100.0)
+	 * @param   float|null  $kp                   Рейтинг на Кинопоиске (0.0-10.0)
+	 * @param   float|null  $imdb                 Рейтинг на IMDB (0.0-10.0)
+	 * @param   float|null  $tmdb                 Рейтинг на TMDB (0.0-10.0)
+	 * @param   float|null  $filmCritics          Рейтинг кинокритиков (0.0-100.0)
+	 * @param   float|null  $russianFilmCritics   Рейтинг российских кинокритиков (0.0-100.0)
+	 * @param   float|null  $await                Рейтинг ожидания (0.0-100.0)
 	 */
 	public function __construct(
 		public ?float $kp = NULL,
@@ -80,24 +81,23 @@ readonly class Rating implements BaseModel {
 	 *
 	 * Фабричный метод для создания экземпляра класса Rating из массива данных,
 	 * полученных от API Kinopoisk.dev. Безопасно обрабатывает отсутствующие
-	 * значения и преобразует строковые значения в числовые.
+	 * значения, устанавливая их в null.
 	 *
 	 * @see Rating::toArray() Для обратного преобразования в массив
 	 *
-	 * @param   array  $data  Массив данных о рейтингах от API
+	 * @param   array<string, mixed>  $data  Массив данных рейтингов от API
 	 *
-	 * @return static Новый экземпляр класса Rating с данными из массива
+	 * @return static Новый экземпляр класса Rating
+	 *
 	 */
 	public static function fromArray(array $data): static {
 		return new self(
-			kp                : isset($data['kp']) ? (float) $data['kp'] : NULL,
-			imdb              : isset($data['imdb']) ? (float) $data['imdb'] : NULL,
-			tmdb              : isset($data['tmdb']) ? (float) $data['tmdb'] : NULL,
-			filmCritics       : isset($data['filmCritics'])
-				? (float) $data['filmCritics'] : NULL,
-			russianFilmCritics: isset($data['russianFilmCritics'])
-				? (float) $data['russianFilmCritics'] : NULL,
-			await             : isset($data['await']) ? (float) $data['await'] : NULL,
+			kp: $data['kp'] ?? NULL,
+			imdb: $data['imdb'] ?? NULL,
+			tmdb: $data['tmdb'] ?? NULL,
+			filmCritics: $data['filmCritics'] ?? NULL,
+			russianFilmCritics: $data['russianFilmCritics'] ?? NULL,
+			await: $data['await'] ?? NULL,
 		);
 	}
 
@@ -105,22 +105,21 @@ readonly class Rating implements BaseModel {
 	 * Преобразует объект в массив данных
 	 *
 	 * Конвертирует текущий экземпляр класса Rating в массив,
-	 * совместимый с форматом API Kinopoisk.dev. Используется для сериализации
-	 * данных при отправке запросов к API или для экспорта данных.
+	 * совместимый с форматом API Kinopoisk.dev. Используется для
+	 * сериализации данных при отправке запросов к API.
 	 *
 	 * @see Rating::fromArray() Для создания объекта из массива
+	 * @return array<string, mixed> Массив с данными рейтингов
 	 *
-	 * @param bool $includeNulls Включать ли null значения в результат
-	 * @return array Массив с данными о рейтингах из различных источников
 	 */
 	public function toArray(bool $includeNulls = true): array {
 		$data = [
-			'kp'                 => $this->kp,
-			'imdb'               => $this->imdb,
-			'tmdb'               => $this->tmdb,
-			'filmCritics'        => $this->filmCritics,
-			'russianFilmCritics' => $this->russianFilmCritics,
-			'await'              => $this->await,
+			'kp'                  => $this->kp,
+			'imdb'                => $this->imdb,
+			'tmdb'                => $this->tmdb,
+			'filmCritics'         => $this->filmCritics,
+			'russianFilmCritics'  => $this->russianFilmCritics,
+			'await'               => $this->await,
 		];
 
 		// Удаляем null значения если не нужно их включать
@@ -288,7 +287,7 @@ readonly class Rating implements BaseModel {
 	 *
 	 * @see Rating::hasAnyRating() Для проверки наличия хотя бы одного рейтинга
 	 *
-	 * @return array Ассоциативный массив доступных рейтингов
+	 * @return array<string, mixed> Ассоциативный массив доступных рейтингов
 	 */
 	public function getAvailableRatings(): array {
 		$ratings = [];
@@ -350,7 +349,11 @@ readonly class Rating implements BaseModel {
 	 * @throws \JsonException При ошибке сериализации
 	 */
 	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
+		$json = json_encode($this->toArray(), $flags);
+		if ($json === false) {
+			throw new \JsonException('Ошибка кодирования JSON');
+		}
+		return $json;
 	}
 
 	/**

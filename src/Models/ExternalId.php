@@ -84,7 +84,7 @@ readonly class ExternalId implements BaseModel {
 	 *
 	 * @see ExternalId::toArray() Для обратного преобразования в массив
 	 *
-	 * @param   array  $data  Массив данных о внешних идентификаторах от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Массив данных о внешних идентификаторах от API, содержащий ключи:
 	 *                        - kpHD: string|null - идентификатор Kinopoisk HD
 	 *                        - imdb: string|null - идентификатор IMDB
 	 *                        - tmdb: string|int|null - идентификатор TMDB
@@ -108,7 +108,7 @@ readonly class ExternalId implements BaseModel {
 	 *
 	 * @see ExternalId::fromArray() Для создания объекта из массива
 	 *
-	 * @return array Массив с данными о внешних идентификаторах, содержащий ключи:
+	 * @return array<string, mixed> Массив с данными о внешних идентификаторах, содержащий ключи:
 	 *               - kpHD: string|null - идентификатор Kinopoisk HD
 	 *               - imdb: string|null - идентификатор IMDB
 	 *               - tmdb: int|null - идентификатор TMDB
@@ -227,7 +227,7 @@ readonly class ExternalId implements BaseModel {
 	 * @see ExternalId::hasAnyId() Для проверки наличия идентификаторов
 	 * @see ExternalId::toArray() Для получения всех идентификаторов включая null
 	 *
-	 * @return array Ассоциативный массив с доступными идентификаторами, где:
+	 * @return array<string, string|int> Ассоциативный массив с доступными идентификаторами, где:
 	 *               - ключ 'kpHD' содержит идентификатор Kinopoisk HD (если установлен)
 	 *               - ключ 'imdb' содержит идентификатор IMDB (если установлен)
 	 *               - ключ 'tmdb' содержит идентификатор TMDB (если установлен)

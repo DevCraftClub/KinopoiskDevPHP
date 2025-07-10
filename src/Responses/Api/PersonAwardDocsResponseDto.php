@@ -35,7 +35,7 @@ class PersonAwardDocsResponseDto extends BaseDocsResponseDto {
 	 * @see    \KinopoiskDev\Utils\DataManager::parseObjectArray() Используется для преобразования массива объектов
 	 * @see    \KinopoiskDev\Models\PersonAward::fromArray() Метод создания объектов PersonAward из массива данных
 	 *
-	 * @param   array  $data  Массив данных от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Массив данных от API, содержащий ключи:
 	 *                        - docs: array - массив данных наград персон для преобразования
 	 *                        - total: int - общее количество наград в результате
 	 *                        - limit: int - максимальное количество элементов на странице
@@ -46,7 +46,7 @@ class PersonAwardDocsResponseDto extends BaseDocsResponseDto {
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException При ошибках валидации класса PersonAward или отсутствии метода fromArray
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			docs : DataManager::parseObjectArray($data, 'docs', PersonAward::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? 10,

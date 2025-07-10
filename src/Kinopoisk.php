@@ -48,9 +48,6 @@ class Kinopoisk extends Helper {
 	private CacheInterface $cache;
 
 	#[Getter]
-	private ValidationService $validator;
-
-	#[Getter]
 	private ?LoggerInterface $logger;
 
 	/**
@@ -77,7 +74,6 @@ class Kinopoisk extends Helper {
 		$this->validateAndSetApiToken($apiToken);
 		$this->httpClient = $httpClient ?? $this->createDefaultHttpClient();
 		$this->cache = $cache ?? new CacheService(new FilesystemAdapter());
-		$this->validator = new ValidationService();
 		$this->logger = $logger;
 
 		$this->logger?->info('Kinopoisk client initialized', [
@@ -139,7 +135,7 @@ class Kinopoisk extends Helper {
 			throw new KinopoiskDevException(
 				message: "Ошибка HTTP запроса: {$e->getMessage()}",
 				code: $e->getCode(),
-				previous: $e,
+				previous: $e instanceof \Exception ? $e : new \Exception($e->getMessage(), $e->getCode(), $e),
 			);
 		}
 	}

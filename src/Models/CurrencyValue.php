@@ -50,11 +50,11 @@ readonly class CurrencyValue implements BaseModel {
 	 *
 	 * @see CurrencyValue::toArray() Для обратного преобразования в массив
 	 *
-	 * @param   array  $data  Массив данных о денежном значении от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Массив данных о денежном значении от API, содержащий ключи:
 	 *                        - value: int|null - денежное значение
 	 *                        - currency: string|null - код валюты
 	 *
-	 * @return self Новый экземпляр класса CurrencyValue с данными из массива
+	 * @return static Новый экземпляр класса CurrencyValue с данными из массива
 	 */
 	public static function fromArray(array $data): static {
 		return new self(
@@ -72,7 +72,7 @@ readonly class CurrencyValue implements BaseModel {
 	 *
 	 * @see CurrencyValue::fromArray() Для создания объекта из массива
 	 *
-	 * @return array Массив с данными о денежном значении, содержащий ключи:
+	 * @return array<string, mixed> Массив с данными о денежном значении, содержащий ключи:
 	 *               - value: int|null - денежное значение
 	 *               - currency: string|null - код валюты
 	 */
@@ -102,7 +102,11 @@ readonly class CurrencyValue implements BaseModel {
 	 * @throws \JsonException При ошибке сериализации
 	 */
 	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
+		$json = json_encode($this->toArray(), $flags);
+		if ($json === false) {
+			throw new \JsonException('Ошибка кодирования JSON');
+		}
+		return $json;
 	}
 
 	/**

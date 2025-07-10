@@ -36,7 +36,7 @@ abstract class BaseDocsResponseDto extends BaseResponseDto {
 	 * @param   int    $page   Номер текущей страницы (начинается с 1)
 	 * @param   int    $pages  Общее количество страниц в коллекции
 	 *
-	 * @param   array  $docs   Массив документов текущей страницы
+	 * @param   array<int, mixed>  $docs   Массив документов текущей страницы
 	 */
 	public function __construct(
 		public readonly array $docs = [],

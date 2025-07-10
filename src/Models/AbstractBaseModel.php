@@ -21,7 +21,7 @@ use ReflectionProperty;
  * @author  Maxim Harder
  * @version 1.0.0
  */
-abstract readonly class AbstractBaseModel implements BaseModel {
+abstract class AbstractBaseModel implements BaseModel {
 
 	private static ?ValidationService $validator = null;
 
@@ -84,7 +84,12 @@ abstract readonly class AbstractBaseModel implements BaseModel {
 		// Обрабатываем sensitive поля для JSON
 		$data = $this->filterSensitiveForJson($data);
 
-		return json_encode($data, $flags);
+		$json = json_encode($data, $flags);
+		if ($json === false) {
+			throw new ValidationException('Ошибка кодирования JSON');
+		}
+		
+		return $json;
 	}
 
 	/**
@@ -106,7 +111,7 @@ abstract readonly class AbstractBaseModel implements BaseModel {
 	/**
 	 * Создает копию объекта с измененными свойствами
 	 *
-	 * @param   array $changes Массив изменений ['property' => 'newValue']
+	 * @param   array<string, mixed> $changes Массив изменений ['property' => 'newValue']
 	 *
 	 * @return static Новый экземпляр с изменениями
 	 * @throws ValidationException При ошибках валидации
@@ -155,7 +160,7 @@ abstract readonly class AbstractBaseModel implements BaseModel {
 	/**
 	 * Возвращает только заполненные свойства
 	 *
-	 * @return array Массив непустых свойств
+	 * @return array<string, mixed> Массив непустых свойств
 	 */
 	public function getFilledProperties(): array {
 		return array_filter($this->toArray(includeNulls: false), function ($value) {
@@ -193,10 +198,10 @@ abstract readonly class AbstractBaseModel implements BaseModel {
 	/**
 	 * Обрабатывает значения массива для сериализации
 	 *
-	 * @param   array $value        Массив для обработки
+	 * @param   array<mixed> $value        Массив для обработки
 	 * @param   bool  $includeNulls Включать ли null значения
 	 *
-	 * @return array Обработанный массив
+	 * @return array<mixed> Обработанный массив
 	 */
 	private function processArrayValue(array $value, bool $includeNulls): array {
 		return array_map(function ($item) use ($includeNulls) {
@@ -212,9 +217,9 @@ abstract readonly class AbstractBaseModel implements BaseModel {
 	/**
 	 * Фильтрует конфиденциальные поля для JSON вывода
 	 *
-	 * @param   array $data Данные для фильтрации
+	 * @param   array<string, mixed> $data Данные для фильтрации
 	 *
-	 * @return array Отфильтрованные данные
+	 * @return array<string, mixed> Отфильтрованные данные
 	 */
 	private function filterSensitiveForJson(array $data): array {
 		$reflection = new ReflectionClass($this);
@@ -236,7 +241,7 @@ abstract readonly class AbstractBaseModel implements BaseModel {
 	/**
 	 * Безопасно извлекает значение из массива данных
 	 *
-	 * @param   array  $data    Массив данных
+	 * @param   array<string, mixed>  $data    Массив данных
 	 * @param   string $key     Ключ
 	 * @param   mixed  $default Значение по умолчанию
 	 *
@@ -249,10 +254,10 @@ abstract readonly class AbstractBaseModel implements BaseModel {
 	/**
 	 * Безопасно извлекает массив из данных
 	 *
-	 * @param   array  $data Массив данных
+	 * @param   array<string, mixed>  $data Массив данных
 	 * @param   string $key  Ключ
 	 *
-	 * @return array Массив значений
+	 * @return array<mixed> Массив значений
 	 */
 	protected static function getArrayValue(array $data, string $key): array {
 		$value = $data[$key] ?? [];
@@ -262,7 +267,7 @@ abstract readonly class AbstractBaseModel implements BaseModel {
 	/**
 	 * Безопасно извлекает строку из данных
 	 *
-	 * @param   array       $data Массив данных
+	 * @param   array<string, mixed>       $data Массив данных
 	 * @param   string      $key  Ключ
 	 * @param   string|null $default Значение по умолчанию
 	 *
@@ -276,7 +281,7 @@ abstract readonly class AbstractBaseModel implements BaseModel {
 	/**
 	 * Безопасно извлекает целое число из данных
 	 *
-	 * @param   array    $data Массив данных
+	 * @param   array<string, mixed>    $data Массив данных
 	 * @param   string   $key  Ключ
 	 * @param   int|null $default Значение по умолчанию
 	 *
@@ -290,7 +295,7 @@ abstract readonly class AbstractBaseModel implements BaseModel {
 	/**
 	 * Безопасно извлекает логическое значение из данных
 	 *
-	 * @param   array     $data Массив данных
+	 * @param   array<string, mixed>     $data Массив данных
 	 * @param   string    $key  Ключ
 	 * @param   bool|null $default Значение по умолчанию
 	 *

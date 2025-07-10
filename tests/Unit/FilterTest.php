@@ -8,12 +8,12 @@ use KinopoiskDev\Filter\KeywordSearchFilter;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Test class for filter functionality
+ * Тестовый класс для функциональности фильтров
  */
 class FilterTest extends TestCase {
 
     /**
-     * Test notNullFields method creates correct filters
+     * Тест метода notNullFields создает правильные фильтры
      */
     public function testNotNullFields(): void {
         $filter = new KeywordSearchFilter();
@@ -28,38 +28,38 @@ class FilterTest extends TestCase {
     }
 
     /**
-     * Test combined filters including year.gte
+     * Тест комбинированных фильтров включая year.gte
      */
     public function testCombinedNotNullFields(): void {
         $filter = new KeywordSearchFilter();
         
-        // Create combined filters like the failing test might expect
+        // Создаем комбинированные фильтры как может ожидать падающий тест
         $filter->year(2020, 'gte')
                ->notNullFields(['title', 'movieId'])
                ->onlyPopular(5);
         
         $filters = $filter->getFilters();
         
-        // Check that year.gte exists (this was the failing assertion)
+        // Проверяем, что year.gte существует (это была падающая проверка)
         $this->assertArrayHasKey('year.gte', $filters);
         $this->assertEquals(2020, $filters['year.gte']);
         
-        // Check notNullFields
+        // Проверяем notNullFields
         $this->assertArrayHasKey('title.ne', $filters);
         $this->assertArrayHasKey('movieId.ne', $filters);
         
-        // Check onlyPopular
+        // Проверяем onlyPopular
         $this->assertArrayHasKey('movieCount.gte', $filters);
         $this->assertEquals(5, $filters['movieCount.gte']);
     }
 
     /**
-     * Test year filter method inheritance
+     * Тест наследования метода фильтра по году
      */
     public function testYearFilterInheritance(): void {
         $filter = new KeywordSearchFilter();
         
-        // Test that year method is available from MovieFilter
+        // Тестируем, что метод year доступен из MovieFilter
         $result = $filter->year(2023, 'gte');
         $this->assertInstanceOf(KeywordSearchFilter::class, $result);
         
@@ -69,7 +69,7 @@ class FilterTest extends TestCase {
     }
 
     /**
-     * Test various operators with year filter
+     * Тест различных операторов с фильтром по году
      */
     public function testYearFilterOperators(): void {
         $testCases = [
@@ -86,13 +86,13 @@ class FilterTest extends TestCase {
             $filter->year($value, $operator);
             
             $filters = $filter->getFilters();
-            $this->assertArrayHasKey($expectedKey, $filters, "Failed for operator: $operator");
+            $this->assertArrayHasKey($expectedKey, $filters, "Ошибка для оператора: $operator");
             $this->assertEquals($value, $filters[$expectedKey]);
         }
     }
 
     /**
-     * Test filter chaining and method availability
+     * Тест цепочки фильтров и доступности методов
      */
     public function testFilterChaining(): void {
         $filter = new KeywordSearchFilter();
@@ -110,7 +110,7 @@ class FilterTest extends TestCase {
         
         $filters = $filter->getFilters();
         
-        // Verify all expected keys exist
+        // Проверяем, что все ожидаемые ключи существуют
         $expectedKeys = [
             'id.eq',
             'title.eq', 
@@ -122,30 +122,30 @@ class FilterTest extends TestCase {
         ];
         
         foreach ($expectedKeys as $key) {
-            $this->assertArrayHasKey($key, $filters, "Missing key: $key");
+            $this->assertArrayHasKey($key, $filters, "Отсутствует ключ: $key");
         }
     }
 
     /**
-     * Test that would reproduce the original error
+     * Тест, который воспроизводит оригинальную ошибку
      */
     public function testReproduceOriginalError(): void {
         $filter = new KeywordSearchFilter();
         
-        // This should create both year.gte and other filters
+        // Это должно создать как year.gte, так и другие фильтры
         $filter->year(2020, 'gte')
                ->notNullFields(['title', 'description']);
         
         $filters = $filter->getFilters();
         
-        // This is the assertion that was failing according to the user
-        $this->assertArrayHasKey('year.gte', $filters, 'year.gte key should exist in combined filters');
+        // Это проверка, которая падала согласно пользователю
+        $this->assertArrayHasKey('year.gte', $filters, 'ключ year.gte должен существовать в комбинированных фильтрах');
         
-        // Additional checks
+        // Дополнительные проверки
         $this->assertArrayHasKey('title.ne', $filters);
         $this->assertArrayHasKey('description.ne', $filters);
         
-        // Verify values
+        // Проверяем значения
         $this->assertEquals(2020, $filters['year.gte']);
         $this->assertNull($filters['title.ne']);
         $this->assertNull($filters['description.ne']);

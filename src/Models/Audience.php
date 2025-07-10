@@ -48,11 +48,11 @@ readonly class Audience implements BaseModel {
 	 *
 	 * @see Audience::toArray() Для обратного преобразования в массив
 	 *
-	 * @param   array  $data  Массив данных об аудитории от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Массив данных об аудитории от API, содержащий ключи:
 	 *                        - count: int|null - количество зрителей
 	 *                        - country: string|null - страна сбора данных
 	 *
-	 * @return self Новый экземпляр класса Audience
+	 * @return static Новый экземпляр класса Audience
 	 *
 	 */
 	public static function fromArray(array $data): static {
@@ -70,7 +70,7 @@ readonly class Audience implements BaseModel {
 	 * сериализации данных при отправке запросов к API.
 	 *
 	 * @see Audience::fromArray() Для создания объекта из массива
-	 * @return array Массив с данными об аудитории, содержащий ключи:
+	 * @return array<string, mixed> Массив с данными об аудитории, содержащий ключи:
 	 *               - count: int|null - количество зрителей
 	 *               - country: string|null - страна сбора данных
 	 *
@@ -101,7 +101,11 @@ readonly class Audience implements BaseModel {
 	 * @throws \JsonException При ошибке сериализации
 	 */
 	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
+		$json = json_encode($this->toArray(), $flags);
+		if ($json === false) {
+			throw new \JsonException('Ошибка кодирования JSON');
+		}
+		return $json;
 	}
 
 	/**

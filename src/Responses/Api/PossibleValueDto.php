@@ -63,14 +63,14 @@ class PossibleValueDto extends BaseResponseDto {
 	 * полученных от API Kinopoisk.dev. Безопасно обрабатывает отсутствующие
 	 * значения, устанавливая их в null.
 	 *
-	 * @param   array  $data  Массив данных о возможном значении от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Массив данных о возможном значении от API, содержащий ключи:
 	 *                        - name: string|null - значение для запроса в базу данных
 	 *                        - slug: string|null - вспомогательное значение
 	 *
 	 * @return static Новый экземпляр класса PossibleValueDto с данными из массива
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			name: $data['name'] ?? NULL,
 			slug: $data['slug'] ?? NULL,
 		);

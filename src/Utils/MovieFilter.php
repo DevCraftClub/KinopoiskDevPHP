@@ -17,12 +17,13 @@ class MovieFilter {
 	/**
 	 * Массив параметров фильтрации
 	 */
+	/** @var array<string, mixed> */
 	protected array $filters = [];
 
 	/**
 	 * Добавляет фильтр по ID фильма
 	 *
-	 * @param   int|array  $id        ID фильма или массив ID
+	 * @param   int|array<int>  $id        ID фильма или массив ID
 	 * @param   string     $operator  Оператор сравнения (eq, ne, in, nin)
 	 *
 	 * @return $this
@@ -92,7 +93,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по внешнему ID фильма
 	 *
-	 * @param   array  $externalId  Массив внешних ID (imdb, tmdb, kpHD)
+	 * @param   array<string, string>  $externalId  Массив внешних ID (imdb, tmdb, kpHD)
 	 *
 	 * @return $this
 	 */
@@ -147,7 +148,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по всем названиям фильма
 	 *
-	 * @param   string|array  $names     Название или массив названий
+	 * @param   string|array<string>  $names     Название или массив названий
 	 * @param   string        $operator  Оператор сравнения (eq, ne, in, nin, regex)
 	 *
 	 * @return $this
@@ -286,7 +287,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по годам релиза
 	 *
-	 * @param   array  $releaseYears  Массив годов релиза
+	 * @param   array<int>  $releaseYears  Массив годов релиза
 	 *
 	 * @return $this
 	 */
@@ -299,7 +300,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по рейтингу
 	 *
-	 * @param   float|array  $rating    Рейтинг или массив с параметрами рейтинга
+	 * @param   float|array<float>  $rating    Рейтинг или массив с параметрами рейтинга
 	 * @param   string       $field     Поле рейтинга (kp, imdb, tmdb, filmCritics, russianFilmCritics, await)
 	 * @param   string       $operator  Оператор сравнения (eq, ne, in, nin, gt, gte, lt, lte)
 	 *
@@ -361,7 +362,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по голосам
 	 *
-	 * @param   int|array  $votes     Количество голосов или массив с параметрами голосов
+	 * @param   int|array<int>  $votes     Количество голосов или массив с параметрами голосов
 	 * @param   string     $field     Поле голосов (kp, imdb, tmdb, filmCritics, russianFilmCritics, await)
 	 * @param   string     $operator  Оператор сравнения (eq, ne, in, nin, gt, gte, lt, lte)
 	 *
@@ -395,7 +396,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по информации о сезонах
 	 *
-	 * @param   array  $seasonsInfo  Информация о сезонах
+	 * @param   array<string, mixed>  $seasonsInfo  Информация о сезонах
 	 *
 	 * @return $this
 	 */
@@ -408,7 +409,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по бюджету
 	 *
-	 * @param   array  $budget  Информация о бюджете
+	 * @param   array<string, mixed>  $budget  Информация о бюджете
 	 *
 	 * @return $this
 	 */
@@ -421,7 +422,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по аудитории
 	 *
-	 * @param   array  $audience  Информация об аудитории
+	 * @param   array<string, mixed>  $audience  Информация об аудитории
 	 *
 	 * @return $this
 	 */
@@ -476,7 +477,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по жанрам
 	 *
-	 * @param   string|array  $genres    Жанр или массив жанров
+	 * @param   string|array<string>  $genres    Жанр или массив жанров
 	 * @param   string        $operator  Оператор сравнения (eq, ne, in, nin)
 	 *
 	 * @return $this
@@ -490,7 +491,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр для включения жанров (оператор +)
 	 *
-	 * @param   string|array  $genres  Жанр или массив жанров для включения
+	 * @param   string|array<string>  $genres  Жанр или массив жанров для включения
 	 *
 	 * @return $this
 	 */
@@ -503,7 +504,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр для исключения жанров (оператор !)
 	 *
-	 * @param   string|array  $genres  Жанр или массив жанров для исключения
+	 * @param   string|array<string>  $genres  Жанр или массив жанров для исключения
 	 *
 	 * @return $this
 	 */
@@ -516,7 +517,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по странам
 	 *
-	 * @param   string|array  $countries  Страна или массив стран
+	 * @param   string|array<string>  $countries  Страна или массив стран
 	 * @param   string        $operator   Оператор сравнения (eq, ne, in, nin)
 	 *
 	 * @return $this
@@ -530,7 +531,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр для включения стран (оператор +)
 	 *
-	 * @param   string|array  $countries  Страна или массив стран для включения
+	 * @param   string|array<string>  $countries  Страна или массив стран для включения
 	 *
 	 * @return $this
 	 */
@@ -543,7 +544,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр для исключения стран (оператор !)
 	 *
-	 * @param   string|array  $countries  Страна или массив стран для исключения
+	 * @param   string|array<string>  $countries  Страна или массив стран для исключения
 	 *
 	 * @return $this
 	 */
@@ -556,7 +557,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по постеру
 	 *
-	 * @param   array  $poster  Информация о постере
+	 * @param   array<string, mixed>  $poster  Информация о постере
 	 *
 	 * @return $this
 	 */
@@ -569,7 +570,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по фоновому изображению
 	 *
-	 * @param   array  $backdrop  Информация о фоновом изображении
+	 * @param   array<string, mixed>  $backdrop  Информация о фоновом изображении
 	 *
 	 * @return $this
 	 */
@@ -582,7 +583,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по логотипу
 	 *
-	 * @param   array  $logo  Информация о логотипе
+	 * @param   array<string, mixed>  $logo  Информация о логотипе
 	 *
 	 * @return $this
 	 */
@@ -608,7 +609,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по видео
 	 *
-	 * @param   array  $videos  Информация о видео
+	 * @param   array<int, mixed>  $videos  Информация о видео
 	 *
 	 * @return $this
 	 */
@@ -621,7 +622,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по сетям
 	 *
-	 * @param   array  $networks  Информация о сетях
+	 * @param   array<int, mixed>  $networks  Информация о сетях
 	 *
 	 * @return $this
 	 */
@@ -632,9 +633,9 @@ class MovieFilter {
 	}
 
 	/**
-	 * Добавляет фильтр по персонам
+	 * Добавляет фильтр по участникам
 	 *
-	 * @param   array  $persons  Информация о персонах
+	 * @param   array<int, mixed>  $persons  Информация об участниках
 	 *
 	 * @return $this
 	 */
@@ -647,7 +648,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по фактам
 	 *
-	 * @param   array  $facts  Информация о фактах
+	 * @param   array<int, mixed>  $facts  Информация о фактах
 	 *
 	 * @return $this
 	 */
@@ -660,7 +661,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по сборам
 	 *
-	 * @param   array  $fees  Информация о сборах
+	 * @param   array<string, mixed>  $fees  Информация о сборах
 	 *
 	 * @return $this
 	 */
@@ -673,7 +674,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по премьере
 	 *
-	 * @param   array  $premiere  Информация о премьере
+	 * @param   array<string, mixed>  $premiere  Информация о премьере
 	 *
 	 * @return $this
 	 */
@@ -701,7 +702,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по похожим фильмам
 	 *
-	 * @param   array  $similarMovies  Информация о похожих фильмах
+	 * @param   array<int, mixed>  $similarMovies  Информация о похожих фильмах
 	 *
 	 * @return $this
 	 */
@@ -714,7 +715,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по сиквелам и приквелам
 	 *
-	 * @param   array  $sequelsAndPrequels  Информация о сиквелах и приквелах
+	 * @param   array<int, mixed>  $sequelsAndPrequels  Информация о сиквелах и приквелах
 	 *
 	 * @return $this
 	 */
@@ -727,7 +728,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по доступности просмотра
 	 *
-	 * @param   array  $watchability  Информация о доступности просмотра
+	 * @param   array<string, mixed>  $watchability  Информация о доступности просмотра
 	 *
 	 * @return $this
 	 */
@@ -740,7 +741,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по спискам
 	 *
-	 * @param   array  $lists  Информация о списках
+	 * @param   array<int, mixed>  $lists  Информация о списках
 	 *
 	 * @return $this
 	 */
@@ -809,7 +810,7 @@ class MovieFilter {
 	/**
 	 * Возвращает массив фильтров
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public function getFilters(): array {
 		$filters    = $this->filters;
@@ -824,7 +825,7 @@ class MovieFilter {
 	/**
 	 * Исключение записей с пустыми значениями в указанных полях
 	 *
-	 * @param   array  $fields  Массив названий полей
+	 * @param   array<string>  $fields  Массив названий полей
 	 *
 	 * @return $this
 	 */

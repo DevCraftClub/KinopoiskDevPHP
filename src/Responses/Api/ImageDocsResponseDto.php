@@ -34,7 +34,7 @@ class ImageDocsResponseDto extends BaseDocsResponseDto {
 	 * @see    \KinopoiskDev\Utils\DataManager::parseObjectArray() Используется для преобразования массива объектов
 	 * @see    \KinopoiskDev\Models\Image::fromArray() Метод создания объектов Image из массива данных
 	 *
-	 * @param   array  $data  Массив данных от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Массив данных от API, содержащий ключи:
 	 *                        - docs: array - массив данных изображений для преобразования
 	 *                        - total: int - общее количество изображений в результате
 	 *                        - limit: int - максимальное количество элементов на странице
@@ -45,7 +45,7 @@ class ImageDocsResponseDto extends BaseDocsResponseDto {
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException При ошибках валидации класса Image или отсутствии метода fromArray
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			docs : DataManager::parseObjectArray($data, 'docs', Image::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? 10,

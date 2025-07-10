@@ -62,59 +62,34 @@ class MeiliPersonEntity implements BaseModel {
 	) {}
 
 	/**
-	 * Создает экземпляр сущности персоны из массива данных API
+	 * Создает объект MeiliPersonEntity из массива данных API
 	 *
-	 * Фабричный метод для создания объекта MeiliPersonEntity из массива данных,
-	 * полученных от API Kinopoisk.dev. Метод безопасно извлекает все необходимые
-	 * данные из массива, применяя значения по умолчанию для опциональных полей
-	 * и выполняя специализированное преобразование для enum-значений и массивов.
+	 * Фабричный метод для создания экземпляра класса MeiliPersonEntity из массива данных,
+	 * полученных от API Kinopoisk.dev. Безопасно обрабатывает отсутствующие
+	 * значения, устанавливая их в null или пустые массивы.
 	 *
-	 * Для поля 'sex' используется DataManager::parseEnumValue() для безопасного
-	 * преобразования строкового значения в enum PersonSex. Для массива 'profession'
-	 * выполняется преобразование объектов PersonProfession в их строковые значения
-	 * через свойство value.
+	 * @see MeiliPersonEntity::toArray() Для обратного преобразования в массив
 	 *
-	 * @since 1.0.0
-	 * @see   PersonSex Enum для определения пола персоны
-	 * @see   PersonProfession Enum для определения профессий персоны
-	 * @see   MeiliPersonEntity::toArray() Обратное преобразование объекта в массив
+	 * @param   array<string, mixed>  $data  Массив данных персоны от API
 	 *
-	 * @see   DataManager::parseEnumValue() Используется для преобразования enum-значений
-	 *
-	 * @param   array  $data  Ассоциативный массив с данными персоны, содержащий ключи:
-	 *                        - id: int - обязательный уникальный идентификатор персоны
-	 *                        - name: string|null - русское имя персоны (опционально)
-	 *                        - enName: string|null - английское имя персоны (опционально)
-	 *                        - photo: string|null - URL фотографии персоны (опционально)
-	 *                        - sex: string|null - пол персоны для преобразования в enum (опционально)
-	 *                        - growth: int|null - рост персоны в сантиметрах (опционально)
-	 *                        - birthday: string|null - дата рождения в строковом формате (опционально)
-	 *                        - death: string|null - дата смерти в строковом формате (опционально)
-	 *                        - age: int|null - возраст персоны в годах (опционально)
-	 *                        - birthPlace: array|null - массив мест рождения (опционально, по умолчанию [])
-	 *                        - deathPlace: array|null - массив мест смерти (опционально, по умолчанию [])
-	 *                        - profession: array|null - массив объектов PersonProfession (опционально, по умолчанию [])
-	 *
-	 * @return self Новый экземпляр MeiliPersonEntity с данными из массива
-	 *
-	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException При ошибках валидации enum-класса PersonSex
+	 * @return static Новый экземпляр класса MeiliPersonEntity
 	 *
 	 */
 	public static function fromArray(array $data): static {
 		return new self(
-			id        : $data['id'],
-			name      : $data['name'] ?? NULL,
-			enName    : $data['enName'] ?? NULL,
-			photo     : $data['photo'] ?? NULL,
-			sex       : DataManager::parseEnumValue($data, 'sex', PersonSex::class),
-			growth    : $data['growth'] ?? NULL,
-			birthday  : $data['birthday'] ?? NULL,
-			death     : $data['death'] ?? NULL,
-			age       : $data['age'] ?? NULL,
+			id: $data['id'] ?? 0,
+			name: $data['name'] ?? NULL,
+			enName: $data['enName'] ?? NULL,
+			photo: $data['photo'] ?? NULL,
+			sex: isset($data['sex']) ? PersonSex::tryFrom($data['sex']) : NULL,
+			growth: $data['growth'] ?? NULL,
+			birthday: $data['birthday'] ?? NULL,
+			death: $data['death'] ?? NULL,
+			age: $data['age'] ?? NULL,
 			birthPlace: $data['birthPlace'] ?? [],
 			deathPlace: $data['deathPlace'] ?? [],
 			profession: isset($data['profession']) && is_array($data['profession']) ? 
-			array_map(fn($pr) => is_string($pr) ? $pr : (is_object($pr) ? $pr->value : $pr), $data['profession']) : [],
+			array_map(fn($pr) => is_string($pr) ? $pr : (is_object($pr) && property_exists($pr, 'value') ? $pr->value : $pr), $data['profession']) : [],
 		);
 	}
 
@@ -150,7 +125,7 @@ class MeiliPersonEntity implements BaseModel {
 	 * @see   \KinopoiskDev\Enums\PersonSex Enum для значений пола персоны
 	 * @see   \KinopoiskDev\Enums\PersonProfession Enum для значений профессий персоны
 	 *
-	 * @return array Ассоциативный массив с данными персоны, содержащий ключи:
+	 * @return array<string, mixed> Ассоциативный массив с данными персоны, содержащий ключи:
 	 *               - id: int - уникальный идентификатор персоны
 	 *               - photo: string|null - URL фотографии персоны
 	 *               - name: string|null - русское имя персоны
@@ -193,7 +168,7 @@ class MeiliPersonEntity implements BaseModel {
 	 *
 	 * @see Person::getProfessionEn() Для получения профессии на английском языке
 	 *
-	 * @return array Название профессии на русском языке или null, если не задано
+	 * @return array<string> Название профессии на русском языке или null, если не задано
 	 */
 	public function getProfessionRu(): array {
 		return array_map(function($professionValue) {
@@ -213,7 +188,7 @@ class MeiliPersonEntity implements BaseModel {
 	 * @see Person::getProfessionRu() Для получения профессии на русском языке
 	 * @see PersonProfession Для списка возможных профессий
 	 *
-	 * @return array Enum значение профессии или null, если не задано
+	 * @return array<string> Enum значение профессии или null, если не задано
 	 */
 	public function getProfessionEn(): array {
 		return array_map(function($professionValue) {
@@ -300,7 +275,7 @@ class MeiliPersonEntity implements BaseModel {
 	 * @return bool true, если персона является актером, false в противном случае
 	 */
 	public function isActor(): bool {
-		return in_array(PersonProfession::ACTOR->value, $this->profession, TRUE);
+		return $this->profession !== null && in_array(PersonProfession::ACTOR->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -321,10 +296,10 @@ class MeiliPersonEntity implements BaseModel {
 	 * @see self::isVoiceActor() Проверка, является ли персона актером дубляжа
 	 * @see self::isOtherProfession() Проверка других профессий персоны
 	 *
-	 * @return bool true если персона является режиссером, false в противном случае
+	 * @return bool true, если персона является режиссером, false в противном случае
 	 */
 	public function isDirector(): bool {
-		return in_array(PersonProfession::DIRECTOR->value, $this->profession, TRUE);
+		return $this->profession !== null && in_array(PersonProfession::DIRECTOR->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -345,10 +320,10 @@ class MeiliPersonEntity implements BaseModel {
 	 * @see self::isVoiceActor() Проверка, является ли персона актером дубляжа
 	 * @see self::isOtherProfession() Проверка других профессий персоны
 	 *
-	 * @return bool true если персона является сценаристом, false в противном случае
+	 * @return bool true, если персона является сценаристом, false в противном случае
 	 */
 	public function isWriter(): bool {
-		return in_array(PersonProfession::WRITER->value, $this->profession, TRUE);
+		return $this->profession !== null && in_array(PersonProfession::WRITER->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -369,10 +344,10 @@ class MeiliPersonEntity implements BaseModel {
 	 * @see self::isVoiceActor() Проверка, является ли персона актером дубляжа
 	 * @see self::isOtherProfession() Проверка других профессий персоны
 	 *
-	 * @return bool true если персона является продюсером, false в противном случае
+	 * @return bool true, если персона является продюсером, false в противном случае
 	 */
 	public function isProducer(): bool {
-		return in_array(PersonProfession::PRODUCER->value, $this->profession, TRUE);
+		return $this->profession !== null && in_array(PersonProfession::PRODUCER->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -393,10 +368,10 @@ class MeiliPersonEntity implements BaseModel {
 	 * @see self::isVoiceActor() Проверка, является ли персона актером дубляжа
 	 * @see self::isOtherProfession() Проверка других профессий персоны
 	 *
-	 * @return bool true если персона является композитором, false в противном случае
+	 * @return bool true, если персона является композитором, false в противном случае
 	 */
 	public function isComposer(): bool {
-		return in_array(PersonProfession::COMPOSER->value, $this->profession, TRUE);
+		return $this->profession !== null && in_array(PersonProfession::COMPOSER->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -417,10 +392,10 @@ class MeiliPersonEntity implements BaseModel {
 	 * @see self::isVoiceActor() Проверка, является ли персона актером дубляжа
 	 * @see self::isOtherProfession() Проверка других профессий персоны
 	 *
-	 * @return bool true если персона является оператором, false в противном случае
+	 * @return bool true, если персона является оператором, false в противном случае
 	 */
 	public function isOperator(): bool {
-		return in_array(PersonProfession::OPERATOR->value, $this->profession, TRUE);
+		return $this->profession !== null && in_array(PersonProfession::OPERATOR->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -441,10 +416,10 @@ class MeiliPersonEntity implements BaseModel {
 	 * @see self::isVoiceActor() Проверка, является ли персона актером дубляжа
 	 * @see self::isOtherProfession() Проверка других профессий персоны
 	 *
-	 * @return bool true если персона является художником, false в противном случае
+	 * @return bool true, если персона является художником, false в противном случае
 	 */
 	public function isDesigner(): bool {
-		return in_array(PersonProfession::DESIGN->value, $this->profession, TRUE);
+		return $this->profession !== null && in_array(PersonProfession::DESIGN->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -465,10 +440,10 @@ class MeiliPersonEntity implements BaseModel {
 	 * @see self::isVoiceActor() Проверка, является ли персона актером дубляжа
 	 * @see self::isOtherProfession() Проверка других профессий персоны
 	 *
-	 * @return bool true если персона является монтажёром, false в противном случае
+	 * @return bool true, если персона является монтажёром, false в противном случае
 	 */
 	public function isEditor(): bool {
-		return in_array(PersonProfession::EDITOR->value, $this->profession, TRUE);
+		return $this->profession !== null && in_array(PersonProfession::EDITOR->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -489,10 +464,10 @@ class MeiliPersonEntity implements BaseModel {
 	 * @see self::isEditor() Проверка, является ли персона монтажером
 	 * @see self::isOtherProfession() Проверка других профессий персоны
 	 *
-	 * @return bool true если персона является актёром дубляжа, false в противном случае
+	 * @return bool true, если персона является актером дубляжа, false в противном случае
 	 */
 	public function isVoiceActor(): bool {
-		return in_array(PersonProfession::VOICE_ACTOR->value, $this->profession, TRUE);
+		return $this->profession !== null && in_array(PersonProfession::VOICE_ACTOR->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -513,10 +488,10 @@ class MeiliPersonEntity implements BaseModel {
 	 * @see self::isEditor() Проверка, является ли персона монтажером
 	 * @see self::isVoiceActor() Проверка, является ли персона актером дубляжа
 	 *
-	 * @return bool true если персона является другой профессии, false в противном случае
+	 * @return bool true, если персона является другой профессии, false в противном случае
 	 */
 	public function isOtherProfession(): bool {
-		return in_array(PersonProfession::OTHER->value, $this->profession, TRUE);
+		return $this->profession !== null && in_array(PersonProfession::OTHER->value, $this->profession, TRUE);
 	}
 
 
@@ -538,7 +513,11 @@ class MeiliPersonEntity implements BaseModel {
 	 * @throws \JsonException При ошибке сериализации
 	 */
 	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
+		$json = json_encode($this->toArray(), $flags);
+		if ($json === false) {
+			throw new \JsonException('Ошибка кодирования JSON');
+		}
+		return $json;
 	}
 
 	/**

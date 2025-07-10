@@ -82,7 +82,7 @@ class Keyword implements BaseModel {
 	/**
 	 * Создает экземпляр модели из массива данных
 	 *
-	 * @param   array  $data  Массив данных от API
+	 * @param   array<string, mixed>  $data  Массив данных от API
 	 *
 	 * @return static Экземпляр модели ключевого слова
 	 */
@@ -96,7 +96,7 @@ class Keyword implements BaseModel {
 			}
 		}
 
-		return new static(
+		return new self(
 			id: $data['id'] ?? 0,
 			title: $data['title'] ?? null,
 			movies: $movies,
@@ -214,7 +214,7 @@ class Keyword implements BaseModel {
 	 */
 	public static function fromJson(string $json): static {
 		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
+		$instance = self::fromArray($data);
 		$instance->validate();
 		return $instance;
 	}

@@ -55,7 +55,7 @@ final class ValidationService {
 	 * @param   object             $object   Объект
 	 * @param   ReflectionProperty $property Свойство для валидации
 	 *
-	 * @return array Массив ошибок валидации
+	 * @return array<string, string> Массив ошибок валидации
 	 */
 	private function validateProperty(object $object, ReflectionProperty $property): array {
 		$errors = [];
@@ -111,7 +111,7 @@ final class ValidationService {
 	 * @param   Validation $validation   Правила валидации
 	 * @param   string     $propertyName Название свойства
 	 *
-	 * @return array Массив ошибок
+	 * @return array<string, string> Массив ошибок
 	 */
 	private function validateString(string $value, Validation $validation, string $propertyName): array {
 		$errors = [];
@@ -145,7 +145,7 @@ final class ValidationService {
 	 * @param   Validation $validation   Правила валидации
 	 * @param   string     $propertyName Название свойства
 	 *
-	 * @return array Массив ошибок
+	 * @return array<string, string> Массив ошибок
 	 */
 	private function validateNumeric(float|int $value, Validation $validation, string $propertyName): array {
 		$errors = [];
@@ -168,8 +168,8 @@ final class ValidationService {
 	/**
 	 * Валидирует массив данных по правилам
 	 *
-	 * @param   array $data  Данные для валидации
-	 * @param   array $rules Правила валидации
+	 * @param   array<string, mixed> $data  Данные для валидации
+	 * @param   array<string, mixed> $rules Правила валидации
 	 *
 	 * @return bool True если валидация прошла успешно
 	 * @throws ValidationException При ошибках валидации
@@ -196,10 +196,10 @@ final class ValidationService {
 	 * Валидирует значение поля по правилам
 	 *
 	 * @param   mixed  $value     Значение
-	 * @param   array  $rules     Правила
+	 * @param   array<string, mixed>  $rules     Правила
 	 * @param   string $fieldName Название поля
 	 *
-	 * @return array Массив ошибок
+	 * @return array<string, string> Массив ошибок
 	 */
 	private function validateFieldValue(mixed $value, array $rules, string $fieldName): array {
 		$errors = [];

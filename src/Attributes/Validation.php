@@ -29,7 +29,7 @@ final readonly class Validation {
 	 * @param   float|null  $min           Минимальное значение (для чисел)
 	 * @param   float|null  $max           Максимальное значение (для чисел)
 	 * @param   string|null $pattern       Регулярное выражение
-	 * @param   array       $allowedValues Допустимые значения
+	 * @param   array<string> $allowedValues Допустимые значения
 	 * @param   string|null $customMessage Кастомное сообщение об ошибке
 	 */
 	public function __construct(

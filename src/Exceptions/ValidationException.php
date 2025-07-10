@@ -22,7 +22,7 @@ final class ValidationException extends RuntimeException {
 
 	/**
 	 * @param   string         $message    Основное сообщение об ошибке
-	 * @param   array          $errors     Список ошибок валидации
+	 * @param   array<string, string> $errors     Список ошибок валидации
 	 * @param   string|null    $field      Поле, вызвавшее ошибку
 	 * @param   mixed          $value      Значение, не прошедшее валидацию
 	 * @param   int            $code       Код ошибки
@@ -42,7 +42,7 @@ final class ValidationException extends RuntimeException {
 	/**
 	 * Возвращает список всех ошибок валидации
 	 *
-	 * @return array Массив ошибок в формате ['field' => 'error_message']
+	 * @return array<string, string> Массив ошибок в формате ['field' => 'error_message']
 	 */
 	public function getErrors(): array {
 		return $this->errors;
@@ -105,7 +105,7 @@ final class ValidationException extends RuntimeException {
 	/**
 	 * Создает исключение для множественных ошибок
 	 *
-	 * @param   array $errors Массив ошибок ['field' => 'message']
+	 * @param   array<string, string> $errors Массив ошибок ['field' => 'message']
 	 *
 	 * @return self Экземпляр исключения
 	 */

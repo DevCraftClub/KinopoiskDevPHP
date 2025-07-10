@@ -90,7 +90,7 @@ class MovieSearchFilter extends MovieFilter {
 	/**
 	 * Добавляет фильтр для поиска фильмов по нескольким жанрам (И)
 	 *
-	 * @param   array  $genres  Массив жанров
+	 * @param   array<string>  $genres  Массив жанров
 	 *
 	 * @return $this
 	 */
@@ -103,7 +103,7 @@ class MovieSearchFilter extends MovieFilter {
 	/**
 	 * Добавляет фильтр для включения жанров (оператор +)
 	 *
-	 * @param   string|array  $genres  Жанр или массив жанров для включения
+	 * @param   string|array<string>  $genres  Жанр или массив жанров для включения
 	 *
 	 * @return $this
 	 */
@@ -116,7 +116,7 @@ class MovieSearchFilter extends MovieFilter {
 	/**
 	 * Добавляет фильтр для исключения жанров (оператор !)
 	 *
-	 * @param   string|array  $genres  Жанр или массив жанров для исключения
+	 * @param   string|array<string>  $genres  Жанр или массив жанров для исключения
 	 *
 	 * @return $this
 	 */
@@ -129,7 +129,7 @@ class MovieSearchFilter extends MovieFilter {
 	/**
 	 * Добавляет фильтр для поиска фильмов по нескольким странам (И)
 	 *
-	 * @param   array  $countries  Массив стран
+	 * @param   array<string>  $countries  Массив стран
 	 *
 	 * @return $this
 	 */
@@ -142,7 +142,7 @@ class MovieSearchFilter extends MovieFilter {
 	/**
 	 * Добавляет фильтр для включения стран (оператор +)
 	 *
-	 * @param   string|array  $countries  Страна или массив стран для включения
+	 * @param   string|array<string>  $countries  Страна или массив стран для включения
 	 *
 	 * @return $this
 	 */
@@ -155,7 +155,7 @@ class MovieSearchFilter extends MovieFilter {
 	/**
 	 * Добавляет фильтр для исключения стран (оператор !)
 	 *
-	 * @param   string|array  $countries  Страна или массив стран для исключения
+	 * @param   string|array<string>  $countries  Страна или массив стран для исключения
 	 *
 	 * @return $this
 	 */

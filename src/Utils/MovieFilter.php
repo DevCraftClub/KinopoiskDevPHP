@@ -17,12 +17,13 @@ class MovieFilter {
 	/**
 	 * Массив параметров фильтрации
 	 */
+	/** @var array<string, mixed> */
 	protected array $filters = [];
 
 	/**
 	 * Добавляет фильтр по ID фильма
 	 *
-	 * @param   int|array  $id        ID фильма или массив ID
+	 * @param   int|array<int>  $id        ID фильма или массив ID
 	 * @param   string     $operator  Оператор сравнения (eq, ne, in, nin)
 	 *
 	 * @return $this
@@ -92,7 +93,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по внешнему ID фильма
 	 *
-	 * @param   array  $externalId  Массив внешних ID (imdb, tmdb, kpHD)
+	 * @param   array<string, string>  $externalId  Массив внешних ID (imdb, tmdb, kpHD)
 	 *
 	 * @return $this
 	 */
@@ -147,7 +148,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по всем названиям фильма
 	 *
-	 * @param   string|array  $names     Название или массив названий
+	 * @param   string|array<string>  $names     Название или массив названий
 	 * @param   string        $operator  Оператор сравнения (eq, ne, in, nin, regex)
 	 *
 	 * @return $this
@@ -286,7 +287,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по годам релиза
 	 *
-	 * @param   array  $releaseYears  Массив годов релиза
+	 * @param   array<int>  $releaseYears  Массив годов релиза
 	 *
 	 * @return $this
 	 */
@@ -299,7 +300,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по рейтингу
 	 *
-	 * @param   float|array  $rating    Рейтинг или массив с параметрами рейтинга
+	 * @param   float|array<float>  $rating    Рейтинг или массив с параметрами рейтинга
 	 * @param   string       $field     Поле рейтинга (kp, imdb, tmdb, filmCritics, russianFilmCritics, await)
 	 * @param   string       $operator  Оператор сравнения (eq, ne, in, nin, gt, gte, lt, lte)
 	 *
@@ -361,7 +362,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по голосам
 	 *
-	 * @param   int|array  $votes     Количество голосов или массив с параметрами голосов
+	 * @param   int|array<int>  $votes     Количество голосов или массив с параметрами голосов
 	 * @param   string     $field     Поле голосов (kp, imdb, tmdb, filmCritics, russianFilmCritics, await)
 	 * @param   string     $operator  Оператор сравнения (eq, ne, in, nin, gt, gte, lt, lte)
 	 *
@@ -476,7 +477,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по жанрам
 	 *
-	 * @param   string|array  $genres    Жанр или массив жанров
+	 * @param   string|array<string>  $genres    Жанр или массив жанров
 	 * @param   string        $operator  Оператор сравнения (eq, ne, in, nin)
 	 *
 	 * @return $this
@@ -490,7 +491,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр для включения жанров (оператор +)
 	 *
-	 * @param   string|array  $genres  Жанр или массив жанров для включения
+	 * @param   string|array<string>  $genres  Жанр или массив жанров для включения
 	 *
 	 * @return $this
 	 */
@@ -503,7 +504,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр для исключения жанров (оператор !)
 	 *
-	 * @param   string|array  $genres  Жанр или массив жанров для исключения
+	 * @param   string|array<string>  $genres  Жанр или массив жанров для исключения
 	 *
 	 * @return $this
 	 */
@@ -516,7 +517,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по странам
 	 *
-	 * @param   string|array  $countries  Страна или массив стран
+	 * @param   string|array<string>  $countries  Страна или массив стран
 	 * @param   string        $operator   Оператор сравнения (eq, ne, in, nin)
 	 *
 	 * @return $this
@@ -530,7 +531,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр для включения стран (оператор +)
 	 *
-	 * @param   string|array  $countries  Страна или массив стран для включения
+	 * @param   string|array<string>  $countries  Страна или массив стран для включения
 	 *
 	 * @return $this
 	 */
@@ -543,7 +544,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр для исключения стран (оператор !)
 	 *
-	 * @param   string|array  $countries  Страна или массив стран для исключения
+	 * @param   string|array<string>  $countries  Страна или массив стран для исключения
 	 *
 	 * @return $this
 	 */
@@ -809,7 +810,7 @@ class MovieFilter {
 	/**
 	 * Возвращает массив фильтров
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public function getFilters(): array {
 		$filters    = $this->filters;
@@ -824,7 +825,7 @@ class MovieFilter {
 	/**
 	 * Исключение записей с пустыми значениями в указанных полях
 	 *
-	 * @param   array  $fields  Массив названий полей
+	 * @param   array<string>  $fields  Массив названий полей
 	 *
 	 * @return $this
 	 */

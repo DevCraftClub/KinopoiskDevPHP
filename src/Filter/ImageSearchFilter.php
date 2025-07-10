@@ -118,4 +118,6 @@ class ImageSearchFilter extends MovieFilter {
 		return $this;
 	}
 
+// The `notNullFields` method is removed to avoid duplication with the parent class.
+
 }

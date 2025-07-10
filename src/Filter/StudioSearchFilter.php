@@ -178,4 +178,6 @@ class StudioSearchFilter extends MovieFilter {
 		$this->sortBy(SortField::TYPE, SortDirection::fromString($direction));
 		return $this;
 	}
+
+// The `notNullFields` method is inherited from the parent `MovieFilter` class.
 }

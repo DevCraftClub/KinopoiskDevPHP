@@ -156,4 +156,6 @@ class PersonSearchFilter extends MovieFilter {
 		return $this;
 	}
 
+// The `notNullFields` method is inherited from the parent `MovieFilter` class.
+
 }

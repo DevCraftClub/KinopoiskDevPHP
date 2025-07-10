@@ -260,4 +260,6 @@ class MovieSearchFilter extends MovieFilter {
 		return $this;
 	}
 
+	// The notNullFields method is inherited from the MovieFilter class.
+
 }

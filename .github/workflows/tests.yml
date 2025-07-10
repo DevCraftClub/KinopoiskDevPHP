@@ -74,11 +74,21 @@ jobs:
         COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
     
     - name: Run unit tests
-      run: composer test
+      run: |
+        echo "=== Running PHPUnit Tests ==="
+        # Если API ключ не настроен, запускаем только unit тесты
+        if [ -z "$KINOPOISK_TOKEN" ] || [ "$KINOPOISK_TOKEN" = "YOUR_API_KEY" ]; then
+          echo "API key not configured, running only unit tests..."
+          ./vendor/bin/phpunit --testsuite="Unit Tests" --no-coverage
+        else
+          echo "API key configured, running all tests..."
+          composer test
+        fi
       env:
         HOME: ${{ env.HOME }}
         COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
         KINOPOISK_TOKEN: ${{ vars.KINOPOISK_TEST_API_KEY }}
+        SKIP_INTEGRATION_TESTS: ${{ vars.KINOPOISK_TEST_API_KEY == '' && 'true' || 'false' }}
     
     - name: Run PHPStan static analysis
       run: composer phpstan
@@ -93,11 +103,21 @@ jobs:
         COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
     
     - name: Generate test coverage
-      run: composer test-coverage
+      run: |
+        echo "=== Generating Test Coverage ==="
+        # Если API ключ не настроен, генерируем покрытие только для unit тестов
+        if [ -z "$KINOPOISK_TOKEN" ] || [ "$KINOPOISK_TOKEN" = "YOUR_API_KEY" ]; then
+          echo "API key not configured, generating coverage for unit tests only..."
+          ./vendor/bin/phpunit --testsuite="Unit Tests" --coverage-html coverage --coverage-clover coverage/clover.xml
+        else
+          echo "API key configured, generating full coverage..."
+          composer test-coverage
+        fi
       env:
         HOME: ${{ env.HOME }}
         COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
         KINOPOISK_TOKEN: ${{ vars.KINOPOISK_TEST_API_KEY }}
+        SKIP_INTEGRATION_TESTS: ${{ vars.KINOPOISK_TEST_API_KEY == '' && 'true' || 'false' }}
     
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3

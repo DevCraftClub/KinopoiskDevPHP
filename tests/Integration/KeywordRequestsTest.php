@@ -31,10 +31,23 @@ final class KeywordRequestsTest extends TestCase {
 	{
 		return $_ENV['KINOPOISK_TOKEN'] ?? self::API_TOKEN;
 	}
+	
+	private function shouldSkipIntegrationTests(): bool
+	{
+		// Пропускаем интеграционные тесты если:
+		// 1. Явно установлена переменная SKIP_INTEGRATION_TESTS
+		// 2. API ключ не настроен (равен плейсхолдеру)
+		return $_ENV['SKIP_INTEGRATION_TESTS'] === 'true' || 
+			   $this->getTestApiToken() === self::API_TOKEN;
+	}
 
 	private KeywordRequests $keywordRequests;
 
 	protected function setUp(): void {
+		if ($this->shouldSkipIntegrationTests()) {
+			$this->markTestSkipped('Интеграционные тесты пропущены: не настроен реальный API ключ');
+		}
+		
 		$this->keywordRequests = new KeywordRequests(
 			apiToken: $this->getTestApiToken(),
 			httpClient: null,

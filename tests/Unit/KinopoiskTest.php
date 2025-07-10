@@ -82,10 +82,10 @@ final class KinopoiskTest extends TestCase {
 	 * @group constructor
 	 */
 	public function testConstructorWithMinimalParameters(): void {
-		$kinopoisk = new Kinopoisk(apiToken: self::VALID_API_TOKEN);
+		$kinopoisk = new Kinopoisk(apiToken: $this->getTestApiToken());
 
 		$this->assertInstanceOf(Kinopoisk::class, $kinopoisk);
-		$this->assertSame(self::VALID_API_TOKEN, $kinopoisk->getApiToken());
+		$this->assertSame($this->getTestApiToken(), $kinopoisk->getApiToken());
 	}
 
 	/**
@@ -115,11 +115,11 @@ final class KinopoiskTest extends TestCase {
 	 * @group constructor
 	 */
 	public function testConstructorUsesEnvironmentToken(): void {
-		$_ENV['KINOPOISK_TOKEN'] = self::VALID_API_TOKEN;
+		$_ENV['KINOPOISK_TOKEN'] = $this->getTestApiToken();
 
 		$kinopoisk = new Kinopoisk();
 
-		$this->assertSame(self::VALID_API_TOKEN, $kinopoisk->getApiToken());
+		$this->assertSame($this->getTestApiToken(), $kinopoisk->getApiToken());
 
 		unset($_ENV['KINOPOISK_TOKEN']);
 	}

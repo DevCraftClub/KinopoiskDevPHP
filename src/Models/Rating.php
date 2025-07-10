@@ -327,8 +327,8 @@ readonly class Rating implements BaseModel {
 	public function validate(): bool {
 		// Валидация рейтингов KP, IMDB, TMDB (0-10)
 		foreach (['kp' => $this->kp, 'imdb' => $this->imdb, 'tmdb' => $this->tmdb] as $name => $rating) {
-			if ($rating !== null && ($rating < 0 || $rating > 10)) {
-				throw new \KinopoiskDev\Exceptions\ValidationException("Rating {$name} must be between 0 and 10");
+			if ($rating !== null && ($rating < self::RATING_MIN || $rating > self::RATING_MAX)) {
+				throw new \KinopoiskDev\Exceptions\ValidationException("Rating {$name} must be between " . self::RATING_MIN . " and " . self::RATING_MAX);
 			}
 		}
 

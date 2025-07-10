@@ -30,7 +30,7 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
  * @author  Maxim Harder
  * @version 2.0.0
  */
-final readonly class Kinopoisk extends Helper {
+final class Kinopoisk extends Helper {
 
 	private const string BASE_URL = 'https://api.kinopoisk.dev';
 	private const string API_VERSION = 'v1.4';

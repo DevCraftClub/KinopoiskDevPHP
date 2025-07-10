@@ -260,18 +260,6 @@ class MovieSearchFilter extends MovieFilter {
 		return $this;
 	}
 
-	/**
-	 * Исключение записей с пустыми значениями в указанных полях
-	 *
-	 * @param   array  $fields  Массив названий полей
-	 *
-	 * @return $this
-	 */
-	public function notNullFields(array $fields): self {
-		foreach ($fields as $field) {
-			$this->addFilter($field, null, 'ne');
-		}
-		return $this;
-	}
+	// The notNullFields method is inherited from the MovieFilter class.
 
 }

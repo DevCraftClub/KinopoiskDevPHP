@@ -1,4 +1,4 @@
-THIS SHOULD BE A LINTER ERRORname: Tests
+name: Tests
 
 on:
   push:
@@ -10,6 +10,10 @@ jobs:
   test:
     runs-on: self-hosted
     
+    env:
+      COMPOSER_ALLOW_SUPERUSER: 1
+      COMPOSER_NO_INTERACTION: 1
+    
     strategy:
       matrix:
         php-version: ['8.3']
@@ -19,9 +23,21 @@ jobs:
     
     - name: Set environment variables
       run: |
-        echo "HOME=${HOME:-/tmp}" >> $GITHUB_ENV
-        echo "COMPOSER_HOME=${COMPOSER_HOME:-$HOME/.composer}" >> $GITHUB_ENV
-        mkdir -p ${COMPOSER_HOME:-$HOME/.composer}
+        echo "Setting up environment variables for self-hosted runner..."
+        export HOME=${HOME:-/tmp}
+        export COMPOSER_HOME=${COMPOSER_HOME:-$HOME/.composer}
+        echo "HOME=$HOME" >> $GITHUB_ENV
+        echo "COMPOSER_HOME=$COMPOSER_HOME" >> $GITHUB_ENV
+        echo "TMPDIR=${TMPDIR:-/tmp}" >> $GITHUB_ENV
+        
+        echo "Creating necessary directories..."
+        mkdir -p $HOME
+        mkdir -p $COMPOSER_HOME
+        mkdir -p ${TMPDIR:-/tmp}
+        
+        echo "Environment setup complete."
+        echo "HOME: $HOME"
+        echo "COMPOSER_HOME: $COMPOSER_HOME"
     
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
@@ -32,6 +48,9 @@ jobs:
     
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
+      env:
+        HOME: ${{ env.HOME }}
+        COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
     
     - name: Cache Composer packages
       id: composer-cache
@@ -47,21 +66,34 @@ jobs:
     
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
+      env:
+        HOME: ${{ env.HOME }}
+        COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
     
     - name: Run unit tests
       run: composer test
       env:
+        HOME: ${{ env.HOME }}
+        COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
         KINOPOISK_TOKEN: ${{ vars.KINOPOISK_TEST_API_KEY }}
     
     - name: Run PHPStan static analysis
       run: composer phpstan
+      env:
+        HOME: ${{ env.HOME }}
+        COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
     
     - name: Run PHP CodeSniffer
       run: composer phpcs
+      env:
+        HOME: ${{ env.HOME }}
+        COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
     
     - name: Generate test coverage
       run: composer test-coverage
       env:
+        HOME: ${{ env.HOME }}
+        COMPOSER_HOME: ${{ env.COMPOSER_HOME }}
         KINOPOISK_TOKEN: ${{ vars.KINOPOISK_TEST_API_KEY }}
     
     - name: Upload coverage reports to Codecov

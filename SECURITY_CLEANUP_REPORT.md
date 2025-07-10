@@ -27,18 +27,21 @@
 - **PHP версия**: 8.3
 - **Переменная**: `${{ vars.KINOPOISK_TEST_API_KEY }}`
 - **Триггеры**: push и pull_request в ветки `main` и `develop`
+- **Окружение**: настроены `HOME`, `COMPOSER_HOME`, `TMPDIR`
+- **Composer**: настроены `COMPOSER_ALLOW_SUPERUSER`, `COMPOSER_NO_INTERACTION`
 
 #### Этапы выполнения:
 1. Checkout кода
-2. Настройка PHP с необходимыми расширениями
-3. Валидация composer.json
-4. Кэширование зависимостей Composer
-5. Установка зависимостей
-6. Запуск unit тестов (с переменной `KINOPOISK_TOKEN`)
-7. Запуск PHPStan анализа
-8. Запуск PHP CodeSniffer
-9. Генерация отчета покрытия тестами
-10. Отправка отчета в Codecov
+2. Настройка переменных окружения для self-hosted runner
+3. Настройка PHP с необходимыми расширениями
+4. Валидация composer.json
+5. Кэширование зависимостей Composer
+6. Установка зависимостей
+7. Запуск unit тестов (с переменной `KINOPOISK_TOKEN`)
+8. Запуск PHPStan анализа
+9. Запуск PHP CodeSniffer
+10. Генерация отчета покрытия тестами
+11. Отправка отчета в Codecov
 
 ## Настройка переменной репозитория
 
@@ -85,3 +88,22 @@ KINOPOISK_TOKEN=your-api-key-here
 - Гибкую настройку через переменные окружения
 
 Все изменения сохраняют обратную совместимость и не нарушают существующую функциональность.
+
+## Устранение проблем Self-Hosted Runner
+
+### ✅ Исправлена ошибка переменных окружения
+```
+Error: The HOME or COMPOSER_HOME environment variable must be set for composer to run correctly
+```
+
+**Решение:**
+- Добавлена автоматическая настройка `HOME`, `COMPOSER_HOME`, `TMPDIR`
+- Включены флаги `COMPOSER_ALLOW_SUPERUSER=1` и `COMPOSER_NO_INTERACTION=1`
+- Создание необходимых директорий перед выполнением команд
+- Передача переменных окружения во все шаги с Composer
+
+**Преимущества:**
+- Надежная работа на любых self-hosted runners
+- Изоляция зависимостей Composer
+- Улучшенное кэширование пакетов
+- Отсутствие интерактивных запросов

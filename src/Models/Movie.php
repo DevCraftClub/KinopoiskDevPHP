@@ -400,8 +400,8 @@ readonly class Movie implements BaseModel {
 		}
 
 		// Валидация года
-		if ($this->year !== null && ($this->year < 1800 || $this->year > 2100)) {
-			throw new \KinopoiskDev\Exceptions\ValidationException('Movie year must be between 1800 and 2100');
+		if ($this->year !== null && ($this->year < self::MIN_YEAR || $this->year > self::MAX_YEAR)) {
+			throw new \KinopoiskDev\Exceptions\ValidationException('Movie year must be between ' . self::MIN_YEAR . ' and ' . self::MAX_YEAR);
 		}
 
 		// Валидация рейтингов

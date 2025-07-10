@@ -247,6 +247,33 @@ public function withPremiereRange(string $fromDate, string $toDate, string $coun
 
 ---
 
+### notNullFields
+```php
+public function notNullFields(array $fields): self
+```
+**Описание:** Исключение записей с пустыми значениями в указанных полях
+
+**Параметры:**
+- `array $fields` — Массив названий полей для исключения null значений
+
+**Возвращает:** `$this` — для fluent interface
+
+**Примеры полей для фильмов:**
+- `poster.url` — Исключить фильмы без постеров
+- `backdrop.url` — Исключить фильмы без фоновых изображений
+- `description` — Исключить фильмы без описания
+- `name` — Исключить фильмы без названия
+- `rating.kp` — Исключить фильмы без рейтинга Кинопоиска
+- `votes.kp` — Исключить фильмы без голосов
+- `year` — Исключить фильмы без года выпуска
+- `genres.name` — Исключить фильмы без жанров
+- `countries.name` — Исключить фильмы без стран
+- `persons.name` — Исключить фильмы без информации о персонах
+- `budget.value` — Исключить фильмы без бюджета
+- `fees.world.value` — Исключить фильмы без сборов
+
+---
+
 ## Примеры использования
 
 ```php
@@ -266,6 +293,21 @@ $filter->withIncludedCountries('Россия')
 $filter->withActor('Леонардо ДиКаприо')
        ->withMinVotes(10000)
        ->sortByYear();
+
+// Поиск фильмов с полной информацией (исключение пустых полей)
+$filter->withYearBetween(2020, 2024)
+       ->withRatingBetween(8.0, 10.0)
+       ->notNullFields([
+           'poster.url',
+           'backdrop.url', 
+           'description',
+           'name',
+           'rating.kp',
+           'votes.kp',
+           'year',
+           'genres.name'
+       ])
+       ->sortByKinopoiskRating();
 ```
 
 ---

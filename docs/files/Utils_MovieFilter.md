@@ -439,6 +439,43 @@ public function reset(): self
 
 ---
 
+### notNullFields
+```php
+public function notNullFields(array $fields): self
+```
+**Описание:** Исключение записей с пустыми значениями в указанных полях
+
+**Параметры:**
+- `array $fields` — Массив названий полей для исключения null значений
+
+**Возвращает:** `$this` — для fluent interface
+
+**Принцип работы:** Для каждого поля в массиве добавляется фильтр с оператором `ne` (not equal) и значением `null`, что исключает записи с пустыми значениями в указанных полях.
+
+**Примеры использования:**
+```php
+// Исключить фильмы без постеров и описаний
+$filter->notNullFields(['poster.url', 'description']);
+
+// Исключить персоны без фото
+$filter->notNullFields(['photo', 'description']);
+
+// Исключить отзывы без текста
+$filter->notNullFields(['review', 'title']);
+
+// Комплексный пример
+$filter->notNullFields([
+    'poster.url',
+    'backdrop.url', 
+    'description',
+    'name',
+    'rating.kp',
+    'votes.kp'
+]);
+```
+
+---
+
 ## Примеры использования
 
 ```php
@@ -465,7 +502,21 @@ $filter->top250(1, 'gte')
 // Поиск по внешнему ID
 $filter->externalId(['imdb' => 'tt0111161'])
        ->sortByRating();
-```
+
+// Поиск фильмов с полной информацией (исключение пустых полей)
+$filter->yearRange(2020, 2024)
+       ->rating(8.0, 'kp', 'gte')
+       ->notNullFields([
+           'poster.url',
+           'backdrop.url', 
+           'description',
+           'name',
+           'rating.kp',
+           'votes.kp',
+           'year',
+           'genres.name'
+       ])
+       ->sortByRating();
 
 ---
 

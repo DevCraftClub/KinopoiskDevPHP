@@ -1,4 +1,4 @@
-THIS SHOULD BE A LINTER ERROR<?php
+<?php
 
 namespace Tests\Filter;
 
@@ -149,8 +149,10 @@ class NotNullFieldsTest extends TestCase
     public function testCombinedNotNullFields(): void
     {
         $filter = new MovieSearchFilter();
-        $filter->withYearBetween(2020, 2024)
-               ->withRatingBetween(7.0, 10.0)
+        $filter->year(2020, 'gte')
+               ->year(2024, 'lte')
+               ->rating(7.0, 'kp', 'gte')
+               ->rating(10.0, 'kp', 'lte')
                ->notNullFields(['poster.url', 'description', 'name'])
                ->sortByKinopoiskRating();
         
@@ -162,12 +164,16 @@ class NotNullFieldsTest extends TestCase
         $this->assertArrayHasKey('name.ne', $filters);
         
         // Проверяем, что другие фильтры тоже присутствуют
-        $this->assertArrayHasKey('year', $filters);
-        $this->assertArrayHasKey('rating.kp', $filters);
+        $this->assertArrayHasKey('year.gte', $filters);
+        $this->assertArrayHasKey('year.lte', $filters);
+        $this->assertArrayHasKey('rating.kp.gte', $filters);
+        $this->assertArrayHasKey('rating.kp.lte', $filters);
         
-        // Проверяем, что значения диапазонов корректны
-        $this->assertEquals('2020-2024', $filters['year']);
-        $this->assertEquals('7-10', $filters['rating.kp']);
+        // Проверяем, что значения корректны
+        $this->assertEquals(2020, $filters['year.gte']);
+        $this->assertEquals(2024, $filters['year.lte']);
+        $this->assertEquals(7.0, $filters['rating.kp.gte']);
+        $this->assertEquals(10.0, $filters['rating.kp.lte']);
     }
 
     /**

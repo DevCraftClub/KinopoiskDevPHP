@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 /**
- * Simple documentation generator for Kinopoisk.dev PHP client
+ * Простой генератор документации для PHP клиента Kinopoisk.dev
  *
- * Scans the src/ directory, extracts namespace, class/trait/interface/enum
- * definitions together with their PHPDoc blocks and public method signatures
- * and writes a corresponding markdown file into the docs/ directory, preserving
- * the original folder structure (e.g. src/Models/Movie.php -> docs/Models/Movie.md).
+ * Сканирует директорию src/, извлекает определения namespace, class/trait/interface/enum
+ * вместе с их PHPDoc блоками и сигнатурами публичных методов
+ * и записывает соответствующий markdown файл в директорию docs/, сохраняя
+ * оригинальную структуру папок (например, src/Models/Movie.php -> docs/Models/Movie.md).
  *
- * Usage:
+ * Использование:
  *   php bin/generate_docs.php
  */
 
@@ -60,11 +60,11 @@ updateProgressFile($projectRoot, $classesProcessed);
 
 echo "[OK] Generated documentation for {$classesProcessed} classes to {$docsDir}.\n";
 
-/******************** Helper functions ************************/ 
+/******************** Вспомогательные функции ************************/ 
 
 /**
- * Parse a PHP file and return an array with documentation information about each
- * class/trait/interface/enum contained within.
+ * Парсит PHP файл и возвращает массив с информацией о документации для каждого
+ * class/trait/interface/enum, содержащегося в файле.
  *
  * @param string $filePath
  * @return array<int, array<string, mixed>>
@@ -119,7 +119,7 @@ function parsePhpFile(string $filePath): array
 
                 case ord('}'):
                     $braceLevel--;
-                    // End of class definition
+                    // Конец определения класса
                     if ($braceLevel === 0 && !empty($classInfo)) {
                         $classes[]   = $classInfo;
                         $classInfo   = [];
@@ -131,13 +131,13 @@ function parsePhpFile(string $filePath): array
                 case T_INTERFACE:
                 case T_TRAIT:
                 case T_ENUM:
-                    // Ensure it's not anonymous class (keyword 'class' followed by '('
+                    // Убеждаемся, что это не анонимный класс (ключевое слово 'class' за которым следует '('
                     $nextToken = $tokens[$i + 1] ?? null;
                     if (is_array($nextToken) && $nextToken[0] === T_WHITESPACE) {
                         $nextToken = $tokens[$i + 2] ?? null;
                     }
                     if ($nextToken === '(') {
-                        // anonymous, skip
+                        // анонимный, пропускаем
                         break;
                     }
                     $collectClass = true;
@@ -145,14 +145,14 @@ function parsePhpFile(string $filePath): array
 
                 case T_FUNCTION:
                     if (empty($classInfo)) {
-                        break; // function outside class
+                        break; // функция вне класса
                     }
-                    // Capture function name
+                    // Захватываем имя функции
                     $j = $i + 1;
                     while (isset($tokens[$j]) && (is_array($tokens[$j]) && $tokens[$j][0] === T_WHITESPACE)) {
                         $j++;
                     }
-                    // Skip & symbol for reference
+                    // Пропускаем символ & для ссылки
                     if (is_array($tokens[$j]) && $tokens[$j][0] === T_BITWISE_AND) {
                         $j++;
                         while (isset($tokens[$j]) && (is_array($tokens[$j]) && $tokens[$j][0] === T_WHITESPACE)) {
@@ -169,7 +169,7 @@ function parsePhpFile(string $filePath): array
                     // no-op
             }
         } else {
-            // Simple string tokens '{' or '}' handled above
+            // Простые строковые токены '{' или '}' обрабатываются выше
             if ($token === '{') {
                 $braceLevel++;
             } elseif ($token === '}') {
@@ -182,7 +182,7 @@ function parsePhpFile(string $filePath): array
             }
         }
 
-        // Capture completed namespace
+        // Захватываем завершенный namespace
         if ($collectNs && !is_array($token) && $token === ';') {
             $namespace = implode('\\', $nsParts);
             $collectNs = false;
@@ -193,7 +193,7 @@ function parsePhpFile(string $filePath): array
 }
 
 /**
- * Build a markdown string from parsed class info
+ * Строит markdown строку из распарсенной информации о классе
  *
  * @param array<string, mixed> $classInfo
  */
@@ -217,7 +217,7 @@ function buildMarkdown(array $classInfo): string
 }
 
 /**
- * Remove comment markers from a PHPDoc block
+ * Удаляет маркеры комментариев из PHPDoc блока
  */
 function cleanDocblock(string $doc): string
 {
@@ -226,7 +226,7 @@ function cleanDocblock(string $doc): string
     foreach ($lines as $line) {
         $line = trim($line, "\t *\/");
         if ($line === '' || str_starts_with($line, '@')) {
-            continue; // Skip empty and annotation lines
+            continue; // Пропускаем пустые строки и строки с аннотациями
         }
         $clean[] = $line;
     }
@@ -234,7 +234,7 @@ function cleanDocblock(string $doc): string
 }
 
 /**
- * Append a simple summary into DOCUMENTATION_PROGRESS.md
+ * Добавляет простое резюме в DOCUMENTATION_PROGRESS.md
  */
 function updateProgressFile(string $projectRoot, int $classesProcessed): void
 {

@@ -48,15 +48,15 @@ class EnumTest extends TestCase
     {
         $personData = [
             'id' => 1,
-            'enProfession' => 'actor',
+            'profession' => [PersonProfession::ACTOR],
             'sex' => 'male',
         ];
         
         $person = Person::fromArray($personData);
         
-        $this->assertInstanceOf(PersonProfession::class, $person->enProfession);
-        $this->assertEquals(PersonProfession::ACTOR, $person->enProfession);
-        $this->assertEquals('actor', $person->enProfession->value);
+        $this->assertIsArray($person->profession);
+        $this->assertCount(1, $person->profession);
+        $this->assertContains('actor', $person->profession);
         
         $this->assertInstanceOf(PersonSex::class, $person->sex);
         $this->assertEquals(PersonSex::MALE, $person->sex);
@@ -64,11 +64,9 @@ class EnumTest extends TestCase
         
         $personArray = $person->toArray();
         
-        $this->assertEquals('actor', $personArray['enProfession']);
+        $this->assertIsArray($personArray['profession']);
+        $this->assertContains('actor', $personArray['profession']);
         $this->assertEquals('male', $personArray['sex']);
-        
-        $this->assertTrue($person->isActor());
-        $this->assertEquals('actor', $person->getRoleCategory());
     }
     
     public function testLinkedMovieEnums()

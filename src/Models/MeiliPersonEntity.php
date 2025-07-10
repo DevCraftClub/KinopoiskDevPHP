@@ -113,7 +113,8 @@ readonly class MeiliPersonEntity implements BaseModel {
 			age       : $data['age'] ?? NULL,
 			birthPlace: $data['birthPlace'] ?? [],
 			deathPlace: $data['deathPlace'] ?? [],
-			profession: $data['profession'] ? array_map(fn (PersonProfession $pr) => $pr->value, $data['profession']) : [],
+			profession: isset($data['profession']) && is_array($data['profession']) ? 
+			array_map(fn($pr) => is_string($pr) ? $pr : (is_object($pr) ? $pr->value : $pr), $data['profession']) : [],
 		);
 	}
 
@@ -195,7 +196,12 @@ readonly class MeiliPersonEntity implements BaseModel {
 	 * @return array Название профессии на русском языке или null, если не задано
 	 */
 	public function getProfessionRu(): array {
-		return array_map(fn (PersonProfession $pr) => $pr->getRussianName(), $this->profession);
+		return array_map(function($professionValue) {
+			$profession = is_string($professionValue) 
+				? PersonProfession::tryFrom($professionValue) 
+				: $professionValue;
+			return $profession?->getRussianName() ?? $professionValue;
+		}, $this->profession ?? []);
 	}
 
 	/**
@@ -210,7 +216,12 @@ readonly class MeiliPersonEntity implements BaseModel {
 	 * @return array Enum значение профессии или null, если не задано
 	 */
 	public function getProfessionEn(): array {
-		return array_map(fn (PersonProfession $pr) => $pr->getEnglishName(), $this->profession);
+		return array_map(function($professionValue) {
+			$profession = is_string($professionValue) 
+				? PersonProfession::tryFrom($professionValue) 
+				: $professionValue;
+			return $profession?->getEnglishName() ?? $professionValue;
+		}, $this->profession ?? []);
 	}
 
 	/**

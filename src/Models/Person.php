@@ -80,7 +80,7 @@ readonly class Person extends MeiliPersonEntity {
 		public ?string    $updatedAt = NULL,
 		public ?string    $createdAt = NULL,
 	) {
-		parent::__construct($id, $name, $name, $photo, $sex, $growth, $birthday, $death, $age, $birthPlace, $deathPlace, $profession);
+		parent::__construct($id, $name, $enName, $photo, $sex, $growth, $birthday, $death, $age, $birthPlace, $deathPlace, $profession);
 	}
 
 	/**
@@ -113,7 +113,8 @@ readonly class Person extends MeiliPersonEntity {
 			deathPlace : $data['deathPlace'] ?? [],
 			spouses    : $data['spouses'] ?? [],
 			countAwards: $data['countAwards'] ?? 0,
-			profession : $data['profession'] ? array_map(fn (PersonProfession $pr) => $pr->value, $data['profession']) : [],
+			profession : isset($data['profession']) && is_array($data['profession']) ? 
+			array_map(fn($pr) => is_string($pr) ? $pr : $pr->value, $data['profession']) : [],
 			facts      : $data['facts'] ?? [],
 			movies     : $data['movies'] ?? [],
 			updatedAt  : $data['updatedAt'] ?? NULL,

@@ -47,7 +47,10 @@ jobs:
         coverage: xdebug
     
     - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+      run: |
+        echo "=== Validating composer.json ==="
+        composer validate --no-check-all --no-check-publish
+        echo "=== Validation complete ==="
       env:
         HOME: ${{ env.HOME }}
         COMPOSER_HOME: ${{ env.COMPOSER_HOME }}

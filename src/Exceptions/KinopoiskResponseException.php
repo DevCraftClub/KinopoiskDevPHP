@@ -14,8 +14,13 @@ class KinopoiskResponseException extends Exception {
 	) {
 		if (!empty($rspnsCls)) {
 			$response = new $rspnsCls();
+			
+			// Безопасный доступ к свойствам через reflection или приведение типа
+			$error = property_exists($response, 'error') ? $response->error : 'Unknown error';
+			$message = property_exists($response, 'message') ? $response->message : 'Unknown message';
+			$statusCode = property_exists($response, 'statusCode') ? $response->statusCode : 0;
 
-			parent::__construct("{$response->error}: {$response->message}", $response->statusCode, $previous);
+			parent::__construct("{$error}: {$message}", $statusCode, $previous);
 		} else {
 			parent::__construct('', 0, $previous);
 		}

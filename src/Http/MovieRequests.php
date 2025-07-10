@@ -73,15 +73,15 @@ class MovieRequests extends Kinopoisk {
 	}
 
 	/**
-	 * Получает возможные значения для определенного поля
+	 * Получает возможные значения для указанного поля фильтрации
 	 *
-	 * @api    /v1/movie/possible-values-by-field
-	 * @link   https://kinopoiskdev.readme.io/reference/moviecontroller_getpossiblevaluesbyfieldname
+	 * @api  /v1.4/movie/possible-values-by-field
+	 * @link https://kinopoiskdev.readme.io/reference/moviecontroller_getpossiblevaluesbyfieldv1_4
 	 *
-	 * @param   string  $field  Поле, для которого нужно получить возможные значения
+	 * @param   string  $field  Поле для получения возможных значений
 	 *
-	 * @return array Массив с возможными значениями для поля
-	 * @throws KinopoiskDevException|KinopoiskResponseException При ошибках API
+	 * @return array<array<string, mixed>> Массив возможных значений
+	 * @throws KinopoiskDevException При неподдерживаемом поле
 	 * @throws \JsonException При ошибках парсинга JSON
 	 */
 	public function getPossibleValuesByField(string $field): array {
@@ -94,7 +94,8 @@ class MovieRequests extends Kinopoisk {
 		];
 
 		if (!in_array($field, $allowedFields, TRUE)) {
-			throw new KinopoiskDevException('Лишь следующие поля поддерживаются для этого запроса: ' . implode(', ', $allowedFields));
+			$fieldNames = array_map(fn(FilterField $f) => $f->value, $allowedFields);
+			throw new KinopoiskDevException('Лишь следующие поля поддерживаются для этого запроса: ' . implode(', ', $fieldNames));
 		}
 
 		$queryParams = ['field' => $field];
@@ -172,6 +173,7 @@ class MovieRequests extends Kinopoisk {
 		$filters->addFilter('query', $query);
 
 		$response = $this->makeRequest('GET', '/movie/search', $filters->getFilters());
+		$data = $this->parseResponse($response);
 
 		return new SearchMovieResponseDto(
 			docs : array_map(fn ($movieData) => Movie::fromArray($movieData), $data['docs'] ?? []),
@@ -249,7 +251,7 @@ class MovieRequests extends Kinopoisk {
 	/**
 	 * Получает фильмы по жанру
 	 *
-	 * @param   string|array  $genres  Жанр(ы)
+	 * @param   string|array<string>  $genres  Жанр(ы)
 	 * @param   int           $page    Номер страницы
 	 * @param   int           $limit   Результатов на странице
 	 *
@@ -270,7 +272,7 @@ class MovieRequests extends Kinopoisk {
 	/**
 	 * Получает фильмы по стране
 	 *
-	 * @param   string|array  $countries  Страна/Страны
+	 * @param   string|array<string>  $countries  Страна/Страны
 	 * @param   int           $page       Номер страницы
 	 * @param   int           $limit      Результатов на странице
 	 *

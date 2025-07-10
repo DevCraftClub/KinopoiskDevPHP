@@ -84,7 +84,12 @@ abstract readonly class AbstractBaseModel implements BaseModel {
 		// Обрабатываем sensitive поля для JSON
 		$data = $this->filterSensitiveForJson($data);
 
-		return json_encode($data, $flags);
+		$json = json_encode($data, $flags);
+		if ($json === false) {
+			throw new ValidationException('Ошибка кодирования JSON');
+		}
+		
+		return $json;
 	}
 
 	/**

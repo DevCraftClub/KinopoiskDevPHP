@@ -84,7 +84,7 @@ class SortCriteria {
 	 * Фабричный метод для создания SortCriteria из ассоциативного массива
 	 * с ключами 'field' и 'direction'.
 	 *
-	 * @param   array  $data  Массив с данными сортировки
+	 * @param   array<string, mixed>  $data  Массив с данными сортировки
 	 *
 	 * @return self|null Новый экземпляр SortCriteria или null при некорректных данных
 	 */
@@ -126,7 +126,7 @@ class SortCriteria {
 	/**
 	 * Преобразует критерии в массив
 	 *
-	 * @return array Ассоциативный массив с ключами 'field' и 'direction'
+	 * @return array<string, string> Ассоциативный массив с ключами 'field' и 'direction'
 	 */
 	public function toArray(): array {
 		return [

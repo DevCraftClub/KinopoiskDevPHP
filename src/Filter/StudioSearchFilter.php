@@ -31,7 +31,7 @@ class StudioSearchFilter extends MovieFilter {
 	 *
 	 * Находит студии, которые участвовали в создании указанного фильма.
 	 *
-	 * @param   int|array  $movieIds  ID фильма или массив ID фильмов
+	 * @param   int|array<int>  $movieIds  ID фильма или массив ID фильмов
 	 *
 	 * @return self Текущий экземпляр для цепочки методов
 	 */
@@ -43,7 +43,7 @@ class StudioSearchFilter extends MovieFilter {
 	/**
 	 * Фильтр по типу студии
 	 *
-	 * @param   string|StudioType|array  $types  Тип студии, enum или массив типов
+	 * @param   string|StudioType|array<string|StudioType>  $types  Тип студии, enum или массив типов
 	 *
 	 * @return self Текущий экземпляр для цепочки методов
 	 */
@@ -61,7 +61,7 @@ class StudioSearchFilter extends MovieFilter {
 	/**
 	 * Фильтр по подтипу студии
 	 *
-	 * @param   string|array  $subTypes  Подтип студии или массив подтипов
+	 * @param   string|array<string>  $subTypes  Подтип студии или массив подтипов
 	 *
 	 * @return self Текущий экземпляр для цепочки методов
 	 */
@@ -75,7 +75,7 @@ class StudioSearchFilter extends MovieFilter {
 	 *
 	 * Поиск по точному или частичному совпадению названия.
 	 *
-	 * @param   string|array  $titles  Название студии или массив названий
+	 * @param   string|array<string>  $titles  Название студии или массив названий
 	 *
 	 * @return self Текущий экземпляр для цепочки методов
 	 */
@@ -123,7 +123,7 @@ class StudioSearchFilter extends MovieFilter {
 	/**
 	 * Исключить определенные типы студий
 	 *
-	 * @param   string|StudioType|array  $types  Типы для исключения
+	 * @param   string|StudioType|array<string|StudioType>  $types  Типы для исключения
 	 *
 	 * @return self Текущий экземпляр для цепочки методов
 	 */
@@ -144,7 +144,7 @@ class StudioSearchFilter extends MovieFilter {
 	/**
 	 * Поиск студий, участвовавших в нескольких фильмах
 	 *
-	 * @param   array  $movieIds  Массив ID фильмов (студия должна участвовать во всех)
+	 * @param   array<int>  $movieIds  Массив ID фильмов (студия должна участвовать во всех)
 	 *
 	 * @return self Текущий экземпляр для цепочки методов
 	 */

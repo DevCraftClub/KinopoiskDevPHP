@@ -33,14 +33,17 @@ enum HttpStatusCode: int {
 	 * Проверяет, является ли статус кодом ошибки
 	 */
 	public function isError(): bool {
-		return $this->value >= 400;
+		return match ($this) {
+			self::UNAUTHORIZED, self::FORBIDDEN, self::NOT_FOUND, self::INTERNAL_SERVER_ERROR => true,
+			default => false,
+		};
 	}
 
 	/**
 	 * Проверяет, является ли статус кодом успеха
 	 */
 	public function isSuccess(): bool {
-		return $this->value >= 200 && $this->value < 300;
+		return $this === self::OK;
 	}
 
 }

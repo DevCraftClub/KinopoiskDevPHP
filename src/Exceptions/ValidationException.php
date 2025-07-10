@@ -81,7 +81,11 @@ final class ValidationException extends RuntimeException {
 	 * @return string|null Текст первой ошибки или null
 	 */
 	public function getFirstError(): ?string {
-		return $this->hasErrors() ? reset($this->errors) : null;
+		if ($this->hasErrors()) {
+			$firstValue = reset($this->errors);
+			return is_string($firstValue) ? $firstValue : null;
+		}
+		return null;
 	}
 
 	/**

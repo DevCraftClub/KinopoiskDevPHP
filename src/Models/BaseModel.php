@@ -29,7 +29,7 @@ interface BaseModel {
 	 * @return static Экземпляр модели
 	 * @throws ValidationException При некорректных данных
 	 */
-	public static function fromArray(array $data): static;
+	public static function fromArray(array<string, mixed> $data): static;
 
 	/**
 	 * Преобразует объект в массив
@@ -38,7 +38,7 @@ interface BaseModel {
 	 *
 	 * @return array Данные объекта в виде массива
 	 */
-	public function toArray(bool $includeNulls = true): array;
+	public function toArray(bool $includeNulls = true): array<string, mixed>;
 
 	/**
 	 * Валидирует данные модели

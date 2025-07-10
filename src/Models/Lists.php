@@ -19,7 +19,7 @@ use Lombok\Setter;
  * @link    https://kinopoiskdev.readme.io/reference/
  */
 #[Setter, Getter]
-class Lists extends BaseModel {
+class Lists implements BaseModel {
 
 	/**
 	 * Категория коллекции
@@ -90,8 +90,6 @@ class Lists extends BaseModel {
 		?string $updatedAt = null,
 		?string $createdAt = null
 	) {
-		parent::__construct();
-		
 		$this->category = $category;
 		$this->slug = $slug;
 		$this->moviesCount = $moviesCount;
@@ -131,6 +129,74 @@ class Lists extends BaseModel {
 		$categoryText = $this->category ? " в категории \"{$this->category}\"" : '';
 		
 		return "Коллекция \"{$this->name}\"{$moviesText}{$categoryText}";
+	}
+
+	/**
+	 * Создает экземпляр модели из массива данных
+	 *
+	 * @param array<string, mixed> $data Массив данных от API
+	 * @return static Экземпляр модели коллекции
+	 */
+	public static function fromArray(array<string, mixed> $data): static {
+		return new static(
+			category: $data['category'] ?? null,
+			slug: $data['slug'] ?? null,
+			moviesCount: $data['moviesCount'] ?? null,
+			cover: isset($data['cover']) ? ShortImage::fromArray($data['cover']) : null,
+			name: $data['name'] ?? '',
+			updatedAt: $data['updatedAt'] ?? null,
+			createdAt: $data['createdAt'] ?? null
+		);
+	}
+
+	/**
+	 * Преобразует модель в массив
+	 *
+	 * @param bool $includeNulls Включать ли null значения
+	 * @return array<string, mixed> Массив данных модели
+	 */
+	public function toArray(bool $includeNulls = true): array<string, mixed> {
+		return [
+			'category' => $this->category,
+			'slug' => $this->slug,
+			'moviesCount' => $this->moviesCount,
+			'cover' => $this->cover?->toArray($includeNulls),
+			'name' => $this->name,
+			'updatedAt' => $this->updatedAt,
+			'createdAt' => $this->createdAt
+		];
+	}
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * @return bool True если данные валидны
+	 */
+	public function validate(): bool {
+		return !empty($this->name);
+	}
+
+	/**
+	 * Возвращает JSON представление объекта
+	 *
+	 * @param int $flags Флаги для json_encode
+	 * @return string JSON строка
+	 */
+	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
+		return json_encode($this->toArray(), $flags);
+	}
+
+	/**
+	 * Создает объект из JSON строки
+	 *
+	 * @param string $json JSON строка
+	 * @return static Экземпляр модели
+	 */
+	public static function fromJson(string $json): static {
+		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		$instance = static::fromArray($data);
+		$instance->validate();
+		return $instance;
 	}
 
 }

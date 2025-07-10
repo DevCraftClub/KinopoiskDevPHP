@@ -30,7 +30,7 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
  * @author  Maxim Harder
  * @version 2.0.0
  */
-final class Kinopoisk extends Helper {
+class Kinopoisk extends Helper {
 
 	private const string BASE_URL = 'https://api.kinopoisk.dev';
 	private const string API_VERSION = 'v1.4';
@@ -100,7 +100,7 @@ final class Kinopoisk extends Helper {
 	public function makeRequest(
 		string $method,
 		string $endpoint,
-		array $queryParams = [],
+		array<string, mixed> $queryParams = [],
 		?string $apiVersion = null,
 	): ResponseInterface {
 		$this->validateHttpMethod($method);
@@ -153,7 +153,7 @@ final class Kinopoisk extends Helper {
 	 * @throws KinopoiskDevException При ошибках обработки
 	 * @throws KinopoiskResponseException При ошибках API
 	 */
-	public function parseResponse(ResponseInterface $response): array {
+	public function parseResponse(ResponseInterface $response): array<string, mixed> {
 		$statusCode = HttpStatusCode::tryFrom($response->getStatusCode());
 		$this->handleErrorStatusCode($statusCode, $response->getStatusCode());
 
@@ -254,7 +254,7 @@ final class Kinopoisk extends Helper {
 	private function executeHttpRequest(
 		string $method,
 		string $endpoint,
-		array $queryParams,
+		array<string, mixed> $queryParams,
 		string $version,
 	): ResponseInterface {
 		$url = "/{$version}/{$endpoint}";
@@ -289,7 +289,7 @@ final class Kinopoisk extends Helper {
 	private function generateCacheKey(
 		string $method,
 		string $endpoint,
-		array $queryParams,
+		array<string, mixed> $queryParams,
 		string $version,
 	): string {
 		$data = [$method, $endpoint, $queryParams, $version];

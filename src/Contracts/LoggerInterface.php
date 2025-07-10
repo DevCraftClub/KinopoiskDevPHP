@@ -25,7 +25,7 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function debug(string $message, array $context = []): void;
+	public function debug(string $message, array<string, mixed> $context = []): void;
 
 	/**
 	 * Записывает информационное сообщение
@@ -35,7 +35,7 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function info(string $message, array $context = []): void;
+	public function info(string $message, array<string, mixed> $context = []): void;
 
 	/**
 	 * Записывает предупреждение
@@ -45,7 +45,7 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function warning(string $message, array $context = []): void;
+	public function warning(string $message, array<string, mixed> $context = []): void;
 
 	/**
 	 * Записывает сообщение об ошибке
@@ -55,7 +55,7 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function error(string $message, array $context = []): void;
+	public function error(string $message, array<string, mixed> $context = []): void;
 
 	/**
 	 * Записывает критическое сообщение
@@ -65,5 +65,5 @@ interface LoggerInterface {
 	 *
 	 * @return void
 	 */
-	public function critical(string $message, array $context = []): void;
+	public function critical(string $message, array<string, mixed> $context = []): void;
 }

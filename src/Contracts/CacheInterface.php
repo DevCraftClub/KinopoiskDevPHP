@@ -69,7 +69,7 @@ interface CacheInterface {
 	 *
 	 * @return array Ассоциативный массив ключ => значение
 	 */
-	public function getMultiple(array $keys): array;
+	public function getMultiple(array<string> $keys): array<string, mixed>;
 
 	/**
 	 * Сохраняет множественные значения
@@ -79,5 +79,5 @@ interface CacheInterface {
 	 *
 	 * @return bool True при успешном сохранении
 	 */
-	public function setMultiple(array $values, int $ttl = 3600): bool;
+	public function setMultiple(array<string, mixed> $values, int $ttl = 3600): bool;
 }

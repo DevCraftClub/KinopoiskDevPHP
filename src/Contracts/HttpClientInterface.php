@@ -38,7 +38,7 @@ interface HttpClientInterface {
 	 * @return ResponseInterface HTTP ответ
 	 * @throws \GuzzleHttp\Exception\GuzzleException При ошибке запроса
 	 */
-	public function get(string $uri, array $options = []): ResponseInterface;
+	public function get(string $uri, array<string, mixed> $options = []): ResponseInterface;
 
 	/**
 	 * Выполняет POST запрос
@@ -49,7 +49,7 @@ interface HttpClientInterface {
 	 * @return ResponseInterface HTTP ответ
 	 * @throws \GuzzleHttp\Exception\GuzzleException При ошибке запроса
 	 */
-	public function post(string $uri, array $options = []): ResponseInterface;
+	public function post(string $uri, array<string, mixed> $options = []): ResponseInterface;
 
 	/**
 	 * Выполняет PUT запрос
@@ -60,7 +60,7 @@ interface HttpClientInterface {
 	 * @return ResponseInterface HTTP ответ
 	 * @throws \GuzzleHttp\Exception\GuzzleException При ошибке запроса
 	 */
-	public function put(string $uri, array $options = []): ResponseInterface;
+	public function put(string $uri, array<string, mixed> $options = []): ResponseInterface;
 
 	/**
 	 * Выполняет DELETE запрос
@@ -71,5 +71,5 @@ interface HttpClientInterface {
 	 * @return ResponseInterface HTTP ответ
 	 * @throws \GuzzleHttp\Exception\GuzzleException При ошибке запроса
 	 */
-	public function delete(string $uri, array $options = []): ResponseInterface;
+	public function delete(string $uri, array<string, mixed> $options = []): ResponseInterface;
 }

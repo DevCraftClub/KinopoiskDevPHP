@@ -57,6 +57,7 @@
 		"phpcs-fix": "phpcbf --standard=PSR12 src/",
 		"php-cs-fixer": "php-cs-fixer fix --dry-run --diff",
 		"php-cs-fixer-fix": "php-cs-fixer fix",
+		"docs": "php bin/generate_docs.php",
 		"quality": [
 			"@phpstan",
 			"@phpcs",

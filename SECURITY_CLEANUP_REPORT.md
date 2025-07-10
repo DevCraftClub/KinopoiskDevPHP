@@ -126,3 +126,21 @@ Error: Process completed with exit code 1.
 - **Без API ключа**: запускаются только unit тесты (с моками) ✅
 - **С API ключом**: запускаются все тесты включая интеграционные ✅
 - **Интеграционные тесты** автоматически пропускаются если ключ = `YOUR_API_KEY`
+
+## Устранение проблем совместимости типов PHP 8.3
+
+### ✅ Исправлена Fatal Error типизации
+```
+PHP Fatal error: Declaration of KinopoiskDev\Models\Movie::fromArray(array $data): KinopoiskDev\Models\Movie must be compatible with KinopoiskDev\Models\BaseModel::fromArray(array $data): static
+```
+
+**Решение:**
+- Исправлена сигнатура метода `fromArray()` в классах `Movie` и `Rating`
+- Изменен возвращаемый тип с конкретного класса на `static`
+- Добавлены недостающие методы интерфейса `BaseModel`
+- Обновлена сигнатура `toArray()` с поддержкой параметра `includeNulls`
+
+**Принцип:**
+- Соблюдение Liskov Substitution Principle (LSP)
+- Совместимость с более строгими правилами типизации PHP 8.3
+- Единообразная реализация интерфейсов во всех моделях

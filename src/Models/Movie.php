@@ -151,10 +151,10 @@ readonly class Movie implements BaseModel {
 	 *
 	 * @param   array  $data  Массив данных о фильме от API, содержащий все возможные поля фильма
 	 *
-	 * @return \KinopoiskDev\Models\Movie Новый экземпляр класса Movie с данными из массива
+	 * @return static Новый экземпляр класса Movie с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): Movie {
+	public static function fromArray(array $data): static {
 		return new self(
 			id                : $data['id'],
 			externalId        : DataManager::parseObjectAuto($data, 'externalId', ExternalId::class),
@@ -214,10 +214,11 @@ readonly class Movie implements BaseModel {
 	 *
 	 * @see Movie::fromArray() Для создания объекта из массива
 	 *
+	 * @param bool $includeNulls Включать ли null значения в результат
 	 * @return array Массив с полными данными о фильме, содержащий все поля объекта
 	 */
-	public function toArray(): array {
-		return [
+	public function toArray(bool $includeNulls = true): array {
+		$data = [
 			'id'                 => $this->id,
 			'externalId'         => $this->externalId?->toArray(),
 			'name'               => $this->name,
@@ -265,6 +266,13 @@ readonly class Movie implements BaseModel {
 			'createdAt'          => $this->createdAt,
 			'updatedAt'          => $this->updatedAt,
 		];
+
+		// Удаляем null значения если не нужно их включать
+		if (!$includeNulls) {
+			return array_filter($data, fn($value) => $value !== null);
+		}
+
+		return $data;
 	}
 
 	/**
@@ -374,6 +382,75 @@ readonly class Movie implements BaseModel {
 	 */
 	public function getTmdbUrl(): ?string {
 		return $this->externalId?->getTmdbUrl();
+	}
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * Проверяет корректность основных полей объекта Movie.
+	 * Проверяет наличие обязательного идентификатора и валидность опциональных полей.
+	 *
+	 * @return bool True если данные валидны
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
+	 */
+	public function validate(): bool {
+		// Основная валидация - должен быть ID
+		if ($this->id === null || $this->id <= 0) {
+			throw new \KinopoiskDev\Exceptions\ValidationException('Movie ID is required and must be positive');
+		}
+
+		// Валидация года
+		if ($this->year !== null && ($this->year < 1800 || $this->year > 2100)) {
+			throw new \KinopoiskDev\Exceptions\ValidationException('Movie year must be between 1800 and 2100');
+		}
+
+		// Валидация рейтингов
+		if ($this->rating?->kp !== null && ($this->rating->kp < 0 || $this->rating->kp > 10)) {
+			throw new \KinopoiskDev\Exceptions\ValidationException('Kinopoisk rating must be between 0 and 10');
+		}
+
+		if ($this->rating?->imdb !== null && ($this->rating->imdb < 0 || $this->rating->imdb > 10)) {
+			throw new \KinopoiskDev\Exceptions\ValidationException('IMDB rating must be between 0 and 10');
+		}
+
+		// Валидация возрастного рейтинга
+		if ($this->ageRating !== null && ($this->ageRating < 0 || $this->ageRating > 21)) {
+			throw new \KinopoiskDev\Exceptions\ValidationException('Age rating must be between 0 and 21');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Возвращает JSON представление объекта
+	 *
+	 * Сериализует объект Movie в JSON строку с использованием указанных флагов.
+	 * По умолчанию включает поддержку Unicode и выбрасывает исключения при ошибках.
+	 *
+	 * @param int $flags Флаги для json_encode
+	 * @return string JSON строка
+	 * @throws \JsonException При ошибке сериализации
+	 */
+	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
+		return json_encode($this->toArray(), $flags);
+	}
+
+	/**
+	 * Создает объект из JSON строки
+	 *
+	 * Парсит JSON строку и создает из неё объект Movie.
+	 * Автоматически валидирует полученные данные.
+	 *
+	 * @param string $json JSON строка
+	 * @return static Экземпляр модели
+	 * @throws \JsonException При ошибке парсинга
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
+	 */
+	public static function fromJson(string $json): static {
+		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		$instance = static::fromArray($data);
+		$instance->validate();
+		return $instance;
 	}
 
 }

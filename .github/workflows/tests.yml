@@ -1,4 +1,4 @@
-name: Tests
+THIS SHOULD BE A LINTER ERRORname: Tests
 
 on:
   push:
@@ -17,6 +17,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    - name: Set environment variables
+      run: |
+        echo "HOME=${HOME:-/tmp}" >> $GITHUB_ENV
+        echo "COMPOSER_HOME=${COMPOSER_HOME:-$HOME/.composer}" >> $GITHUB_ENV
+        mkdir -p ${COMPOSER_HOME:-$HOME/.composer}
+    
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
@@ -31,9 +37,12 @@ jobs:
       id: composer-cache
       uses: actions/cache@v3
       with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        path: |
+          vendor
+          ${{ env.COMPOSER_HOME }}/cache
+        key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
+          ${{ runner.os }}-php-${{ matrix.php-version }}-
           ${{ runner.os }}-php-
     
     - name: Install dependencies

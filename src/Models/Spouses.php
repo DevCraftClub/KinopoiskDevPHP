@@ -60,7 +60,7 @@ readonly class Spouses implements BaseModel {
 	 * @see Spouses::toArray() Для обратного преобразования в массив
 	 * @see PersonSex::tryFrom() Для безопасного преобразования строки в enum
 	 *
-	 * @param   array  $data  Массив данных о супруге от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Массив данных о супруге от API, содержащий ключи:
 	 *                        - id: int - уникальный идентификатор супруга
 	 *                        - name: string - полное имя супруга
 	 *                        - divorced: bool - статус развода
@@ -72,7 +72,7 @@ readonly class Spouses implements BaseModel {
 	 * @return self Новый экземпляр класса Spouses с данными из массива
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			id            : $data['id'],
 			name          : $data['name'],
 			divorced      : $data['divorced'],
@@ -147,7 +147,7 @@ readonly class Spouses implements BaseModel {
 	 */
 	public static function fromJson(string $json): static {
 		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
+		$instance = self::fromArray($data);
 		$instance->validate();
 		return $instance;
 	}

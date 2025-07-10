@@ -37,7 +37,7 @@ class MovieDocsResponseDto extends BaseDocsResponseDto {
 	 *
 	 * @see    \KinopoiskDev\Responses\BaseResponseDto::fromArray() Родительский абстрактный метод
 	 *
-	 * @param   array  $data  Ассоциативный массив с данными от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Ассоциативный массив с данными от API, содержащий ключи:
 	 *                        - docs: array - массив данных фильмов (остается без преобразования)
 	 *                        - total: int - общее количество фильмов в результате (по умолчанию 0)
 	 *                        - limit: int - максимальное количество элементов на странице (по умолчанию 10)
@@ -49,7 +49,7 @@ class MovieDocsResponseDto extends BaseDocsResponseDto {
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			docs : DataManager::parseObjectArray($data, 'docs', Movie::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? 10,

@@ -396,7 +396,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по информации о сезонах
 	 *
-	 * @param   array  $seasonsInfo  Информация о сезонах
+	 * @param   array<string, mixed>  $seasonsInfo  Информация о сезонах
 	 *
 	 * @return $this
 	 */
@@ -409,7 +409,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по бюджету
 	 *
-	 * @param   array  $budget  Информация о бюджете
+	 * @param   array<string, mixed>  $budget  Информация о бюджете
 	 *
 	 * @return $this
 	 */
@@ -422,7 +422,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по аудитории
 	 *
-	 * @param   array  $audience  Информация об аудитории
+	 * @param   array<string, mixed>  $audience  Информация об аудитории
 	 *
 	 * @return $this
 	 */
@@ -557,7 +557,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по постеру
 	 *
-	 * @param   array  $poster  Информация о постере
+	 * @param   array<string, mixed>  $poster  Информация о постере
 	 *
 	 * @return $this
 	 */
@@ -570,7 +570,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по фоновому изображению
 	 *
-	 * @param   array  $backdrop  Информация о фоновом изображении
+	 * @param   array<string, mixed>  $backdrop  Информация о фоновом изображении
 	 *
 	 * @return $this
 	 */
@@ -583,7 +583,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по логотипу
 	 *
-	 * @param   array  $logo  Информация о логотипе
+	 * @param   array<string, mixed>  $logo  Информация о логотипе
 	 *
 	 * @return $this
 	 */
@@ -609,7 +609,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по видео
 	 *
-	 * @param   array  $videos  Информация о видео
+	 * @param   array<int, mixed>  $videos  Информация о видео
 	 *
 	 * @return $this
 	 */
@@ -622,7 +622,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по сетям
 	 *
-	 * @param   array  $networks  Информация о сетях
+	 * @param   array<int, mixed>  $networks  Информация о сетях
 	 *
 	 * @return $this
 	 */
@@ -633,9 +633,9 @@ class MovieFilter {
 	}
 
 	/**
-	 * Добавляет фильтр по персонам
+	 * Добавляет фильтр по участникам
 	 *
-	 * @param   array  $persons  Информация о персонах
+	 * @param   array<int, mixed>  $persons  Информация об участниках
 	 *
 	 * @return $this
 	 */
@@ -648,7 +648,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по фактам
 	 *
-	 * @param   array  $facts  Информация о фактах
+	 * @param   array<int, mixed>  $facts  Информация о фактах
 	 *
 	 * @return $this
 	 */
@@ -661,7 +661,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по сборам
 	 *
-	 * @param   array  $fees  Информация о сборах
+	 * @param   array<string, mixed>  $fees  Информация о сборах
 	 *
 	 * @return $this
 	 */
@@ -674,7 +674,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по премьере
 	 *
-	 * @param   array  $premiere  Информация о премьере
+	 * @param   array<string, mixed>  $premiere  Информация о премьере
 	 *
 	 * @return $this
 	 */
@@ -702,7 +702,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по похожим фильмам
 	 *
-	 * @param   array  $similarMovies  Информация о похожих фильмах
+	 * @param   array<int, mixed>  $similarMovies  Информация о похожих фильмах
 	 *
 	 * @return $this
 	 */
@@ -715,7 +715,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по сиквелам и приквелам
 	 *
-	 * @param   array  $sequelsAndPrequels  Информация о сиквелах и приквелах
+	 * @param   array<int, mixed>  $sequelsAndPrequels  Информация о сиквелах и приквелах
 	 *
 	 * @return $this
 	 */
@@ -728,7 +728,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по доступности просмотра
 	 *
-	 * @param   array  $watchability  Информация о доступности просмотра
+	 * @param   array<string, mixed>  $watchability  Информация о доступности просмотра
 	 *
 	 * @return $this
 	 */
@@ -741,7 +741,7 @@ class MovieFilter {
 	/**
 	 * Добавляет фильтр по спискам
 	 *
-	 * @param   array  $lists  Информация о списках
+	 * @param   array<int, mixed>  $lists  Информация о списках
 	 *
 	 * @return $this
 	 */

@@ -49,7 +49,7 @@ class UnauthorizedErrorResponseDto extends BaseResponseDto {
 	 * Использует значения по умолчанию для отсутствующих полей, что обеспечивает
 	 * корректное создание объекта даже при неполных данных от API.
 	 *
-	 * @param   array  $data  Ассоциативный массив с данными ошибки авторизации, может содержать:
+	 * @param   array<string, mixed>  $data  Ассоциативный массив с данными ошибки авторизации, может содержать:
 	 *                        - statusCode: int - HTTP статус код (по умолчанию 401)
 	 *                        - message: string - сообщение об ошибке (по умолчанию "В запросе не указан токен!")
 	 *                        - error: string - тип ошибки (по умолчанию "Unauthorized")
@@ -57,7 +57,7 @@ class UnauthorizedErrorResponseDto extends BaseResponseDto {
 	 * @return static Новый экземпляр UnauthorizedErrorResponseDto с данными ошибки авторизации
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			statusCode: $data['statusCode'] ?? 401,
 			message   : $data['message'] ?? 'В запросе не указан токен!',
 			error     : $data['error'] ?? 'Unauthorized',

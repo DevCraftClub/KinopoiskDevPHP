@@ -91,7 +91,7 @@ readonly class Rating implements BaseModel {
 	 *
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			kp: $data['kp'] ?? NULL,
 			imdb: $data['imdb'] ?? NULL,
 			tmdb: $data['tmdb'] ?? NULL,

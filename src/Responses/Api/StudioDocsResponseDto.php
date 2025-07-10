@@ -13,7 +13,7 @@ class StudioDocsResponseDto extends BaseDocsResponseDto {
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			docs : DataManager::parseObjectArray($data, 'docs', Studio::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? 10,

@@ -76,7 +76,7 @@ class MeiliPersonEntity implements BaseModel {
 	 *
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			id: $data['id'] ?? 0,
 			name: $data['name'] ?? NULL,
 			enName: $data['enName'] ?? NULL,

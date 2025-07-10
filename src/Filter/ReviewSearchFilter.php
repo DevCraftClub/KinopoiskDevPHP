@@ -89,7 +89,7 @@ class ReviewSearchFilter extends MovieFilter {
 	/**
 	 * Исключение записей с пустыми значениями в указанных полях
 	 *
-	 * @param   array  $fields  Массив названий полей
+	 * @param   array<string>  $fields  Массив названий полей
 	 *
 	 * @return $this
 	 */

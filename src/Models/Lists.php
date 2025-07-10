@@ -138,7 +138,7 @@ class Lists implements BaseModel {
 	 * @return static Экземпляр модели коллекции
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			category: $data['category'] ?? null,
 			slug: $data['slug'] ?? null,
 			moviesCount: $data['moviesCount'] ?? null,
@@ -194,7 +194,7 @@ class Lists implements BaseModel {
 	 */
 	public static function fromJson(string $json): static {
 		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
+		$instance = self::fromArray($data);
 		$instance->validate();
 		return $instance;
 	}

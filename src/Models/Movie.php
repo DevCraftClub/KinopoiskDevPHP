@@ -67,14 +67,14 @@ readonly class Movie implements BaseModel {
 	 * @param   array<ItemName>    $countries             Массив стран производства
 	 * @param   array<PersonInMovie> $persons             Массив участников съемочной группы
 	 * @param   ReviewInfo|null    $reviewInfo            Информация о рецензиях
-	 * @param   array|null         $seasonsInfo           Информация о сезонах
+	 * @param   array<string, mixed>|null         $seasonsInfo           Информация о сезонах
 	 * @param   CurrencyValue|null $budget                Бюджет фильма
 	 * @param   Fees|null          $fees                  Кассовые сборы
 	 * @param   Premiere|null      $premiere              Информация о премьере
-	 * @param   array|null         $similarMovies         Похожие фильмы
-	 * @param   array|null         $sequelsAndPrequels    Сиквелы и приквелы
+	 * @param   array<int, mixed>|null         $similarMovies         Похожие фильмы
+	 * @param   array<int, mixed>|null         $sequelsAndPrequels    Сиквелы и приквелы
 	 * @param   Watchability|null  $watchability          Где посмотреть фильм
-	 * @param   array|null         $releaseYears          Годы выпуска
+	 * @param   array<int>|null         $releaseYears          Годы выпуска
 	 * @param   int|null           $top10                 Позиция в топ-10
 	 * @param   int|null           $top250                Позиция в топ-250
 	 * @param   bool               $isSeries              Является ли сериалом
@@ -151,7 +151,7 @@ readonly class Movie implements BaseModel {
 	 *
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			id: $data['id'] ?? NULL,
 			externalId: isset($data['externalId']) ? ExternalId::fromArray($data['externalId']) : NULL,
 			name: $data['name'] ?? NULL,

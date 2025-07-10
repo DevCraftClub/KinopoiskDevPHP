@@ -36,7 +36,7 @@ class MovieAwardDocsResponseDto extends BaseDocsResponseDto {
 	 * @see    \KinopoiskDev\Utils\DataManager::parseObjectArray() Метод для преобразования массива в объекты
 	 * @see    \KinopoiskDev\Models\MovieAward::fromArray() Фабричный метод создания объекта награды
 	 *
-	 * @param   array  $data  Ассоциативный массив с данными от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Ассоциативный массив с данными от API, содержащий ключи:
 	 *                        - docs: array - массив данных наград фильмов для преобразования в объекты MovieAward
 	 *                        - total: int - общее количество наград в результате поиска (по умолчанию 0)
 	 *                        - limit: int - максимальное количество элементов на странице (по умолчанию 10)
@@ -51,7 +51,7 @@ class MovieAwardDocsResponseDto extends BaseDocsResponseDto {
 	 *
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
+		return new self(
 			docs : DataManager::parseObjectArray($data, 'docs', MovieAward::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? 10,

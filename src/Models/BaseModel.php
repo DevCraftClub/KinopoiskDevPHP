@@ -24,21 +24,21 @@ interface BaseModel {
 	/**
 	 * Создает экземпляр модели из массива данных
 	 *
-	 * @param   array  $data  Данные для создания объекта
+	 * @param   array<string, mixed>  $data  Данные для создания объекта
 	 *
 	 * @return static Экземпляр модели
 	 * @throws ValidationException При некорректных данных
 	 */
-	public static function fromArray(array<string, mixed> $data): static;
+	public static function fromArray(array $data): static;
 
 	/**
 	 * Преобразует объект в массив
 	 *
 	 * @param   bool  $includeNulls  Включать ли null значения
 	 *
-	 * @return array Данные объекта в виде массива
+	 * @return array<string, mixed> Данные объекта в виде массива
 	 */
-	public function toArray(bool $includeNulls = true): array<string, mixed>;
+	public function toArray(bool $includeNulls = true): array;
 
 	/**
 	 * Валидирует данные модели

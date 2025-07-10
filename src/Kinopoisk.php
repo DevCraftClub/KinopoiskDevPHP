@@ -89,10 +89,10 @@ class Kinopoisk extends Helper {
 	/**
 	 * Выполняет HTTP запрос к API с поддержкой кэширования
 	 *
-	 * @param   string       $method       HTTP метод
-	 * @param   string       $endpoint     Конечная точка API
-	 * @param   array        $queryParams  Параметры запроса
-	 * @param   string|null  $apiVersion   Версия API
+	 * @param   string                   $method       HTTP метод
+	 * @param   string                   $endpoint     Конечная точка API
+	 * @param   array<string, mixed>     $queryParams  Параметры запроса
+	 * @param   string|null              $apiVersion   Версия API
 	 *
 	 * @return ResponseInterface Ответ от API
 	 * @throws KinopoiskDevException При ошибках запроса
@@ -100,7 +100,7 @@ class Kinopoisk extends Helper {
 	public function makeRequest(
 		string $method,
 		string $endpoint,
-		array<string, mixed> $queryParams = [],
+		array $queryParams = [],
 		?string $apiVersion = null,
 	): ResponseInterface {
 		$this->validateHttpMethod($method);
@@ -149,11 +149,11 @@ class Kinopoisk extends Helper {
 	 *
 	 * @param   ResponseInterface $response HTTP ответ
 	 *
-	 * @return array Декодированные данные
+	 * @return array<string, mixed> Декодированные данные
 	 * @throws KinopoiskDevException При ошибках обработки
 	 * @throws KinopoiskResponseException При ошибках API
 	 */
-	public function parseResponse(ResponseInterface $response): array<string, mixed> {
+	public function parseResponse(ResponseInterface $response): array {
 		$statusCode = HttpStatusCode::tryFrom($response->getStatusCode());
 		$this->handleErrorStatusCode($statusCode, $response->getStatusCode());
 
@@ -243,10 +243,10 @@ class Kinopoisk extends Helper {
 	/**
 	 * Выполняет HTTP запрос
 	 *
-	 * @param   string $method       HTTP метод
-	 * @param   string $endpoint     Конечная точка
-	 * @param   array  $queryParams  Параметры запроса
-	 * @param   string $version      Версия API
+	 * @param   string                   $method       HTTP метод
+	 * @param   string                   $endpoint     Конечная точка
+	 * @param   array<string, mixed>     $queryParams  Параметры запроса
+	 * @param   string                   $version      Версия API
 	 *
 	 * @return ResponseInterface Ответ
 	 * @throws GuzzleException При ошибке запроса
@@ -254,7 +254,7 @@ class Kinopoisk extends Helper {
 	private function executeHttpRequest(
 		string $method,
 		string $endpoint,
-		array<string, mixed> $queryParams,
+		array $queryParams,
 		string $version,
 	): ResponseInterface {
 		$url = "/{$version}/{$endpoint}";
@@ -279,17 +279,17 @@ class Kinopoisk extends Helper {
 	/**
 	 * Генерирует ключ для кэширования
 	 *
-	 * @param   string $method       HTTP метод
-	 * @param   string $endpoint     Конечная точка
-	 * @param   array  $queryParams  Параметры запроса
-	 * @param   string $version      Версия API
+	 * @param   string                   $method       HTTP метод
+	 * @param   string                   $endpoint     Конечная точка
+	 * @param   array<string, mixed>     $queryParams  Параметры запроса
+	 * @param   string                   $version      Версия API
 	 *
 	 * @return string Ключ кэша
 	 */
 	private function generateCacheKey(
 		string $method,
 		string $endpoint,
-		array<string, mixed> $queryParams,
+		array $queryParams,
 		string $version,
 	): string {
 		$data = [$method, $endpoint, $queryParams, $version];

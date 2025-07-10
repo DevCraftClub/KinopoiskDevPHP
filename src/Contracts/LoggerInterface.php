@@ -20,50 +20,50 @@ interface LoggerInterface {
 	/**
 	 * Записывает сообщение уровня DEBUG
 	 *
-	 * @param   string $message Сообщение для записи
-	 * @param   array  $context Контекстные данные
+	 * @param   string                   $message Сообщение для записи
+	 * @param   array<string, mixed>     $context Контекстные данные
 	 *
 	 * @return void
 	 */
-	public function debug(string $message, array<string, mixed> $context = []): void;
+	public function debug(string $message, array $context = []): void;
 
 	/**
 	 * Записывает информационное сообщение
 	 *
-	 * @param   string $message Сообщение для записи
-	 * @param   array  $context Контекстные данные
+	 * @param   string                   $message Сообщение для записи
+	 * @param   array<string, mixed>     $context Контекстные данные
 	 *
 	 * @return void
 	 */
-	public function info(string $message, array<string, mixed> $context = []): void;
+	public function info(string $message, array $context = []): void;
 
 	/**
 	 * Записывает предупреждение
 	 *
-	 * @param   string $message Сообщение для записи
-	 * @param   array  $context Контекстные данные
+	 * @param   string                   $message Сообщение для записи
+	 * @param   array<string, mixed>     $context Контекстные данные
 	 *
 	 * @return void
 	 */
-	public function warning(string $message, array<string, mixed> $context = []): void;
+	public function warning(string $message, array $context = []): void;
 
 	/**
 	 * Записывает сообщение об ошибке
 	 *
-	 * @param   string $message Сообщение для записи
-	 * @param   array  $context Контекстные данные
+	 * @param   string                   $message Сообщение для записи
+	 * @param   array<string, mixed>     $context Контекстные данные
 	 *
 	 * @return void
 	 */
-	public function error(string $message, array<string, mixed> $context = []): void;
+	public function error(string $message, array $context = []): void;
 
 	/**
 	 * Записывает критическое сообщение
 	 *
-	 * @param   string $message Сообщение для записи
-	 * @param   array  $context Контекстные данные
+	 * @param   string                   $message Сообщение для записи
+	 * @param   array<string, mixed>     $context Контекстные данные
 	 *
 	 * @return void
 	 */
-	public function critical(string $message, array<string, mixed> $context = []): void;
+	public function critical(string $message, array $context = []): void;
 }

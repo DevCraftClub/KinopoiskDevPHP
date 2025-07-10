@@ -65,19 +65,19 @@ interface CacheInterface {
 	/**
 	 * Получает множественные значения по ключам
 	 *
-	 * @param   array $keys Массив ключей
+	 * @param   array<string> $keys Массив ключей
 	 *
-	 * @return array Ассоциативный массив ключ => значение
+	 * @return array<string, mixed> Ассоциативный массив ключ => значение
 	 */
-	public function getMultiple(array<string> $keys): array<string, mixed>;
+	public function getMultiple(array $keys): array;
 
 	/**
 	 * Сохраняет множественные значения
 	 *
-	 * @param   array $values Ассоциативный массив ключ => значение
-	 * @param   int   $ttl    Время жизни в секундах
+	 * @param   array<string, mixed> $values Ассоциативный массив ключ => значение
+	 * @param   int                  $ttl    Время жизни в секундах
 	 *
 	 * @return bool True при успешном сохранении
 	 */
-	public function setMultiple(array<string, mixed> $values, int $ttl = 3600): bool;
+	public function setMultiple(array $values, int $ttl = 3600): bool;
 }

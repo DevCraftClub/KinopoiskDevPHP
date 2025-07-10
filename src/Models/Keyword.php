@@ -86,7 +86,7 @@ class Keyword implements BaseModel {
 	 *
 	 * @return static Экземпляр модели ключевого слова
 	 */
-	public static function fromArray(array<string, mixed> $data): static {
+	public static function fromArray(array $data): static {
 		$movies = [];
 		if (isset($data['movies']) && is_array($data['movies'])) {
 			foreach ($data['movies'] as $movieData) {
@@ -110,7 +110,7 @@ class Keyword implements BaseModel {
 	 *
 	 * @return array<string, mixed> Массив данных модели
 	 */
-	public function toArray(bool $includeNulls = true): array<string, mixed> {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'id' => $this->id,
 			'title' => $this->title,

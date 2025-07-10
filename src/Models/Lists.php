@@ -137,7 +137,7 @@ class Lists implements BaseModel {
 	 * @param array<string, mixed> $data Массив данных от API
 	 * @return static Экземпляр модели коллекции
 	 */
-	public static function fromArray(array<string, mixed> $data): static {
+	public static function fromArray(array $data): static {
 		return new static(
 			category: $data['category'] ?? null,
 			slug: $data['slug'] ?? null,
@@ -155,7 +155,7 @@ class Lists implements BaseModel {
 	 * @param bool $includeNulls Включать ли null значения
 	 * @return array<string, mixed> Массив данных модели
 	 */
-	public function toArray(bool $includeNulls = true): array<string, mixed> {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'category' => $this->category,
 			'slug' => $this->slug,

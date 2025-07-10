@@ -407,7 +407,7 @@ final class KinopoiskTest extends TestCase {
 	public function testApiTokenValidationPattern(): void {
 		// Тестируем различные форматы токенов
 		$validTokens = [
-			'YOUR_API_KEY',
+			'MOCK1234-TEST5678-VALID9012-TOKEN3456',
 			'ABC1234-DEF5678-GHI9012-JKL3456',
 			'1234567-ABCDEFG-7654321-GFEDCBA',
 		];

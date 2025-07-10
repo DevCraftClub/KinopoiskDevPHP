@@ -25,13 +25,18 @@ use PHPUnit\Framework\TestCase;
  */
 final class KeywordRequestsTest extends TestCase {
 
-	private const string API_TOKEN = 'G3DZPDT-0RF4PH5-Q88SA1A-8BDT9PZ';
+	private const string API_TOKEN = 'YOUR_API_KEY';
+	
+	private function getTestApiToken(): string
+	{
+		return $_ENV['KINOPOISK_TOKEN'] ?? self::API_TOKEN;
+	}
 
 	private KeywordRequests $keywordRequests;
 
 	protected function setUp(): void {
 		$this->keywordRequests = new KeywordRequests(
-			apiToken: self::API_TOKEN,
+			apiToken: $this->getTestApiToken(),
 			httpClient: null,
 			useCache: false,
 		);

@@ -31,8 +31,13 @@ use Symfony\Component\Cache\Adapter\ArrayAdapter;
  */
 final class KinopoiskTest extends TestCase {
 
-	private const string VALID_API_TOKEN = 'G3DZPDT-0RF4PH5-Q88SA1A-8BDT9PZ';
+	private const string VALID_API_TOKEN = 'YOUR_API_KEY';
 	private const string INVALID_API_TOKEN = 'INVALID-TOKEN';
+	
+	private function getTestApiToken(): string
+	{
+		return $_ENV['KINOPOISK_TOKEN'] ?? self::VALID_API_TOKEN;
+	}
 
 	private Kinopoisk $kinopoisk;
 	private MockHandler $mockHandler;
@@ -47,7 +52,7 @@ final class KinopoiskTest extends TestCase {
 		$this->logger = $this->createMock(LoggerInterface::class);
 
 		$this->kinopoisk = new Kinopoisk(
-			apiToken: self::VALID_API_TOKEN,
+			apiToken: $this->getTestApiToken(),
 			httpClient: $httpClient,
 			cache: $this->cache,
 			logger: $this->logger,
@@ -61,7 +66,7 @@ final class KinopoiskTest extends TestCase {
 	 */
 	public function testValidConstructorWithAllParameters(): void {
 		$kinopoisk = new Kinopoisk(
-			apiToken: self::VALID_API_TOKEN,
+			apiToken: $this->getTestApiToken(),
 			httpClient: $this->createMock(HttpClientInterface::class),
 			cache: $this->createMock(CacheInterface::class),
 			logger: $this->createMock(LoggerInterface::class),
@@ -69,7 +74,7 @@ final class KinopoiskTest extends TestCase {
 		);
 
 		$this->assertInstanceOf(Kinopoisk::class, $kinopoisk);
-		$this->assertSame(self::VALID_API_TOKEN, $kinopoisk->getApiToken());
+		$this->assertSame($this->getTestApiToken(), $kinopoisk->getApiToken());
 	}
 
 	/**
@@ -402,7 +407,7 @@ final class KinopoiskTest extends TestCase {
 	public function testApiTokenValidationPattern(): void {
 		// Тестируем различные форматы токенов
 		$validTokens = [
-			'G3DZPDT-0RF4PH5-Q88SA1A-8BDT9PZ',
+			'YOUR_API_KEY',
 			'ABC1234-DEF5678-GHI9012-JKL3456',
 			'1234567-ABCDEFG-7654321-GFEDCBA',
 		];

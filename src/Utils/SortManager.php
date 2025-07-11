@@ -208,7 +208,7 @@ trait SortManager {
 	/**
 	 * Добавляет множественные критерии сортировки из массива строк
 	 *
-	 * @param   array<string>  $sorts  Массив строк в формате "field:direction" или просто "field"
+	 * @param   array<string|SortCriteria>  $sorts  Массив строк в формате "field:direction" или просто "field"
 	 *
 	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
 	 *
@@ -223,7 +223,9 @@ trait SortManager {
 	 */
 	public function addMultipleSort(array $sorts): static {
 		foreach ($sorts as $sort) {
-			if (is_string($sort)) {
+			if ($sort instanceof SortCriteria) {
+				$this->addSortCriteria($sort);
+			} elseif (is_string($sort)) {
 				$parts     = explode(':', $sort, 2);
 				$field     = $parts[0];
 				$direction = $parts[1] ?? NULL;
@@ -232,8 +234,6 @@ trait SortManager {
 				if ($criteria) {
 					$this->addSortCriteria($criteria);
 				}
-			} elseif ($sort instanceof SortCriteria) {
-				$this->addSortCriteria($sort);
 			}
 		}
 
@@ -411,7 +411,7 @@ trait SortManager {
 	/**
 	 * Экспорт критериев сортировки в массив для сериализации
 	 *
-	 * @return array Массив с данными о критериях сортировки
+	 * @return array<array<string, string>> Массив с данными о критериях сортировки
 	 */
 	public function exportSortCriteria(): array {
 		return array_map(

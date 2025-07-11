@@ -27,6 +27,33 @@ abstract class AbstractBaseModel implements BaseModel {
 
 	/**
 	 * {@inheritDoc}
+	 * @throws \ReflectionException
+	 */
+	public static function fromArray(array $data): static {
+		$class = static::class;
+
+		$reflection = new \ReflectionClass($class);
+		if ($reflection->isAbstract() || $reflection->isInterface()) {
+			throw new \LogicException("Не стоит напрямую запускать имплементацию или абстракцию: {$class}");
+		}
+
+		$constructor = $reflection->getConstructor();
+		if (!$constructor) {
+			return new $class();
+		}
+
+		$params = [];
+		foreach ($constructor->getParameters() as $param) {
+			$paramName = $param->getName();
+			$params[] = $data[$paramName] ?? ($param->isDefaultValueAvailable() ? $param->getDefaultValue() : null);
+		}
+
+		return $reflection->newInstanceArgs($params);
+	}
+
+
+	/**
+	 * {@inheritDoc}
 	 */
 	public function toArray(bool $includeNulls = true): array {
 		$reflection = new ReflectionClass($this);
@@ -98,10 +125,17 @@ abstract class AbstractBaseModel implements BaseModel {
 	public static function fromJson(string $json): static {
 		try {
 			$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+
 			return static::fromArray($data);
 		} catch (\JsonException $e) {
 			throw new ValidationException(
 				message: "Ошибка парсинга JSON: {$e->getMessage()}",
+				code: $e->getCode(),
+				previous: $e,
+			);
+		} catch (\ReflectionException $e) {
+			throw new ValidationException(
+				"Ошибка инициализации класса: {$e->getMessage()}",
 				code: $e->getCode(),
 				previous: $e,
 			);
@@ -116,11 +150,15 @@ abstract class AbstractBaseModel implements BaseModel {
 	 * @return static Новый экземпляр с изменениями
 	 * @throws ValidationException При ошибках валидации
 	 */
-	public function with(array $changes): self {
+	public function with(array $changes): static {
 		$currentData = $this->toArray();
 		$newData = array_merge($currentData, $changes);
 
-		return self::fromArray($newData);
+		// Statt static::fromArray($newData) verwenden:
+		$instance = static::fromArray($newData);
+		$instance->validate();
+		return $instance;
+
 	}
 
 	/**

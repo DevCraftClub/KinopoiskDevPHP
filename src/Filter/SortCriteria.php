@@ -25,8 +25,8 @@ class SortCriteria {
 	 * @param   SortDirection  $direction  Направление сортировки
 	 */
 	public function __construct(
-		public readonly SortField     $field,
-		public readonly SortDirection $direction,
+		public  SortField     $field,
+		public  SortDirection $direction,
 	) {}
 
 	/**

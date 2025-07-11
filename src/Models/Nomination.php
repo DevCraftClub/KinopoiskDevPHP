@@ -21,7 +21,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\MovieAward Для наград фильмов
  * @see     \KinopoiskDev\Models\PersonAward Для наград персон
  */
-readonly class Nomination implements BaseModel {
+ class Nomination implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта номинации

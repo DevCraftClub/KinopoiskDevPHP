@@ -19,7 +19,7 @@ use KinopoiskDev\Enums\PersonSex;
  * @see     \KinopoiskDev\Enums\PersonSex Для определения пола супруга
  * @see     \KinopoiskDev\Models\Person Для основной модели персоны
  */
-readonly class Spouses implements BaseModel {
+ class Spouses implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта супруга

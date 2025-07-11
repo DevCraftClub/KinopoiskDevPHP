@@ -23,7 +23,7 @@ use Lombok\Getter;
  * @see     \KinopoiskDev\Models\ShortImage Для упрощенной модели изображений
  * @see     \KinopoiskDev\Models\Logo Для логотипов
  */
-readonly class Image implements BaseModel {
+ class Image implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта изображения

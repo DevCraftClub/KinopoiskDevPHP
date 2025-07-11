@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  * @see     \KinopoiskDev\Models\LinkedMovie Для связанных фильмов с названиями
  */
-readonly class Name implements BaseModel {
+ class Name implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта названия фильма

@@ -25,7 +25,7 @@ use KinopoiskDev\Enums\MovieType;
  * @see     \KinopoiskDev\Models\ShortImage Для изображений
  * @see     \KinopoiskDev\Models\Rating Для рейтингов
  */
-readonly class LinkedMovie implements BaseModel {
+ class LinkedMovie implements BaseModel {
 
 	/**
 	 * Конструктор для создания экземпляра связанного фильма
@@ -79,7 +79,7 @@ readonly class LinkedMovie implements BaseModel {
 	 *
 	 * @return self Новый экземпляр класса LinkedMovie с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id             : $data['id'],
 			name           : $data['name'] ?? NULL,

@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Image Для полной информации об изображении
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
-readonly class ShortImage implements BaseModel {
+ class ShortImage implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта упрощенного изображения

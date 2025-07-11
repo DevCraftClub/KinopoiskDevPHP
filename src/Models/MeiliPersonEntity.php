@@ -10,7 +10,7 @@ use KinopoiskDev\Enums\PersonSex;
  *
  * Этот класс представляет структуру данных персоны для индексации в поисковой системе MeiliSearch.
  * Содержит основную информацию о персоне, включая биографические данные, профессиональную информацию
- * и места рождения/смерти. Все свойства являются readonly для обеспечения неизменности данных.
+ * и места рождения/смерти. Все свойства являются  для обеспечения неизменности данных.
  *
  * @package   KinopoiskDev\Models
  * @since     1.0.0
@@ -20,7 +20,7 @@ use KinopoiskDev\Enums\PersonSex;
  * @see       \KinopoiskDev\Enums\PersonSex Enum для определения пола персоны
  * @see       \KinopoiskDev\Models\Person Основная модель персоны
  */
-readonly class MeiliPersonEntity implements BaseModel {
+ class MeiliPersonEntity implements BaseModel {
 
 	/**
 	 * Создает новый экземпляр сущности персоны для MeiliSearch
@@ -91,7 +91,7 @@ readonly class MeiliPersonEntity implements BaseModel {
 	 * @return static Новый экземпляр класса MeiliPersonEntity
 	 *
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id        : $data['id'] ?? 0,
 			name      : $data['name'] ?? NULL,

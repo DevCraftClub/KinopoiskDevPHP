@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie::getRating() Для получения рейтинга фильма
  * @see     \KinopoiskDev\Models\Votes Для информации о количестве голосов
  */
-readonly class Rating implements BaseModel {
+ class Rating implements BaseModel {
 
 	private const float RATING_MIN = 0.0;
 	private const float RATING_MAX = 10.0;

@@ -22,7 +22,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\NetworkItem Для отдельных элементов сети
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма
  */
-readonly class Networks implements BaseModel {
+ class Networks implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта коллекции сетей

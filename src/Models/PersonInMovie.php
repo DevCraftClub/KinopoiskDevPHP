@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Person Для полной информации о персоне
  * @see     \KinopoiskDev\Models\Movie Для информации о фильме
  */
-readonly class PersonInMovie implements BaseModel {
+ class PersonInMovie implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта персоны в фильме

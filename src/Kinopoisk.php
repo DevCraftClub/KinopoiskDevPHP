@@ -67,7 +67,7 @@ class Kinopoisk extends Helper {
 		?HttpClientInterface $httpClient = null,
 		?CacheInterface $cache = null,
 		?LoggerInterface $logger = null,
-		private readonly bool $useCache = false,
+		private  bool $useCache = false,
 	) {
 		parent::__construct();
 
@@ -222,10 +222,10 @@ class Kinopoisk extends Helper {
 	/**
 	 * Создает HTTP клиент по умолчанию
 	 *
-	 * @return HttpClientInterface Экземпляр HTTP клиента
+	 * @return HttpClient Экземпляр HTTP клиента
 	 */
-	private function createDefaultHttpClient(): HttpClientInterface {
-		return new HttpService(new HttpClient([
+	private function createDefaultHttpClient(): HttpClient {
+		return new HttpClient([
 			'base_uri' => self::BASE_URL,
 			'timeout' => self::DEFAULT_TIMEOUT,
 			'headers' => [
@@ -233,7 +233,7 @@ class Kinopoisk extends Helper {
 				'Accept' => 'application/json',
 				'Content-Type' => 'application/json',
 			],
-		]));
+		]);
 	}
 
 	/**

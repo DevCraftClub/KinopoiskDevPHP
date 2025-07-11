@@ -21,7 +21,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\Logo Для работы с логотипами
  * @see     \KinopoiskDev\Models\Movie Для использования в фильмах
  */
-readonly class NetworkItem implements BaseModel {
+ class NetworkItem implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта элемента сети

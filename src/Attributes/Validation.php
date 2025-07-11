@@ -18,7 +18,7 @@ use Attribute;
  * @version 1.0.0
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final readonly class Validation {
+final  class Validation {
 
 	/**
 	 * Конструктор атрибута валидации
@@ -48,7 +48,7 @@ final readonly class Validation {
  * Атрибут для указания источника поля в API
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final readonly class ApiField {
+final  class ApiField {
 
 	public function __construct(
 		public ?string $name = null,
@@ -61,7 +61,7 @@ final readonly class ApiField {
  * Атрибут для конфиденциальных полей
  */
 #[Attribute(Attribute::TARGET_PROPERTY)]
-final readonly class Sensitive {
+final  class Sensitive {
 
 	public function __construct(
 		public bool $hideInJson = true,

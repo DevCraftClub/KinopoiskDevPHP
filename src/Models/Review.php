@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма
  * @link    https://kinopoiskdev.readme.io/reference/reviewcontroller_findmanyv1_4
  */
-readonly class Review implements BaseModel {
+ class Review implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта рецензии

@@ -22,7 +22,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\Person Для основной модели персоны
  * @link    https://kinopoiskdev.readme.io/reference/personcontroller_findmanyawardsv1_4
  */
-readonly class PersonAward implements BaseModel {
+ class PersonAward implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта награды персоны

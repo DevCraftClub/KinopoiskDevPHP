@@ -30,9 +30,9 @@ final class ValidationException extends RuntimeException {
 	 */
 	public function __construct(
 		string $message = 'Ошибка валидации данных',
-		private readonly array $errors = [],
-		private readonly ?string $field = null,
-		private readonly mixed $value = null,
+		private  array $errors = [],
+		private  ?string $field = null,
+		private  mixed $value = null,
 		int $code = 0,
 		?Throwable $previous = null,
 	) {

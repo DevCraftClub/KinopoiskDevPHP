@@ -21,7 +21,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Budget Для информации о бюджете фильма
  * @see     \KinopoiskDev\Models\CurrencyValue Для структуры денежных значений
  */
-readonly class Fees implements BaseModel {
+ class Fees implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта кассовых сборов

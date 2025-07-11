@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о сериалах
  */
-readonly class SeasonInfo implements BaseModel {
+ class SeasonInfo implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта информации о сезоне

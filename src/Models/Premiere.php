@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
-readonly class Premiere implements BaseModel {
+ class Premiere implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта информации о премьерах

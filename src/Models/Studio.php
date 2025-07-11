@@ -19,7 +19,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\MovieFromStudio Для фильмов, связанных со студией
  * @see     \KinopoiskDev\Models\BaseModel Базовый интерфейс для всех моделей
  */
-readonly class Studio implements BaseModel {
+ class Studio implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта студии

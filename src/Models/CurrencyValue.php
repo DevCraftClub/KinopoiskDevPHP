@@ -20,7 +20,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Budget Для информации о бюджете фильма
  * @see     \KinopoiskDev\Models\Fees Для информации о кассовых сборах
  */
-readonly class CurrencyValue implements BaseModel {
+ class CurrencyValue implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта денежного значения

@@ -21,7 +21,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма/сериала
  * @link    https://kinopoiskdev.readme.io/reference/seasoncontroller_findmanyv1_4
  */
-readonly class Season implements BaseModel {
+ class Season implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта сезона

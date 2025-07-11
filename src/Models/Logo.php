@@ -20,7 +20,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма
  * @see     \KinopoiskDev\Models\SearchMovie Для поисковой модели фильма
  */
-readonly class Logo implements BaseModel {
+ class Logo implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта логотипа

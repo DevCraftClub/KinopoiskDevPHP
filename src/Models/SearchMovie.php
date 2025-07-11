@@ -30,7 +30,7 @@ use KinopoiskDev\Enums\RatingMpaa;
  * @see     \KinopoiskDev\Models\Votes Для голосов
  * @link    https://kinopoiskdev.readme.io/reference/moviecontroller_searchmoviesv1_4
  */
-readonly class SearchMovie implements BaseModel {
+ class SearchMovie implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта результата поиска фильма

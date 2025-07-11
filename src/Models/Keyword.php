@@ -18,7 +18,7 @@ use Lombok\Setter;
  * @link    https://kinopoiskdev.readme.io/reference/keywordcontroller_findmanyv1_4
  */
 #[Setter, Getter]
-readonly class Keyword implements BaseModel {
+ class Keyword implements BaseModel {
 
 	/**
 	 * Уникальный идентификатор ключевого слова

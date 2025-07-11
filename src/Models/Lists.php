@@ -18,7 +18,7 @@ use Lombok\Setter;
  * @link    https://kinopoiskdev.readme.io/reference/
  */
 #[Setter, Getter]
-readonly class Lists implements BaseModel {
+ class Lists implements BaseModel {
 
 	/**
 	 * Категория коллекции

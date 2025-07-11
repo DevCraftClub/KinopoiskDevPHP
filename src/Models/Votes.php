@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie::getVotes() Для получения голосов фильма
  * @see     \KinopoiskDev\Models\Rating Для информации о рейтингах
  */
-readonly class Votes implements BaseModel {
+ class Votes implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта голосов

@@ -27,7 +27,7 @@ abstract class BaseDocsResponseDto extends BaseResponseDto {
 	 * Конструктор для создания DTO пагинированного ответа
 	 *
 	 * Инициализирует все необходимые параметры пагинации со значениями по умолчанию.
-	 * Все свойства являются readonly для обеспечения неизменности данных.
+	 * Все свойства являются  для обеспечения неизменности данных.
 	 *
 	 * @since 1.0.0
 	 *
@@ -39,11 +39,11 @@ abstract class BaseDocsResponseDto extends BaseResponseDto {
 	 * @param   array<int, mixed>  $docs   Массив документов текущей страницы
 	 */
 	public function __construct(
-		public readonly array $docs = [],
-		public readonly int   $total = 0,
-		public readonly int   $limit = 10,
-		public readonly int   $page = 1,
-		public readonly int   $pages = 0,
+		public  array $docs = [],
+		public  int   $total = 0,
+		public  int   $limit = 10,
+		public  int   $page = 1,
+		public  int   $pages = 0,
 	) {}
 
 	/**
@@ -126,7 +126,7 @@ abstract class BaseDocsResponseDto extends BaseResponseDto {
 	 * Возвращает последний элемент коллекции
 	 *
 	 * Получает последний документ из массива docs текущей страницы.
-	 * Создает копию массива для избежания изменения readonly свойства.
+	 * Создает копию массива для избежания изменения  свойства.
 	 * Возвращает null, если коллекция пуста.
 	 *
 	 * @since 1.0.0

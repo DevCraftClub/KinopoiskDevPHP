@@ -11,7 +11,7 @@ use KinopoiskDev\Responses\BaseResponseDto;
  *
  * Этот класс наследует от BaseResponseDto и предоставляет специализированное
  * представление ошибки 403 Forbidden, которая возникает при превышении дневного
- * лимита запросов к API Kinopoisk.dev. Все свойства класса являются readonly
+ * лимита запросов к API Kinopoisk.dev. Все свойства класса являются 
  * для обеспечения неизменности данных ответа.
  *
  * @package KinopoiskDev\Responses\Errors
@@ -26,7 +26,7 @@ class ForbiddenErrorResponseDto extends BaseResponseDto {
 	 * Конструктор для создания DTO ошибки доступа запрещен
 	 *
 	 * Инициализирует все свойства ответа об ошибке 403 Forbidden со значениями
-	 * по умолчанию. Все параметры являются readonly для обеспечения неизменности
+	 * по умолчанию. Все параметры являются  для обеспечения неизменности
 	 * данных после создания объекта.
 	 *
 	 * @param   int     $statusCode  HTTP статус код 403
@@ -34,9 +34,9 @@ class ForbiddenErrorResponseDto extends BaseResponseDto {
 	 * @param   string  $error       Техническое описание ошибки (по умолчанию: "Forbidden")
 	 */
 	public function __construct(
-		public readonly int    $statusCode = 403,
-		public readonly string $message = 'Превышен дневной лимит!',
-		public readonly string $error = 'Forbidden',
+		public  int    $statusCode = 403,
+		public  string $message = 'Превышен дневной лимит!',
+		public  string $error = 'Forbidden',
 	) {}
 
 	/**

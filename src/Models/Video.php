@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\VideoTypes Для коллекции видеоматериалов
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
-readonly class Video implements BaseModel {
+ class Video implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта видеоматериала

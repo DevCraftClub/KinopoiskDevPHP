@@ -20,7 +20,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Watchability Для коллекции элементов доступности
  * @see     \KinopoiskDev\Models\Logo Для работы с логотипами сервисов
  */
-readonly class WatchabilityItem implements BaseModel {
+ class WatchabilityItem implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта элемента доступности просмотра

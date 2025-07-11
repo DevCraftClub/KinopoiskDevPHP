@@ -22,7 +22,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма
  * @link    https://kinopoiskdev.readme.io/reference/moviecontroller_getpossiblevaluesbyfieldname
  */
-readonly class ItemName implements BaseModel {
+ class ItemName implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта названия элемента

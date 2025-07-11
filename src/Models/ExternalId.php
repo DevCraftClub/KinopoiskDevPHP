@@ -22,7 +22,7 @@ use Lombok\Getter;
  * @see     \KinopoiskDev\Models\LinkedMovie Для связанных фильмов с внешними идентификаторами
  * @see     \KinopoiskDev\Models\Movie Для использования внешних идентификаторов в фильмах
  */
-readonly class ExternalId implements BaseModel {
+ class ExternalId implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта внешних идентификаторов

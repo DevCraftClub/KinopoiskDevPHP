@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
-readonly class ReviewInfo implements BaseModel {
+ class ReviewInfo implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта информации о рецензиях

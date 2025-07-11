@@ -17,7 +17,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie Основная модель фильма
  * @see     \KinopoiskDev\Models\SearchMovie Поисковая модель фильма
  */
-readonly class FactInMovie implements BaseModel {
+ class FactInMovie implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта факта о фильме

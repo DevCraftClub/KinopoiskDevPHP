@@ -27,7 +27,7 @@ use Lombok\Getter;
  * @see     \KinopoiskDev\Models\ExternalId Для внешних идентификаторов
  * @link    https://kinopoiskdev.readme.io/reference/moviecontroller_findonev1_4
  */
-readonly class Movie implements BaseModel {
+ class Movie implements BaseModel {
 
 	private const int MIN_YEAR = 1888;
 
@@ -171,7 +171,7 @@ readonly class Movie implements BaseModel {
 	 * @return static Новый экземпляр класса Movie
 	 *
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id                : $data['id'] ?? NULL,
 			externalId        : isset($data['externalId']) ? ExternalId::fromArray($data['externalId']) : NULL,

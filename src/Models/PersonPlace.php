@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Person Для работы с персонами
  * @see     \KinopoiskDev\Models\PersonPlaceValue Для более детальной географической информации
  */
-readonly class PersonPlace implements BaseModel {
+ class PersonPlace implements BaseModel {
 
 	/**
 	 * Строковое значение места рождения или смерти персоны

@@ -14,7 +14,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Studio Для основной модели студии
  * @see     \KinopoiskDev\Models\Movie Для полной информации о фильме
  */
-readonly class MovieFromStudio implements BaseModel {
+ class MovieFromStudio implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта фильма из студии

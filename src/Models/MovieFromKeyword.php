@@ -11,7 +11,7 @@ namespace KinopoiskDev\Models;
  * @since   1.0.0
  * @author  Maxim Harder
  */
-readonly class MovieFromKeyword implements BaseModel {
+ class MovieFromKeyword implements BaseModel {
 
 	/**
 	 * Конструктор
@@ -24,12 +24,12 @@ readonly class MovieFromKeyword implements BaseModel {
 	 * @param int|null    $year        Год выпуска
 	 */
 	public function __construct(
-		public readonly ?int $id = null,
-		public readonly ?string $name = null,
-		public readonly ?string $enName = null,
-		public readonly ?string $alternativeName = null,
-		public readonly ?string $type = null,
-		public readonly ?int $year = null,
+		public  ?int $id = null,
+		public  ?string $name = null,
+		public  ?string $enName = null,
+		public  ?string $alternativeName = null,
+		public  ?string $type = null,
+		public  ?int $year = null,
 	) {}
 
 	/**

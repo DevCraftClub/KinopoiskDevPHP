@@ -26,7 +26,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\MeiliPersonEntity Родительский класс
  * @link    https://kinopoiskdev.readme.io/reference/personcontroller_findonev1_4
  */
-readonly class Person extends MeiliPersonEntity {
+ class Person extends MeiliPersonEntity {
 
 	/**
 	 * Конструктор для создания объекта персоны
@@ -115,7 +115,7 @@ readonly class Person extends MeiliPersonEntity {
 	 * @return \KinopoiskDev\Models\Person Новый экземпляр класса Person с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id         : $data['id'],
 			name       : $data['name'] ?? NULL,

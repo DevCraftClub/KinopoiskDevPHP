@@ -20,7 +20,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\Season Для информации о сезонах
  * @see     \KinopoiskDev\Models\ShortImage Для кадров из эпизодов
  */
-readonly class Episode implements BaseModel {
+ class Episode implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта эпизода

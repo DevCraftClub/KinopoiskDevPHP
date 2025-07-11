@@ -19,7 +19,7 @@ use Psr\Cache\InvalidArgumentException;
  * @author  Maxim Harder
  * @version 1.0.0
  */
-final readonly class CacheService implements CacheInterface {
+final  class CacheService implements CacheInterface {
 
 	/**
 	 * @param   CacheItemPoolInterface $cache PSR-6 кэш адаптер
@@ -128,12 +128,12 @@ final readonly class CacheService implements CacheInterface {
 	/**
 	 * Нормализует ключ кэша для соответствия PSR-6
 	 *
-	 * @param   string $key Исходный ключ
+	 * @param   string  $key  Исходный ключ
 	 *
 	 * @return string Нормализованный ключ
 	 */
 	private function normalizeKey(string $key): string {
 		// Удаляем недопустимые символы для PSR-6
-		return preg_replace('/[^a-zA-Z0-9_.-]/', '_', $key);
+		return preg_replace('/[^a-zA-Z0-9_.-]/', '_', $key) ?? $key;
 	}
 }

@@ -21,7 +21,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма
  * @link    https://kinopoiskdev.readme.io/reference/moviecontroller_findmanyawardsv1_4
  */
-readonly class MovieAward implements BaseModel {
+ class MovieAward implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта награды фильма

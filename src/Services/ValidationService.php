@@ -71,7 +71,7 @@ final class ValidationService {
 		$propertyName = $property->getName();
 
 		// Проверка обязательного поля
-		if ($validation->required && ($value === null || $value === '')) {
+		if ($validation->required && (is_null($value) || $value === '')) {
 			$errors[$propertyName] = $validation->customMessage 
 				?? "Поле '{$propertyName}' является обязательным";
 			return $errors;
@@ -89,7 +89,7 @@ final class ValidationService {
 		}
 
 		// Валидация чисел
-		if (is_numeric($value)) {
+		if (is_numeric($value) && !is_string($value)) {
 			$numericErrors = $this->validateNumeric($value, $validation, $propertyName);
 			$errors = array_merge($errors, $numericErrors);
 		}

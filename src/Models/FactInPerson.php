@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Person Основная модель персоны
  * @see     \KinopoiskDev\Models\FactInMovie Модель фактов о фильмах
  */
-readonly class FactInPerson implements BaseModel {
+ class FactInPerson implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта факта о персоне

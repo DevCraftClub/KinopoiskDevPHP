@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\MovieAward Для наград фильмов
  * @see     \KinopoiskDev\Models\PersonAward Для наград персон
  */
-readonly class NominationAward implements BaseModel {
+ class NominationAward implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта награды номинации

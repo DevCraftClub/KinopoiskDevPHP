@@ -177,6 +177,29 @@ abstract class BaseDocsResponseDto extends BaseResponseDto {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * Создает экземпляр DTO из массива данных
+	 *
+	 * Фабричный метод для создания объекта DTO из ассоциативного массива,
+	 * полученного из API ответа. Базовый метод, который должен быть переопределен
+	 * в дочерних классах для правильной обработки типизированных документов.
+	 *
+	 * @param   array<string, mixed>  $data  Ассоциативный массив с данными для создания DTO
+	 *
+	 * @return static Экземпляр конкретного DTO класса
+	 */
+	public static function fromArray(array $data): static {
+		return new static(
+			docs: $data['docs'] ?? [],
+			total: $data['total'] ?? 0,
+			limit: $data['limit'] ?? 10,
+			page: $data['page'] ?? 1,
+			pages: $data['pages'] ?? 0,
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
 	 * Конвертирует объект в массив для сериализации
 	 *
 	 * Преобразует все свойства пагинации в ассоциативный массив,

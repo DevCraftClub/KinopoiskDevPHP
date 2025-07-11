@@ -38,7 +38,7 @@ namespace KinopoiskDev\Models;
 	 * @param array $data Данные от API
 	 * @return static Новый экземпляр класса
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id: isset($data['id']) ? (int) $data['id'] : null,
 			name: $data['name'] ?? null,

@@ -120,7 +120,7 @@ use Lombok\Setter;
 	 *
 	 * @return static Экземпляр модели коллекции
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			category   : $data['category'] ?? NULL,
 			slug       : $data['slug'] ?? NULL,

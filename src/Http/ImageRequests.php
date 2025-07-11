@@ -6,7 +6,7 @@ use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Exceptions\KinopoiskResponseException;
 use KinopoiskDev\Filter\MovieSearchFilter;
 use KinopoiskDev\Kinopoisk;
-use KinopoiskDev\Models\Image;
+use KinopoiskDev\Models\ApiImage;
 use KinopoiskDev\Responses\Api\ImageDocsResponseDto;
 use KinopoiskDev\Utils\DataManager;
 
@@ -98,7 +98,7 @@ class ImageRequests extends Kinopoisk {
 		$data     = $this->parseResponse($response);
 
 		return new ImageDocsResponseDto(
-			docs : DataManager::parseObjectArray($data, 'docs', Image::class),
+			docs : DataManager::parseObjectArray($data, 'docs', ApiImage::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? $limit,
 			page : $data['page'] ?? $page,

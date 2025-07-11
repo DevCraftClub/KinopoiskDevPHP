@@ -77,7 +77,7 @@ use KinopoiskDev\Utils\DataManager;
 			movieId       : $data['movieId'],
 			number        : $data['number'] ?? null,
 			episodesCount : $data['episodesCount'] ?? null,
-			episodes      : DataManager::parseObjectArray($data, 'episodes', EpisodeV1_4::class),
+			episodes      : DataManager::parseObjectArray($data, 'episodes', Episode::class),
 			poster        : DataManager::parseObjectData($data, 'poster', ShortImage::class),
 			name          : $data['name'] ?? null,
 			enName        : $data['enName'] ?? null,

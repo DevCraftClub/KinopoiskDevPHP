@@ -16,25 +16,25 @@ class RatingMpaaTest extends TestCase
 {
     public function test_all_rating_mpaa_have_correct_values(): void
     {
-        $this->assertEquals('G', RatingMpaa::G->value);
-        $this->assertEquals('PG', RatingMpaa::PG->value);
-        $this->assertEquals('PG-13', RatingMpaa::PG_13->value);
-        $this->assertEquals('R', RatingMpaa::R->value);
-        $this->assertEquals('NC-17', RatingMpaa::NC_17->value);
+        $this->assertEquals('g', RatingMpaa::G->value);
+        $this->assertEquals('pg', RatingMpaa::PG->value);
+        $this->assertEquals('pg13', RatingMpaa::PG13->value);
+        $this->assertEquals('r', RatingMpaa::R->value);
+        $this->assertEquals('nc17', RatingMpaa::NC17->value);
     }
 
     public function test_rating_mpaa_can_be_created_from_string(): void
     {
-        $this->assertEquals(RatingMpaa::G, RatingMpaa::from('G'));
-        $this->assertEquals(RatingMpaa::PG, RatingMpaa::from('PG'));
-        $this->assertEquals(RatingMpaa::PG_13, RatingMpaa::from('PG-13'));
-        $this->assertEquals(RatingMpaa::R, RatingMpaa::from('R'));
-        $this->assertEquals(RatingMpaa::NC_17, RatingMpaa::from('NC-17'));
+        $this->assertEquals(RatingMpaa::G, RatingMpaa::from('g'));
+        $this->assertEquals(RatingMpaa::PG, RatingMpaa::from('pg'));
+        $this->assertEquals(RatingMpaa::PG13, RatingMpaa::from('pg13'));
+        $this->assertEquals(RatingMpaa::R, RatingMpaa::from('r'));
+        $this->assertEquals(RatingMpaa::NC17, RatingMpaa::from('nc17'));
     }
 
     public function test_rating_mpaa_can_be_compared(): void
     {
-        $this->assertTrue(RatingMpaa::G === RatingMpaa::from('G'));
+        $this->assertTrue(RatingMpaa::G === RatingMpaa::from('g'));
         $this->assertFalse(RatingMpaa::G === RatingMpaa::PG);
     }
 
@@ -43,7 +43,7 @@ class RatingMpaaTest extends TestCase
         $cases = RatingMpaa::cases();
         $this->assertCount(5, $cases);
         
-        $expectedValues = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
+        $expectedValues = ['g', 'pg', 'pg13', 'r', 'nc17'];
         $actualValues = array_map(fn($case) => $case->value, $cases);
         
         $this->assertEquals($expectedValues, $actualValues);

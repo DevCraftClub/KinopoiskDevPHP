@@ -42,6 +42,7 @@ enum FilterOperator: string {
 			$cache[$fieldType] = match ($fieldType) {
 				'array'   => self::IN,
 				'text'    => self::REGEX,
+				'include_exclude' => self::IN,
 				default   => self::EQUALS
 			};
 		}

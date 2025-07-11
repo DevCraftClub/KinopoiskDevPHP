@@ -4,10 +4,10 @@ namespace KinopoiskDev\Http;
 
 use KinopoiskDev\Enums\StudioType;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
+use KinopoiskDev\Filter\StudioSearchFilter;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Studio;
 use KinopoiskDev\Responses\Api\StudioDocsResponseDto;
-use KinopoiskDev\Filter\StudioSearchFilter;
 
 /**
  * Класс для API-запросов, связанных со студиями
@@ -24,6 +24,43 @@ use KinopoiskDev\Filter\StudioSearchFilter;
  * @see     \KinopoiskDev\Filter\StudioSearchFilter Для фильтрации запросов
  */
 class StudioRequests extends Kinopoisk {
+
+	/**
+	 * Получает производственные студии
+	 *
+	 * Удобный метод для получения студий типа "Производство".
+	 *
+	 * @param   int  $page   Номер страницы результатов
+	 * @param   int  $limit  Количество результатов на странице
+	 *
+	 * @return StudioDocsResponseDto Производственные студии
+	 * @throws KinopoiskDevException При ошибках API
+	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON
+	 */
+	public function getProductionStudios(int $page = 1, int $limit = 10): StudioDocsResponseDto {
+		return $this->getStudiosByType(StudioType::PRODUCTION->value, $page, $limit);
+	}
+
+	/**
+	 * Получает студии по типу
+	 *
+	 * Удобный метод для получения студий определенного типа:
+	 * "Производство", "Спецэффекты", "Прокат", "Студия дубляжа"
+	 *
+	 * @param   string  $type   Тип студии
+	 * @param   int     $page   Номер страницы результатов
+	 * @param   int     $limit  Количество результатов на странице
+	 *
+	 * @return StudioDocsResponseDto Студии указанного типа
+	 * @throws KinopoiskDevException При ошибках API
+	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON
+	 */
+	public function getStudiosByType(string $type, int $page = 1, int $limit = 10): StudioDocsResponseDto {
+		$filters = new StudioSearchFilter();
+		$filters->type($type);
+
+		return $this->searchStudios($filters, $page, $limit);
+	}
 
 	/**
 	 * Ищет студии по различным критериям
@@ -67,43 +104,6 @@ class StudioRequests extends Kinopoisk {
 			page : $data['page'] ?? $page,
 			pages: $data['pages'] ?? 1,
 		);
-	}
-
-	/**
-	 * Получает студии по типу
-	 *
-	 * Удобный метод для получения студий определенного типа:
-	 * "Производство", "Спецэффекты", "Прокат", "Студия дубляжа"
-	 *
-	 * @param   string  $type   Тип студии
-	 * @param   int     $page   Номер страницы результатов
-	 * @param   int     $limit  Количество результатов на странице
-	 *
-	 * @return StudioDocsResponseDto Студии указанного типа
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON
-	 */
-	public function getStudiosByType(string $type, int $page = 1, int $limit = 10): StudioDocsResponseDto {
-		$filters = new StudioSearchFilter();
-		$filters->type($type);
-
-		return $this->searchStudios($filters, $page, $limit);
-	}
-
-	/**
-	 * Получает производственные студии
-	 *
-	 * Удобный метод для получения студий типа "Производство".
-	 *
-	 * @param   int  $page   Номер страницы результатов
-	 * @param   int  $limit  Количество результатов на странице
-	 *
-	 * @return StudioDocsResponseDto Производственные студии
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON
-	 */
-	public function getProductionStudios(int $page = 1, int $limit = 10): StudioDocsResponseDto {
-		return $this->getStudiosByType(StudioType::PRODUCTION->value, $page, $limit);
 	}
 
 	/**

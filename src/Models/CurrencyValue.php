@@ -20,7 +20,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Budget Для информации о бюджете фильма
  * @see     \KinopoiskDev\Models\Fees Для информации о кассовых сборах
  */
- class CurrencyValue implements BaseModel {
+class CurrencyValue implements BaseModel {
 
 	/**
 	 * Конструктор для создания объекта денежного значения
@@ -36,9 +36,26 @@ namespace KinopoiskDev\Models;
 	 * @param   string|null  $currency  Код валюты (например, USD, RUB, EUR) или null если не указана
 	 */
 	public function __construct(
-		public ?int    $value = null,
-		public ?string $currency = null,
+		public ?int    $value = NULL,
+		public ?string $currency = NULL,
 	) {}
+
+	/**
+	 * Создает объект из JSON строки
+	 *
+	 * @param   string  $json  JSON строка
+	 *
+	 * @return static Экземпляр модели
+	 * @throws \JsonException При ошибке парсинга
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
+	 */
+	public static function fromJson(string $json): static {
+		$data     = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
+		$instance = static::fromArray($data);
+		$instance->validate();
+
+		return $instance;
+	}
 
 	/**
 	 * Создает объект CurrencyValue из массива данных API
@@ -51,8 +68,8 @@ namespace KinopoiskDev\Models;
 	 * @see CurrencyValue::toArray() Для обратного преобразования в массив
 	 *
 	 * @param   array<string, mixed>  $data  Массив данных о денежном значении от API, содержащий ключи:
-	 *                        - value: int|null - денежное значение
-	 *                        - currency: string|null - код валюты
+	 *                                       - value: int|null - денежное значение
+	 *                                       - currency: string|null - код валюты
 	 *
 	 * @return static Новый экземпляр класса CurrencyValue с данными из массива
 	 */
@@ -61,6 +78,33 @@ namespace KinopoiskDev\Models;
 			value   : $data['value'] ?? NULL,
 			currency: $data['currency'] ?? NULL,
 		);
+	}
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * @return bool True если данные валидны
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
+	 */
+	public function validate(): bool {
+		return TRUE; // Basic validation - override in specific models if needed
+	}
+
+	/**
+	 * Возвращает JSON представление объекта
+	 *
+	 * @param   int  $flags  Флаги для json_encode
+	 *
+	 * @return string JSON строка
+	 * @throws \JsonException При ошибке сериализации
+	 */
+	public function toJson(int $flags = JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE): string {
+		$json = json_encode($this->toArray(), $flags);
+		if ($json === FALSE) {
+			throw new \JsonException('Ошибка кодирования JSON');
+		}
+
+		return $json;
 	}
 
 	/**
@@ -76,53 +120,11 @@ namespace KinopoiskDev\Models;
 	 *               - value: int|null - денежное значение
 	 *               - currency: string|null - код валюты
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'value'    => $this->value,
 			'currency' => $this->currency,
 		];
 	}
-
-
-	/**
-	 * Валидирует данные модели
-	 *
-	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
-	 */
-	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
-	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		$json = json_encode($this->toArray(), $flags);
-		if ($json === false) {
-			throw new \JsonException('Ошибка кодирования JSON');
-		}
-		return $json;
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

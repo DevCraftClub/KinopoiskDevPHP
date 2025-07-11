@@ -15,21 +15,67 @@ use ReflectionProperty;
  * Выполняет валидацию объектов на основе атрибутов PHP 8.3.
  * Поддерживает различные типы валидации: обязательные поля,
  * ограничения длины, диапазоны значений, регулярные выражения.
+ * Использует рефлексию для автоматического обнаружения правил валидации.
  *
  * @package KinopoiskDev\Services
  * @since   1.0.0
  * @author  Maxim Harder
  * @version 1.0.0
+ * 
+ * @see \KinopoiskDev\Attributes\Validation Атрибут валидации
+ * @see \KinopoiskDev\Exceptions\ValidationException Исключения валидации
+ * 
+ * @example
+ * ```php
+ * class Movie {
+ *     #[Validation(required: true, minLength: 1, maxLength: 255)]
+ *     public string $title;
+ *     
+ *     #[Validation(min: 1900, max: 2030)]
+ *     public int $year;
+ * }
+ * 
+ * $validator = new ValidationService();
+ * $movie = new Movie();
+ * $movie->title = '';
+ * $movie->year = 1800;
+ * 
+ * try {
+ *     $validator->validate($movie);
+ * } catch (ValidationException $e) {
+ *     foreach ($e->getErrors() as $field => $error) {
+ *         echo "{$field}: {$error}\n";
+ *     }
+ * }
+ * ```
  */
 final class ValidationService {
 
 	/**
 	 * Валидирует объект на основе атрибутов свойств
 	 *
-	 * @param   object $object Объект для валидации
+	 * Основной метод валидации, который анализирует все свойства объекта
+	 * и проверяет их на соответствие правилам, заданным в атрибутах Validation.
+	 * Выбрасывает ValidationException при обнаружении ошибок валидации.
+	 *
+	 * @param   object $object Объект для валидации (должен иметь свойства с атрибутами Validation)
 	 *
 	 * @return bool True если валидация прошла успешно
-	 * @throws ValidationException При ошибках валидации
+	 * @throws ValidationException При ошибках валидации с детальным описанием проблем
+	 * 
+	 * @example
+	 * ```php
+	 * $movie = new Movie();
+	 * $movie->title = 'The Matrix';
+	 * $movie->year = 1999;
+	 * 
+	 * try {
+	 *     $validator->validate($movie);
+	 *     echo "Объект валиден";
+	 * } catch (ValidationException $e) {
+	 *     echo "Ошибки валидации: " . $e->getMessage();
+	 * }
+	 * ```
 	 */
 	public function validate(object $object): bool {
 		$reflection = new ReflectionClass($object);
@@ -52,10 +98,16 @@ final class ValidationService {
 	/**
 	 * Валидирует конкретное свойство объекта
 	 *
-	 * @param   object             $object   Объект
+	 * Проверяет одно свойство объекта на соответствие правилам валидации,
+	 * заданным в атрибуте Validation. Поддерживает различные типы проверок
+	 * в зависимости от типа значения свойства.
+	 *
+	 * @param   object             $object   Объект для валидации
 	 * @param   ReflectionProperty $property Свойство для валидации
 	 *
-	 * @return array<string, string> Массив ошибок валидации
+	 * @return array<string, string> Массив ошибок валидации в формате ['property' => 'error']
+	 * 
+	 * @internal Внутренний метод, используется только в validate()
 	 */
 	private function validateProperty(object $object, ReflectionProperty $property): array {
 		$errors = [];
@@ -107,11 +159,16 @@ final class ValidationService {
 	/**
 	 * Валидирует строковое значение
 	 *
-	 * @param   string     $value        Значение для валидации
-	 * @param   Validation $validation   Правила валидации
-	 * @param   string     $propertyName Название свойства
+	 * Выполняет валидацию строковых значений согласно правилам:
+	 * минимальная/максимальная длина и соответствие регулярному выражению.
 	 *
-	 * @return array<string, string> Массив ошибок
+	 * @param   string     $value        Строковое значение для валидации
+	 * @param   Validation $validation   Правила валидации из атрибута
+	 * @param   string     $propertyName Название свойства для сообщений об ошибках
+	 *
+	 * @return array<string, string> Массив ошибок валидации
+	 * 
+	 * @internal Внутренний метод, используется только в validateProperty()
 	 */
 	private function validateString(string $value, Validation $validation, string $propertyName): array {
 		$errors = [];
@@ -141,11 +198,16 @@ final class ValidationService {
 	/**
 	 * Валидирует числовое значение
 	 *
-	 * @param   float|int  $value        Значение для валидации
-	 * @param   Validation $validation   Правила валидации
-	 * @param   string     $propertyName Название свойства
+	 * Выполняет валидацию числовых значений согласно правилам:
+	 * минимальное/максимальное значение.
 	 *
-	 * @return array<string, string> Массив ошибок
+	 * @param   float|int  $value        Числовое значение для валидации
+	 * @param   Validation $validation   Правила валидации из атрибута
+	 * @param   string     $propertyName Название свойства для сообщений об ошибках
+	 *
+	 * @return array<string, string> Массив ошибок валидации
+	 * 
+	 * @internal Внутренний метод, используется только в validateProperty()
 	 */
 	private function validateNumeric(float|int $value, Validation $validation, string $propertyName): array {
 		$errors = [];
@@ -168,11 +230,37 @@ final class ValidationService {
 	/**
 	 * Валидирует массив данных по правилам
 	 *
-	 * @param   array<string, mixed> $data  Данные для валидации
-	 * @param   array<string, mixed> $rules Правила валидации
+	 * Альтернативный метод валидации для работы с массивами данных
+	 * вместо объектов. Полезен для валидации входных данных API
+	 * или данных форм.
+	 *
+	 * @param   array<string, mixed> $data  Ассоциативный массив данных для валидации
+	 * @param   array<string, mixed> $rules Правила валидации в формате ['field' => ['rule' => 'value']]
 	 *
 	 * @return bool True если валидация прошла успешно
 	 * @throws ValidationException При ошибках валидации
+	 * 
+	 * @example
+	 * ```php
+	 * $data = [
+	 *     'title' => 'The Matrix',
+	 *     'year' => 1999,
+	 *     'rating' => 8.7
+	 * ];
+	 * 
+	 * $rules = [
+	 *     'title' => ['required' => true, 'min_length' => 1, 'max_length' => 255],
+	 *     'year' => ['min' => 1900, 'max' => 2030],
+	 *     'rating' => ['min' => 0, 'max' => 10]
+	 * ];
+	 * 
+	 * try {
+	 *     $validator->validateArray($data, $rules);
+	 *     echo "Данные валидны";
+	 * } catch (ValidationException $e) {
+	 *     echo "Ошибки: " . $e->getMessage();
+	 * }
+	 * ```
 	 */
 	public function validateArray(array $data, array $rules): bool {
 		$errors = [];
@@ -195,11 +283,17 @@ final class ValidationService {
 	/**
 	 * Валидирует значение поля по правилам
 	 *
-	 * @param   mixed  $value     Значение
-	 * @param   array<string, mixed>  $rules     Правила
-	 * @param   string $fieldName Название поля
+	 * Вспомогательный метод для валидации отдельного поля
+	 * согласно переданным правилам. Поддерживает различные
+	 * типы правил валидации.
 	 *
-	 * @return array<string, string> Массив ошибок
+	 * @param   mixed  $value     Значение поля для валидации
+	 * @param   array<string, mixed>  $rules     Правила валидации для поля
+	 * @param   string $fieldName Название поля для сообщений об ошибках
+	 *
+	 * @return array<string, string> Массив ошибок валидации
+	 * 
+	 * @internal Внутренний метод, используется только в validateArray()
 	 */
 	private function validateFieldValue(mixed $value, array $rules, string $fieldName): array {
 		$errors = [];
@@ -239,10 +333,16 @@ final class ValidationService {
 	/**
 	 * Валидирует значение на основе правил валидации
 	 *
+	 * Универсальный метод для валидации любого значения
+	 * согласно объекту Validation. Возвращает сообщение об ошибке
+	 * или null при успешной валидации.
+	 *
 	 * @param   mixed      $value       Значение для валидации
 	 * @param   Validation $validation  Правила валидации
 	 *
 	 * @return string|null Сообщение об ошибке или null если валидация прошла успешно
+	 * 
+	 * @internal Внутренний метод, используется для универсальной валидации
 	 */
 	private function validateValue(mixed $value, Validation $validation): ?string {
 		// Проверка обязательности поля

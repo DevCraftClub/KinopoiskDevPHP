@@ -3,10 +3,10 @@
 namespace KinopoiskDev\Http;
 
 use KinopoiskDev\Exceptions\KinopoiskDevException;
+use KinopoiskDev\Filter\KeywordSearchFilter;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Keyword;
 use KinopoiskDev\Responses\Api\KeywordDocsResponseDto;
-use KinopoiskDev\Filter\KeywordSearchFilter;
 
 /**
  * Класс для API-запросов, связанных с ключевыми словами
@@ -23,6 +23,27 @@ use KinopoiskDev\Filter\KeywordSearchFilter;
  * @see     \KinopoiskDev\Filter\KeywordSearchFilter Для фильтрации запросов
  */
 class KeywordRequests extends Kinopoisk {
+
+	/**
+	 * Получает ключевые слова по названию
+	 *
+	 * Выполняет поиск ключевых слов по точному или частичному совпадению названия.
+	 * Полезно для поиска тематических категорий фильмов.
+	 *
+	 * @param   string  $title  Название ключевого слова для поиска
+	 * @param   int     $page   Номер страницы результатов
+	 * @param   int     $limit  Количество результатов на странице
+	 *
+	 * @return KeywordDocsResponseDto Ключевые слова с подходящими названиями
+	 * @throws KinopoiskDevException При ошибках API
+	 * @throws \JsonException При ошибках парсинга JSON
+	 */
+	public function getKeywordsByTitle(string $title, int $page = 1, int $limit = 10): KeywordDocsResponseDto {
+		$filters = new KeywordSearchFilter();
+		$filters->title($title);
+
+		return $this->searchKeywords($filters, $page, $limit);
+	}
 
 	/**
 	 * Ищет ключевые слова по различным критериям
@@ -66,27 +87,6 @@ class KeywordRequests extends Kinopoisk {
 			page : $data['page'] ?? $page,
 			pages: $data['pages'] ?? 1,
 		);
-	}
-
-	/**
-	 * Получает ключевые слова по названию
-	 *
-	 * Выполняет поиск ключевых слов по точному или частичному совпадению названия.
-	 * Полезно для поиска тематических категорий фильмов.
-	 *
-	 * @param   string  $title  Название ключевого слова для поиска
-	 * @param   int     $page   Номер страницы результатов
-	 * @param   int     $limit  Количество результатов на странице
-	 *
-	 * @return KeywordDocsResponseDto Ключевые слова с подходящими названиями
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
-	 */
-	public function getKeywordsByTitle(string $title, int $page = 1, int $limit = 10): KeywordDocsResponseDto {
-		$filters = new KeywordSearchFilter();
-		$filters->title($title);
-
-		return $this->searchKeywords($filters, $page, $limit);
 	}
 
 	/**

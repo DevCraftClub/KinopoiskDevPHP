@@ -46,38 +46,39 @@ class Audience extends AbstractBaseModel {
 	 * @see Audience::toArray() Для обратного преобразования в массив
 	 *
 	 * @param   array<string, mixed>  $data  Массив данных об аудитории от API, содержащий ключи:
-	 *                        - count: int|null - количество зрителей
-	 *                        - country: string|null - страна сбора данных
+	 *                                       - count: int|null - количество зрителей
+	 *                                       - country: string|null - страна сбора данных
 	 *
 	 * @return static Новый экземпляр класса Audience
 	 *
 	 */
 	public static function fromArray(array $data): static {
 		return new self(
-			count  : $data['count'] ?? null,
-			country: $data['country'] ?? null,
+			count  : $data['count'] ?? NULL,
+			country: $data['country'] ?? NULL,
 		);
 	}
 
 	/**
 	 * Преобразует объект в массив
 	 *
-	 * @param   bool $includeNulls Включать ли null значения
-	 *
 	 * @see Audience::fromArray() Для создания объекта из массива
+	 *
+	 * @param   bool  $includeNulls  Включать ли null значения
+	 *
 	 * @return array<string, mixed> Массив с данными об аудитории, содержащий ключи:
 	 *               - count: int|null - количество зрителей
 	 *               - country: string|null - страна сбора данных
 	 *
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		$result = [];
 
-		if ($this->count !== null || $includeNulls) {
+		if ($this->count !== NULL || $includeNulls) {
 			$result['count'] = $this->count;
 		}
 
-		if ($this->country !== null || $includeNulls) {
+		if ($this->country !== NULL || $includeNulls) {
 			$result['country'] = $this->country;
 		}
 

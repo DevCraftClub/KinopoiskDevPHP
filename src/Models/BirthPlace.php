@@ -27,4 +27,4 @@ namespace KinopoiskDev\Models;
  * echo $birthPlace->value; // "Москва, Россия"
  * ```
  */
- class BirthPlace extends PersonPlace {}
+class BirthPlace extends PersonPlace {}

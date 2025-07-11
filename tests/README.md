@@ -51,7 +51,18 @@ composer install --dev
 Создайте файл `.env.testing` или установите переменные окружения:
 
 ```bash
-export KINOPOISK_TOKEN="your-test-api-token"
+# Скопируйте пример файла
+cp env.testing.example .env.testing
+
+# Отредактируйте файл .env.testing и установите ваш API токен
+KINOPOISK_API_TOKEN=your_test_api_token_here
+APP_ENV=testing
+```
+
+Или установите переменные окружения напрямую:
+
+```bash
+export KINOPOISK_API_TOKEN="your-test-api-token"
 export APP_ENV="testing"
 ```
 

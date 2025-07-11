@@ -451,7 +451,7 @@ $movieClient = new MovieRequests($apiToken, $httpClient, true);
 Создайте файл `.env`:
 
 ```env
-KINOPOISK_TOKEN=ваш_токен_здесь
+KINOPOISK_API_TOKEN=ваш_токен_здесь
 KINOPOISK_USE_CACHE=true
 ```
 
@@ -461,7 +461,7 @@ use Dotenv\Dotenv;
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-$apiToken = $_ENV['KINOPOISK_TOKEN'];
+$apiToken = $_ENV['KINOPOISK_API_TOKEN'];
 $useCache = $_ENV['KINOPOISK_USE_CACHE'] === 'true';
 
 $movieClient = new MovieRequests($apiToken, null, $useCache);

@@ -36,7 +36,7 @@ class ValidationServiceTest extends TestCase
     public function test_validateApiToken_withValidToken_returnsTrue(): void
     {
         $validTokens = [
-            'ABC1DEF-2GH3IJK-4LM5NOP-6QR7STU',
+            $_ENV['KINOPOISK_API_TOKEN'],
             'XYZ9ABC-1DEF2GHI-3JKL4MNO-5PQR6STU',
             '12345678-9ABC-DEF0-1234-567890ABCDEF'
         ];

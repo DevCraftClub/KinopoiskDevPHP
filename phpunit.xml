@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
+         bootstrap="tests/bootstrap.php"
          colors="true"
          cacheDirectory=".phpunit.cache"
          cacheResultFile=".phpunit.cache/test-results"
@@ -75,11 +75,7 @@
     </coverage>
 
     <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="KINOPOISK_TOKEN" value="TEST-TOKEN-1234-5678-9ABC-DEF0"/>
-        <env name="CACHE_DRIVER" value="array"/>
-        <env name="SESSION_DRIVER" value="array"/>
-        <env name="QUEUE_DRIVER" value="sync"/>
+        <!-- Environment variables are loaded from .env.testing file via bootstrap.php -->
     </php>
 
     <listeners>

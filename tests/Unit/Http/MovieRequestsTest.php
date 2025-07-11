@@ -31,8 +31,6 @@ use KinopoiskDev\Enums\FilterField;
  */
 class MovieRequestsTest extends TestCase
 {
-    private const string VALID_API_TOKEN = 'ABC1DEF-2GH3IJK-4LM5NOP-6QR7STU';
-    
     private MockHandler $mockHandler;
     private HandlerStack $handlerStack;
     private Client $httpClient;
@@ -47,7 +45,7 @@ class MovieRequestsTest extends TestCase
         $this->httpClient = new Client(['handler' => $this->handlerStack]);
         
         $this->movieRequests = new MovieRequests(
-            apiToken: self::VALID_API_TOKEN,
+            apiToken: $_ENV['KINOPOISK_API_TOKEN'],
             httpClient: $this->httpClient
         );
     }

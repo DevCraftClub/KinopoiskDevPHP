@@ -209,7 +209,11 @@ final  class CacheService implements CacheInterface {
 	 * ```
 	 */
 	public function clear(): bool {
-		return $this->cache->clear();
+		try {
+			return $this->cache->clear();
+		} catch (InvalidArgumentException) {
+			return false;
+		}
 	}
 
 	/**
@@ -231,20 +235,25 @@ final  class CacheService implements CacheInterface {
 	 * ```
 	 */
 	public function getMultiple(array $keys): array {
+		$result = [];
 		try {
 			$normalizedKeys = array_map($this->normalizeKey(...), $keys);
-			$items = $this->cache->getItems($normalizedKeys);
-			$result = [];
-
-			foreach ($items as $key => $item) {
-				if ($item->isHit()) {
-					$result[$key] = $item->get();
+			$items = iterator_to_array($this->cache->getItems($normalizedKeys));
+			foreach ($keys as $i => $origKey) {
+				$normKey = $normalizedKeys[$i];
+				$item = $items[$normKey] ?? null;
+				if ($item && $item->isHit()) {
+					$result[$origKey] = $item->get();
+				} else {
+					$result[$origKey] = null;
 				}
 			}
-
 			return $result;
 		} catch (InvalidArgumentException) {
-			return [];
+			foreach ($keys as $origKey) {
+				$result[$origKey] = null;
+			}
+			return $result;
 		}
 	}
 
@@ -271,20 +280,52 @@ final  class CacheService implements CacheInterface {
 	 * ```
 	 */
 	public function setMultiple(array $values, int $ttl = 3600): bool {
+		if (empty($values)) {
+			return true;
+		}
 		try {
+			$allSuccess = true;
 			$items = [];
-
 			foreach ($values as $key => $value) {
 				$item = $this->cache->getItem($this->normalizeKey($key));
 				$item->set($value);
 				$item->expiresAfter($ttl);
 				$items[] = $item;
 			}
-
-			return $this->cache->saveDeferred(...$items) && $this->cache->commit();
+			foreach ($items as $item) {
+				if (!$this->cache->saveDeferred($item)) {
+					$allSuccess = false;
+				}
+			}
+			if (!$this->cache->commit()) {
+				$allSuccess = false;
+			}
+			return $allSuccess;
 		} catch (InvalidArgumentException) {
 			return false;
 		}
+	}
+
+	/**
+	 * Удаляет несколько ключей из кэша
+	 *
+	 * @param array $keys Массив ключей для удаления
+	 * @return bool True, если все ключи успешно удалены, False при ошибке
+	 */
+	public function deleteMultiple(array $keys): bool
+	{
+		$allSuccess = true;
+		foreach ($keys as $key) {
+			try {
+				$success = $this->cache->deleteItem($this->normalizeKey($key));
+				if (!$success) {
+					$allSuccess = false;
+				}
+			} catch (InvalidArgumentException) {
+				$allSuccess = false;
+			}
+		}
+		return $allSuccess;
 	}
 
 	/**

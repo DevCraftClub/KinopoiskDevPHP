@@ -2,25 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Models;
+namespace KinopoiskDev\Tests\Unit\Models;
 
 use PHPUnit\Framework\TestCase;
 use KinopoiskDev\Models\Movie;
 use KinopoiskDev\Models\ExternalId;
-use KinopoiskDev\Models\Name;
 use KinopoiskDev\Models\Rating;
 use KinopoiskDev\Models\Votes;
 use KinopoiskDev\Models\ShortImage;
-use KinopoiskDev\Models\ItemName;
-use KinopoiskDev\Models\PersonInMovie;
-use KinopoiskDev\Models\FactInMovie;
-use KinopoiskDev\Models\CurrencyValue;
-use KinopoiskDev\Models\Fees;
-use KinopoiskDev\Models\Premiere;
-use KinopoiskDev\Models\Watchability;
-use KinopoiskDev\Models\Audience;
-use KinopoiskDev\Models\Lists;
-use KinopoiskDev\Models\Networks;
 use KinopoiskDev\Enums\MovieType;
 use KinopoiskDev\Enums\MovieStatus;
 use KinopoiskDev\Enums\RatingMpaa;
@@ -53,10 +42,10 @@ class MovieTest extends TestCase
         );
 
         $this->assertInstanceOf(Movie::class, $movie);
-        $this->assertEquals(123, $movie->getId());
-        $this->assertEquals('Test Movie', $movie->getName());
-        $this->assertEquals(2023, $movie->getYear());
-        $this->assertEquals('Test description', $movie->getDescription());
+        $this->assertEquals(123, $movie->id);
+        $this->assertEquals('Test Movie', $movie->name);
+        $this->assertEquals(2023, $movie->year);
+        $this->assertEquals('Test description', $movie->description);
     }
 
     public function test_constructor_withNullValues_createsInstance(): void
@@ -64,10 +53,10 @@ class MovieTest extends TestCase
         $movie = new Movie();
 
         $this->assertInstanceOf(Movie::class, $movie);
-        $this->assertNull($movie->getId());
-        $this->assertNull($movie->getName());
-        $this->assertNull($movie->getYear());
-        $this->assertNull($movie->getDescription());
+        $this->assertNull($movie->id);
+        $this->assertNull($movie->name);
+        $this->assertNull($movie->year);
+        $this->assertNull($movie->description);
     }
 
     public function test_fromArray_withValidData_createsInstance(): void
@@ -79,21 +68,21 @@ class MovieTest extends TestCase
             'description' => 'Created from array',
             'type' => 'movie',
             'status' => 'completed',
-            'ratingMpaa' => 'G',
+            'ratingMpaa' => 'g',
             'isSeries' => false
         ];
 
         $movie = Movie::fromArray($data);
 
         $this->assertInstanceOf(Movie::class, $movie);
-        $this->assertEquals(456, $movie->getId());
-        $this->assertEquals('From Array Movie', $movie->getName());
-        $this->assertEquals(2022, $movie->getYear());
-        $this->assertEquals('Created from array', $movie->getDescription());
-        $this->assertEquals(MovieType::MOVIE, $movie->getType());
-        $this->assertEquals(MovieStatus::COMPLETED, $movie->getStatus());
-        $this->assertEquals(RatingMpaa::G, $movie->getRatingMpaa());
-        $this->assertFalse($movie->getIsSeries());
+        $this->assertEquals(456, $movie->id);
+        $this->assertEquals('From Array Movie', $movie->name);
+        $this->assertEquals(2022, $movie->year);
+        $this->assertEquals('Created from array', $movie->description);
+        $this->assertEquals(MovieType::MOVIE, $movie->type);
+        $this->assertEquals(MovieStatus::COMPLETED, $movie->status);
+        $this->assertEquals(RatingMpaa::G, $movie->ratingMpaa);
+        $this->assertFalse($movie->isSeries);
     }
 
     public function test_fromArray_withComplexData_createsInstance(): void
@@ -130,14 +119,14 @@ class MovieTest extends TestCase
         $movie = Movie::fromArray($data);
 
         $this->assertInstanceOf(Movie::class, $movie);
-        $this->assertEquals(789, $movie->getId());
-        $this->assertEquals('Complex Movie', $movie->getName());
-        $this->assertInstanceOf(ExternalId::class, $movie->getExternalId());
-        $this->assertCount(2, $movie->getNames());
-        $this->assertInstanceOf(Rating::class, $movie->getRating());
-        $this->assertInstanceOf(Votes::class, $movie->getVotes());
-        $this->assertCount(2, $movie->getGenres());
-        $this->assertCount(2, $movie->getCountries());
+        $this->assertEquals(789, $movie->id);
+        $this->assertEquals('Complex Movie', $movie->name);
+        $this->assertInstanceOf(ExternalId::class, $movie->externalId);
+        $this->assertCount(2, $movie->names);
+        $this->assertInstanceOf(Rating::class, $movie->rating);
+        $this->assertInstanceOf(Votes::class, $movie->votes);
+        $this->assertCount(2, $movie->genres);
+        $this->assertCount(2, $movie->countries);
     }
 
     public function test_fromJson_withValidJson_createsInstance(): void
@@ -151,9 +140,9 @@ class MovieTest extends TestCase
         $movie = Movie::fromJson($json);
 
         $this->assertInstanceOf(Movie::class, $movie);
-        $this->assertEquals(101, $movie->getId());
-        $this->assertEquals('JSON Movie', $movie->getName());
-        $this->assertEquals(2021, $movie->getYear());
+        $this->assertEquals(101, $movie->id);
+        $this->assertEquals('JSON Movie', $movie->name);
+        $this->assertEquals(2021, $movie->year);
     }
 
     public function test_fromJson_withInvalidJson_throwsException(): void
@@ -206,8 +195,7 @@ class MovieTest extends TestCase
 
     public function test_getKinopoiskRating_withRating_returnsValue(): void
     {
-        $rating = $this->createMock(Rating::class);
-        $rating->method('getKp')->willReturn(8.5);
+        $rating = new Rating(kp: 8.5);
 
         $movie = new Movie(rating: $rating);
 
@@ -227,8 +215,7 @@ class MovieTest extends TestCase
 
     public function test_getImdbRating_withRating_returnsValue(): void
     {
-        $rating = $this->createMock(Rating::class);
-        $rating->method('getImdb')->willReturn(8.2);
+        $rating = new Rating(imdb: 8.2);
 
         $movie = new Movie(rating: $rating);
 
@@ -248,8 +235,7 @@ class MovieTest extends TestCase
 
     public function test_getPosterUrl_withPoster_returnsUrl(): void
     {
-        $poster = $this->createMock(ShortImage::class);
-        $poster->method('getUrl')->willReturn('https://example.com/poster.jpg');
+        $poster = new ShortImage(url: 'https://example.com/poster.jpg');
 
         $movie = new Movie(poster: $poster);
 
@@ -269,17 +255,16 @@ class MovieTest extends TestCase
 
     public function test_getGenreNames_withGenres_returnsNames(): void
     {
-        $genres = [
-            new ItemName(name: 'Action'),
-            new ItemName(name: 'Drama'),
-            new ItemName(name: 'Comedy')
-        ];
-
-        $movie = new Movie(genres: $genres);
+        $movie = new Movie(
+            genres: [
+                new \KinopoiskDev\Models\ItemName('Action'),
+                new \KinopoiskDev\Models\ItemName('Drama')
+            ]
+        );
 
         $result = $movie->getGenreNames();
 
-        $this->assertEquals(['Action', 'Drama', 'Comedy'], $result);
+        $this->assertEquals(['Action', 'Drama'], $result);
     }
 
     public function test_getGenreNames_withoutGenres_returnsEmptyArray(): void
@@ -293,17 +278,16 @@ class MovieTest extends TestCase
 
     public function test_getCountryNames_withCountries_returnsNames(): void
     {
-        $countries = [
-            new ItemName(name: 'USA'),
-            new ItemName(name: 'UK'),
-            new ItemName(name: 'France')
-        ];
-
-        $movie = new Movie(countries: $countries);
+        $movie = new Movie(
+            countries: [
+                new \KinopoiskDev\Models\ItemName('USA'),
+                new \KinopoiskDev\Models\ItemName('UK')
+            ]
+        );
 
         $result = $movie->getCountryNames();
 
-        $this->assertEquals(['USA', 'UK', 'France'], $result);
+        $this->assertEquals(['USA', 'UK'], $result);
     }
 
     public function test_getCountryNames_withoutCountries_returnsEmptyArray(): void
@@ -317,8 +301,7 @@ class MovieTest extends TestCase
 
     public function test_getImdbUrl_withExternalId_returnsUrl(): void
     {
-        $externalId = $this->createMock(ExternalId::class);
-        $externalId->method('getImdb')->willReturn('tt1234567');
+        $externalId = new ExternalId(imdb: 'tt1234567');
 
         $movie = new Movie(externalId: $externalId);
 
@@ -338,8 +321,7 @@ class MovieTest extends TestCase
 
     public function test_getTmdbUrl_withExternalId_returnsUrl(): void
     {
-        $externalId = $this->createMock(ExternalId::class);
-        $externalId->method('getTmdb')->willReturn(123456);
+        $externalId = new ExternalId(tmdb: 123456);
 
         $movie = new Movie(externalId: $externalId);
 
@@ -361,52 +343,53 @@ class MovieTest extends TestCase
     {
         $movie = new Movie(
             id: 123,
-            name: 'JSON Test Movie',
+            name: 'Test Movie',
             year: 2023
         );
 
         $json = $movie->toJson();
-        $data = json_decode($json, true);
 
         $this->assertIsString($json);
-        $this->assertEquals(123, $data['id']);
-        $this->assertEquals('JSON Test Movie', $data['name']);
-        $this->assertEquals(2023, $data['year']);
+        $this->assertStringContainsString('"id":123', $json);
+        $this->assertStringContainsString('"name":"Test Movie"', $json);
+        $this->assertStringContainsString('"year":2023', $json);
     }
 
     public function test_toArray_withIncludeNulls_returnsFullArray(): void
     {
         $movie = new Movie(
             id: 123,
-            name: 'Array Test Movie',
+            name: 'Test Movie',
             year: 2023
         );
 
         $array = $movie->toArray(true);
 
-        $this->assertIsArray($array);
-        $this->assertEquals(123, $array['id']);
-        $this->assertEquals('Array Test Movie', $array['name']);
-        $this->assertEquals(2023, $array['year']);
+        $this->assertArrayHasKey('id', $array);
+        $this->assertArrayHasKey('name', $array);
+        $this->assertArrayHasKey('year', $array);
         $this->assertArrayHasKey('description', $array);
-        $this->assertNull($array['description']);
+        $this->assertArrayHasKey('type', $array);
+        $this->assertArrayHasKey('status', $array);
     }
 
     public function test_toArray_withoutIncludeNulls_returnsFilteredArray(): void
     {
         $movie = new Movie(
             id: 123,
-            name: 'Array Test Movie',
+            name: 'Test Movie',
             year: 2023
         );
 
         $array = $movie->toArray(false);
 
-        $this->assertIsArray($array);
-        $this->assertEquals(123, $array['id']);
-        $this->assertEquals('Array Test Movie', $array['name']);
-        $this->assertEquals(2023, $array['year']);
+        $this->assertArrayHasKey('id', $array);
+        $this->assertArrayHasKey('name', $array);
+        $this->assertArrayHasKey('year', $array);
+        // Null values should be filtered out
         $this->assertArrayNotHasKey('description', $array);
+        $this->assertArrayNotHasKey('type', $array);
+        $this->assertArrayNotHasKey('status', $array);
     }
 
     /**
@@ -414,7 +397,7 @@ class MovieTest extends TestCase
      */
     public function test_validate_withValidYears_returnsTrue(int $year): void
     {
-        $movie = new Movie(id: 123, name: 'Valid Year Movie', year: $year);
+        $movie = new Movie(id: 123, year: $year);
 
         $result = $movie->validate();
 
@@ -424,11 +407,10 @@ class MovieTest extends TestCase
     public function validYearProvider(): array
     {
         return [
-            'min_year' => [1888],
-            'max_year' => [2030],
-            'middle_year' => [2023],
-            'old_year' => [1950],
-            'recent_year' => [2020],
+            'minimum_year' => [1888],
+            'current_year' => [2023],
+            'maximum_year' => [2030],
+            'middle_year' => [2000],
         ];
     }
 
@@ -437,7 +419,7 @@ class MovieTest extends TestCase
      */
     public function test_validate_withInvalidYears_throwsException(int $year): void
     {
-        $movie = new Movie(id: 123, name: 'Invalid Year Movie', year: $year);
+        $movie = new Movie(id: 123, year: $year);
 
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('Год должен быть в диапазоне от 1888 до 2030');

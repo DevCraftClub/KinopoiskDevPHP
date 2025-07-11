@@ -87,7 +87,7 @@ use KinopoiskDev\Utils\DataManager;
 	 * $emptyNetwork = NetworkItem::fromArray([]); // все поля будут null
 	 * ```
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			name: $data['name'] ?? NULL,
 			logo: DataManager::parseObjectData($data, 'logo', Logo::class),

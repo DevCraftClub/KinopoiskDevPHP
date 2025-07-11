@@ -54,7 +54,7 @@ namespace KinopoiskDev\Models;
 	 *
 	 * @return \KinopoiskDev\Models\ItemName Новый экземпляр класса ItemName с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			name: $data['name'],
 		);

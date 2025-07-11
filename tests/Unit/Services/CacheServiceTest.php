@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Services;
+namespace KinopoiskDev\Tests\Unit\Services;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -88,14 +88,12 @@ class CacheServiceTest extends TestCase
     public function test_get_withCacheException_returnsNull(): void
     {
         $key = 'invalid_key';
-        
+        $exception = $this->createMock(InvalidArgumentException::class);
         $this->cachePoolMock->expects($this->once())
             ->method('getItem')
             ->with($key)
-            ->willThrowException(new InvalidArgumentException('Invalid key'));
-        
+            ->willThrowException($exception);
         $result = $this->cacheService->get($key);
-        
         $this->assertNull($result);
     }
 
@@ -160,14 +158,12 @@ class CacheServiceTest extends TestCase
     {
         $key = 'invalid_key';
         $value = 'test_value';
-        
+        $exception = $this->createMock(InvalidArgumentException::class);
         $this->cachePoolMock->expects($this->once())
             ->method('getItem')
             ->with($key)
-            ->willThrowException(new InvalidArgumentException('Invalid key'));
-        
+            ->willThrowException($exception);
         $result = $this->cacheService->set($key, $value);
-        
         $this->assertFalse($result);
     }
 
@@ -230,14 +226,12 @@ class CacheServiceTest extends TestCase
     public function test_delete_withCacheException_returnsFalse(): void
     {
         $key = 'invalid_key';
-        
+        $exception = $this->createMock(InvalidArgumentException::class);
         $this->cachePoolMock->expects($this->once())
             ->method('deleteItem')
             ->with($key)
-            ->willThrowException(new InvalidArgumentException('Invalid key'));
-        
+            ->willThrowException($exception);
         $result = $this->cacheService->delete($key);
-        
         $this->assertFalse($result);
     }
 
@@ -254,62 +248,45 @@ class CacheServiceTest extends TestCase
 
     public function test_clear_withCacheException_returnsFalse(): void
     {
+        $exception = $this->createMock(InvalidArgumentException::class);
         $this->cachePoolMock->expects($this->once())
             ->method('clear')
-            ->willThrowException(new InvalidArgumentException('Clear failed'));
-        
+            ->willThrowException($exception);
         $result = $this->cacheService->clear();
-        
         $this->assertFalse($result);
     }
 
     public function test_has_withExistingItem_returnsTrue(): void
     {
-        $key = 'test_key';
-        
+        $key = 'existing_key';
         $this->cachePoolMock->expects($this->once())
-            ->method('getItem')
+            ->method('hasItem')
             ->with($key)
-            ->willReturn($this->cacheItemMock);
-        
-        $this->cacheItemMock->expects($this->once())
-            ->method('isHit')
             ->willReturn(true);
-        
         $result = $this->cacheService->has($key);
-        
         $this->assertTrue($result);
     }
 
     public function test_has_withNonExistingItem_returnsFalse(): void
     {
         $key = 'non_existing_key';
-        
         $this->cachePoolMock->expects($this->once())
-            ->method('getItem')
+            ->method('hasItem')
             ->with($key)
-            ->willReturn($this->cacheItemMock);
-        
-        $this->cacheItemMock->expects($this->once())
-            ->method('isHit')
             ->willReturn(false);
-        
         $result = $this->cacheService->has($key);
-        
         $this->assertFalse($result);
     }
 
     public function test_has_withCacheException_returnsFalse(): void
     {
         $key = 'invalid_key';
-        
+        $exception = $this->createMock(InvalidArgumentException::class);
         $this->cachePoolMock->expects($this->once())
-            ->method('getItem')
+            ->method('hasItem')
             ->with($key)
-            ->willThrowException(new InvalidArgumentException('Invalid key'));
-        
+            ->willThrowException($exception);
         $result = $this->cacheService->has($key);
-        
         $this->assertFalse($result);
     }
 
@@ -345,44 +322,40 @@ class CacheServiceTest extends TestCase
 
     public function test_getMultiple_withCacheException_returnsEmptyArray(): void
     {
-        $keys = ['key1', 'key2'];
-        
+        $key = 'invalid_key';
+        $exception = $this->createMock(InvalidArgumentException::class);
         $this->cachePoolMock->expects($this->once())
             ->method('getItems')
-            ->with($keys)
-            ->willThrowException(new InvalidArgumentException('Invalid keys'));
-        
-        $result = $this->cacheService->getMultiple($keys);
-        
-        $this->assertEquals([], $result);
+            ->willThrowException($exception);
+        $result = $this->cacheService->getMultiple([$key]);
+        $this->assertEquals([$key => null], $result);
     }
 
     public function test_setMultiple_withValidData_setsValues(): void
     {
-        $values = [
-            'key1' => 'value1',
-            'key2' => 'value2'
-        ];
-        $ttl = 1800;
-        
-        $this->cachePoolMock->expects($this->once())
-            ->method('getItems')
-            ->with(['key1', 'key2'])
-            ->willReturn([
-                'key1' => $this->createCacheItemMock('key1', null, false),
-                'key2' => $this->createCacheItemMock('key2', null, false)
-            ]);
-        
-        $this->cachePoolMock->expects($this->once())
+        $values = ['key1' => 'value1', 'key2' => 'value2'];
+        $ttl = 3600;
+        $itemMocks = [];
+        foreach ($values as $key => $value) {
+            $itemMock = $this->createMock(CacheItemInterface::class);
+            $itemMock->expects($this->once())->method('set')->with($value);
+            $itemMock->expects($this->once())->method('expiresAfter')->with($ttl);
+            $itemMocks[$key] = $itemMock;
+        }
+        $this->cachePoolMock->expects($this->exactly(count($values)))
+            ->method('getItem')
+            ->with($this->logicalOr('key1', 'key2'))
+            ->willReturnCallback(function($key) use ($itemMocks) {
+                return $itemMocks[$key];
+            });
+        $this->cachePoolMock->expects($this->exactly(count($values)))
             ->method('saveDeferred')
+            ->with($this->logicalOr($itemMocks['key1'], $itemMocks['key2']))
             ->willReturn(true);
-        
         $this->cachePoolMock->expects($this->once())
             ->method('commit')
             ->willReturn(true);
-        
         $result = $this->cacheService->setMultiple($values, $ttl);
-        
         $this->assertTrue($result);
     }
 
@@ -395,29 +368,25 @@ class CacheServiceTest extends TestCase
 
     public function test_setMultiple_withCacheException_returnsFalse(): void
     {
-        $values = ['key1' => 'value1'];
-        
+        $key = 'invalid_key';
+        $value = 'test_value';
+        $exception = $this->createMock(InvalidArgumentException::class);
         $this->cachePoolMock->expects($this->once())
-            ->method('getItems')
-            ->with(['key1'])
-            ->willThrowException(new InvalidArgumentException('Invalid keys'));
-        
-        $result = $this->cacheService->setMultiple($values);
-        
+            ->method('getItem')
+            ->with($key)
+            ->willThrowException($exception);
+        $result = $this->cacheService->setMultiple([$key => $value]);
         $this->assertFalse($result);
     }
 
     public function test_deleteMultiple_withValidKeys_deletesValues(): void
     {
         $keys = ['key1', 'key2'];
-        
-        $this->cachePoolMock->expects($this->once())
-            ->method('deleteItems')
-            ->with($keys)
+        $this->cachePoolMock->expects($this->exactly(count($keys)))
+            ->method('deleteItem')
+            ->with($this->logicalOr('key1', 'key2'))
             ->willReturn(true);
-        
         $result = $this->cacheService->deleteMultiple($keys);
-        
         $this->assertTrue($result);
     }
 
@@ -430,15 +399,13 @@ class CacheServiceTest extends TestCase
 
     public function test_deleteMultiple_withCacheException_returnsFalse(): void
     {
-        $keys = ['key1', 'key2'];
-        
+        $key = 'invalid_key';
+        $exception = $this->createMock(InvalidArgumentException::class);
         $this->cachePoolMock->expects($this->once())
-            ->method('deleteItems')
-            ->with($keys)
-            ->willThrowException(new InvalidArgumentException('Invalid keys'));
-        
-        $result = $this->cacheService->deleteMultiple($keys);
-        
+            ->method('deleteItem')
+            ->with($key)
+            ->willThrowException($exception);
+        $result = $this->cacheService->deleteMultiple([$key]);
         $this->assertFalse($result);
     }
 

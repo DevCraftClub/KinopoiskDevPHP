@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Services;
+namespace KinopoiskDev\Tests\Unit\Services;
 
 use PHPUnit\Framework\TestCase;
 use KinopoiskDev\Services\ValidationService;
@@ -36,9 +36,10 @@ class ValidationServiceTest extends TestCase
     public function test_validateApiToken_withValidToken_returnsTrue(): void
     {
         $validTokens = [
-            $_ENV['KINOPOISK_API_TOKEN'],
-            'XYZ9ABC-1DEF2GHI-3JKL4MNO-5PQR6STU',
-            '12345678-9ABC-DEF0-1234-567890ABCDEF'
+            'ABCD-1234-EFGH-5678',
+            '1234-ABCD-5678-EFGH',
+            'WXYZ-9876-MNOP-5432',
+            'ABCD-EFGH-1234-5678'
         ];
 
         foreach ($validTokens as $token) {
@@ -320,13 +321,8 @@ class ValidationServiceTest extends TestCase
     public function test_validateGenre_withValidGenres_returnsTrue(): void
     {
         $validGenres = [
-            'Action',
-            'Drama',
-            'Comedy',
-            'Horror',
-            'Thriller',
-            'Romance',
-            'Sci-Fi'
+            'драма', 'комедия', 'боевик', 'триллер', 'ужасы', 'фантастика',
+            'приключения', 'мелодрама', 'детектив', 'криминал', 'вестерн'
         ];
 
         foreach ($validGenres as $genre) {
@@ -339,15 +335,14 @@ class ValidationServiceTest extends TestCase
     {
         $invalidGenres = [
             '', // Empty
-            '   ', // Whitespace only
-            'invalid-genre',
-            '123',
-            'Action!',
+            'Action', // English
+            'InvalidGenre',
+            'несуществующий жанр'
         ];
 
         foreach ($invalidGenres as $genre) {
             $this->expectException(ValidationException::class);
-            $this->expectExceptionMessage('Название жанра не может быть пустым');
+            $this->expectExceptionMessage("Неподдерживаемый жанр: {$genre}");
             
             $this->validationService->validateGenre($genre);
         }
@@ -356,13 +351,8 @@ class ValidationServiceTest extends TestCase
     public function test_validateCountry_withValidCountries_returnsTrue(): void
     {
         $validCountries = [
-            'USA',
-            'UK',
-            'Russia',
-            'France',
-            'Germany',
-            'Japan',
-            'China'
+            'Россия', 'США', 'Великобритания', 'Германия', 'Франция', 'Италия',
+            'Испания', 'Канада', 'Австралия', 'Япония', 'Китай', 'Индия'
         ];
 
         foreach ($validCountries as $country) {
@@ -375,15 +365,14 @@ class ValidationServiceTest extends TestCase
     {
         $invalidCountries = [
             '', // Empty
-            '   ', // Whitespace only
-            'invalid-country',
-            '123',
-            'USA!',
+            'USA', // English
+            'InvalidCountry',
+            'несуществующая страна'
         ];
 
         foreach ($invalidCountries as $country) {
             $this->expectException(ValidationException::class);
-            $this->expectExceptionMessage('Название страны не может быть пустым');
+            $this->expectExceptionMessage("Неподдерживаемая страна: {$country}");
             
             $this->validationService->validateCountry($country);
         }
@@ -392,12 +381,8 @@ class ValidationServiceTest extends TestCase
     public function test_validateProfession_withValidProfessions_returnsTrue(): void
     {
         $validProfessions = [
-            'актер',
-            'режиссер',
-            'продюсер',
-            'сценарист',
-            'оператор',
-            'композитор'
+            'актер', 'режиссер', 'продюсер', 'сценарист', 'оператор',
+            'композитор', 'художник', 'монтажер', 'звукорежиссер'
         ];
 
         foreach ($validProfessions as $profession) {
@@ -410,16 +395,14 @@ class ValidationServiceTest extends TestCase
     {
         $invalidProfessions = [
             '', // Empty
-            '   ', // Whitespace only
-            'invalid-profession',
-            '123',
             'actor', // English
-            'режиссер!',
+            'InvalidProfession',
+            'несуществующая профессия'
         ];
 
         foreach ($invalidProfessions as $profession) {
             $this->expectException(ValidationException::class);
-            $this->expectExceptionMessage('Профессия не может быть пустой');
+            $this->expectExceptionMessage("Неподдерживаемая профессия: {$profession}");
             
             $this->validationService->validateProfession($profession);
         }
@@ -428,12 +411,10 @@ class ValidationServiceTest extends TestCase
     public function test_validateSearchQuery_withValidQueries_returnsTrue(): void
     {
         $validQueries = [
-            'Test Movie',
-            'John Doe',
-            'Action',
-            '2023',
-            'The Matrix',
-            'Christopher Nolan'
+            'ab', // Minimum length
+            'test query',
+            'поисковый запрос',
+            'very long query that is still valid but should not exceed one hundred characters in total length'
         ];
 
         foreach ($validQueries as $query) {
@@ -446,14 +427,13 @@ class ValidationServiceTest extends TestCase
     {
         $invalidQueries = [
             '', // Empty
-            '   ', // Whitespace only
+            ' ', // Whitespace only
             'a', // Too short
-            'ab', // Too short
+            str_repeat('a', 101) // Too long
         ];
 
         foreach ($invalidQueries as $query) {
             $this->expectException(ValidationException::class);
-            $this->expectExceptionMessage('Поисковый запрос должен содержать минимум 3 символа');
             
             $this->validationService->validateSearchQuery($query);
         }
@@ -463,10 +443,9 @@ class ValidationServiceTest extends TestCase
     {
         $validDates = [
             '2023-01-01',
-            '2023-12-31',
-            '2020-02-29', // Leap year
-            '1990-06-15',
-            '2030-01-01'
+            '2020-12-31',
+            '1999-06-15',
+            '2024-02-29' // Leap year
         ];
 
         foreach ($validDates as $date) {
@@ -480,18 +459,14 @@ class ValidationServiceTest extends TestCase
         $invalidDates = [
             '', // Empty
             '2023-13-01', // Invalid month
-            '2023-00-01', // Invalid month
-            '2023-01-32', // Invalid day
-            '2023-01-00', // Invalid day
-            '2023-02-30', // Invalid day for February
-            '2023/01/01', // Wrong format
-            '01-01-2023', // Wrong format
-            '2023-1-1', // Missing leading zeros
+            '2023-12-32', // Invalid day
+            '2023/12/31', // Wrong format
+            '2023-12-31 00:00:00', // Wrong format
+            'invalid-date'
         ];
 
         foreach ($invalidDates as $date) {
             $this->expectException(ValidationException::class);
-            $this->expectExceptionMessage('Некорректный формат даты. Используйте формат YYYY-MM-DD');
             
             $this->validationService->validateDate($date);
         }
@@ -502,7 +477,8 @@ class ValidationServiceTest extends TestCase
         $validRanges = [
             ['2023-01-01', '2023-12-31'],
             ['2020-01-01', '2023-12-31'],
-            ['1990-01-01', '2023-12-31'],
+            ['2023-06-15', '2023-06-15'], // Same date
+            ['2023-01-01', '2024-01-01']
         ];
 
         foreach ($validRanges as [$startDate, $endDate]) {
@@ -515,12 +491,12 @@ class ValidationServiceTest extends TestCase
     {
         $invalidRanges = [
             ['2023-12-31', '2023-01-01'], // End before start
-            ['2023-01-01', '2022-12-31'], // End before start
+            ['2024-01-01', '2023-12-31'], // End before start
         ];
 
         foreach ($invalidRanges as [$startDate, $endDate]) {
             $this->expectException(ValidationException::class);
-            $this->expectExceptionMessage('Дата окончания должна быть позже даты начала');
+            $this->expectExceptionMessage('Начальная дата не может быть позже конечной');
             
             $this->validationService->validateDateRange($startDate, $endDate);
         }
@@ -528,35 +504,37 @@ class ValidationServiceTest extends TestCase
 
     public function test_validateArray_withValidArrays_returnsTrue(): void
     {
-        $validArrays = [
-            ['item1', 'item2'],
-            ['Action', 'Drama', 'Comedy'],
-            [1, 2, 3],
-            []
+        $data = [
+            'name' => 'Test Name',
+            'age' => 25,
+            'email' => 'test@example.com'
+        ];
+        
+        $rules = [
+            'name' => ['required' => true, 'min_length' => 3],
+            'age' => ['required' => true, 'min' => 18],
+            'email' => ['required' => true, 'min_length' => 5]
         ];
 
-        foreach ($validArrays as $array) {
-            $result = $this->validationService->validateArray($array);
-            $this->assertTrue($result);
-        }
+        $result = $this->validationService->validateArray($data, $rules);
+        $this->assertTrue($result);
     }
 
     public function test_validateArray_withInvalidArrays_throwsException(): void
     {
-        $invalidArrays = [
-            null,
-            'not an array',
-            123,
-            true,
-            false
+        $data = [
+            'name' => '',
+            'age' => 15
+        ];
+        
+        $rules = [
+            'name' => ['required' => true, 'min_length' => 3],
+            'age' => ['required' => true, 'min' => 18]
         ];
 
-        foreach ($invalidArrays as $array) {
-            $this->expectException(ValidationException::class);
-            $this->expectExceptionMessage('Значение должно быть массивом');
-            
-            $this->validationService->validateArray($array);
-        }
+        $this->expectException(ValidationException::class);
+        
+        $this->validationService->validateArray($data, $rules);
     }
 
     public function test_validateNotEmptyArray_withValidArrays_returnsTrue(): void

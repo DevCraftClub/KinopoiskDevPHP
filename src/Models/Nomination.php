@@ -74,7 +74,7 @@ use KinopoiskDev\Utils\DataManager;
 	 * @return \KinopoiskDev\Models\Nomination Новый экземпляр класса Nomination с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			award: DataManager::parseObjectData($data, 'award', NominationAward::class),
 			title: $data['title'] ?? NULL,

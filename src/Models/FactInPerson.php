@@ -59,7 +59,7 @@ namespace KinopoiskDev\Models;
 	 *
 	 * @throws \TypeError При отсутствии обязательного поля 'value' в массиве данных
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			value: $data['value'],
 		);

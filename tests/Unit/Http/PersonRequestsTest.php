@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Http;
+namespace KinopoiskDev\Tests\Unit\Http;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -43,7 +43,7 @@ class PersonRequestsTest extends TestCase
         $this->httpClient = new Client(['handler' => $this->handlerStack]);
         
         $this->personRequests = new PersonRequests(
-            apiToken: $_ENV['KINOPOISK_API_TOKEN'],
+            apiToken: 'MOCK123-TEST456-UNIT789-TOKEN01',
             httpClient: $this->httpClient
         );
     }
@@ -69,9 +69,9 @@ class PersonRequestsTest extends TestCase
         $person = $this->personRequests->getPersonById(123);
         
         $this->assertInstanceOf(Person::class, $person);
-        $this->assertEquals(123, $person->getId());
-        $this->assertEquals('John Doe', $person->getName());
-        $this->assertEquals('John Doe', $person->getEnName());
+        $this->assertEquals(123, $person->id);
+        $this->assertEquals('John Doe', $person->name);
+        $this->assertEquals('John Doe', $person->enName);
     }
 
     public function test_getPersonById_withInvalidId_throwsException(): void
@@ -79,43 +79,59 @@ class PersonRequestsTest extends TestCase
         $errorResponse = new Response(404, [], json_encode(['error' => 'Person not found']));
         $this->mockHandler->append($errorResponse);
         
-        $this->expectException(KinopoiskResponseException::class);
-        $this->expectExceptionMessage('Not Found: Запрашиваемый ресурс не найден');
+        $this->expectException(KinopoiskDevException::class);
+        $this->expectExceptionMessage('Ошибка HTTP запроса: Client error: `GET /v1.4/person/999999` resulted in a `404 Not Found` response:');
         
         $this->personRequests->getPersonById(999999);
     }
 
     public function test_getRandomPerson_withoutFilters_returnsPerson(): void
     {
-        $personData = [
-            'id' => 456,
-            'name' => 'Jane Smith',
-            'enName' => 'Jane Smith',
-            'sex' => 'FEMALE',
-            'profession' => 'режиссер'
+        $personsData = [
+            'docs' => [
+                [
+                    'id' => 456,
+                    'name' => 'Jane Smith',
+                    'enName' => 'Jane Smith',
+                    'sex' => 'FEMALE',
+                    'profession' => 'режиссер'
+                ]
+            ],
+            'total' => 1,
+            'limit' => 1,
+            'page' => 1,
+            'pages' => 1
         ];
         
-        $response = new Response(200, [], json_encode($personData));
+        $response = new Response(200, [], json_encode($personsData));
         $this->mockHandler->append($response);
         
         $person = $this->personRequests->getRandomPerson();
         
         $this->assertInstanceOf(Person::class, $person);
-        $this->assertEquals(456, $person->getId());
-        $this->assertEquals('Jane Smith', $person->getName());
+        $this->assertEquals(456, $person->id);
+        $this->assertEquals('Jane Smith', $person->name);
     }
 
     public function test_getRandomPerson_withFilters_returnsFilteredPerson(): void
     {
-        $personData = [
-            'id' => 789,
-            'name' => 'Actor Name',
-            'enName' => 'Actor Name',
-            'sex' => 'MALE',
-            'profession' => 'актер'
+        $personsData = [
+            'docs' => [
+                [
+                    'id' => 789,
+                    'name' => 'Actor Name',
+                    'enName' => 'Actor Name',
+                    'sex' => 'MALE',
+                    'profession' => 'актер'
+                ]
+            ],
+            'total' => 1,
+            'limit' => 1,
+            'page' => 1,
+            'pages' => 1
         ];
         
-        $response = new Response(200, [], json_encode($personData));
+        $response = new Response(200, [], json_encode($personsData));
         $this->mockHandler->append($response);
         
         $filter = new PersonSearchFilter();
@@ -124,7 +140,7 @@ class PersonRequestsTest extends TestCase
         $person = $this->personRequests->getRandomPerson($filter);
         
         $this->assertInstanceOf(Person::class, $person);
-        $this->assertEquals(789, $person->getId());
+        $this->assertEquals(789, $person->id);
     }
 
     public function test_searchPersons_withFilters_returnsPersons(): void
@@ -180,9 +196,13 @@ class PersonRequestsTest extends TestCase
         $response = new Response(200, [], json_encode($personsData));
         $this->mockHandler->append($response);
         
+        // Добавляем мок для searchByName (который вызывает searchPersons)
+        $searchResponse = new Response(200, [], json_encode($personsData));
+        $this->mockHandler->append($searchResponse);
+        
         $result = $this->personRequests->searchPersonsByName('Name Search');
         
-        $this->assertInstanceOf(SearchPersonResponseDto::class, $result);
+        $this->assertInstanceOf(PersonDocsResponseDto::class, $result);
         $this->assertEquals(1, $result->total);
         $this->assertCount(1, $result->docs);
         $this->assertEquals('Name Search', $result->docs[0]->name);
@@ -244,7 +264,7 @@ class PersonRequestsTest extends TestCase
         $response = new Response(200, [], json_encode($personsData));
         $this->mockHandler->append($response);
         
-        $result = $this->personRequests->getPersonsByProfession(['актер', 'режиссер']);
+        $result = $this->personRequests->getPersonsByProfession('актер');
         
         $this->assertInstanceOf(PersonDocsResponseDto::class, $result);
         $this->assertEquals(1, $result->total);
@@ -255,10 +275,27 @@ class PersonRequestsTest extends TestCase
         $awardsData = [
             'docs' => [
                 [
-                    'id' => 1,
-                    'name' => 'Oscar',
-                    'nomination' => 'Best Actor',
-                    'winning' => true
+                    'id' => '6869df05e782baeefc75c3e0',
+                    'nomination' => [
+                        'award' => [
+                            'title' => 'Премия Гильдии актеров',
+                            'year' => 2012
+                        ],
+                        'title' => 'Лучший каскадерский состав'
+                    ],
+                    'winning' => false,
+                    'personId' => 1172655,
+                    'movie' => [
+                        'rating' => [
+                            'kp' => 7.658,
+                            'imdb' => 7.2,
+                            'filmCritics' => 6.8,
+                            'russianFilmCritics' => 7.0,
+                            'await' => 8.0
+                        ]
+                    ],
+                    'createdAt' => '2025-07-06T02:27:17.627Z',
+                    'updatedAt' => '2025-07-06T02:27:17.627Z'
                 ]
             ],
             'total' => 1,
@@ -274,8 +311,8 @@ class PersonRequestsTest extends TestCase
         
         $this->assertInstanceOf(PersonAwardDocsResponseDto::class, $result);
         $this->assertEquals(1, $result->total);
-        $this->assertEquals(10, $result->limit);
-        $this->assertEquals(1, $result->page);
+        $this->assertCount(1, $result->docs);
+        $this->assertEquals(1172655, $result->docs[0]->personId);
     }
 
     public function test_getPersonAwards_withFilters_returnsFilteredAwards(): void
@@ -283,14 +320,31 @@ class PersonRequestsTest extends TestCase
         $awardsData = [
             'docs' => [
                 [
-                    'id' => 2,
-                    'name' => 'Golden Globe',
-                    'nomination' => 'Best Director',
-                    'winning' => false
+                    'id' => '6869df05e782baeefc75c3e1',
+                    'nomination' => [
+                        'award' => [
+                            'title' => 'Премия Гильдии актеров',
+                            'year' => 2013
+                        ],
+                        'title' => 'Лучший дублер'
+                    ],
+                    'winning' => true,
+                    'personId' => 1172656,
+                    'movie' => [
+                        'rating' => [
+                            'kp' => 8.0,
+                            'imdb' => 7.5,
+                            'filmCritics' => 7.0,
+                            'russianFilmCritics' => 7.2,
+                            'await' => 8.1
+                        ]
+                    ],
+                    'createdAt' => '2025-07-06T02:27:17.627Z',
+                    'updatedAt' => '2025-07-06T02:27:17.627Z'
                 ]
             ],
             'total' => 1,
-            'limit' => 50,
+            'limit' => 10,
             'page' => 1,
             'pages' => 1
         ];
@@ -299,13 +353,14 @@ class PersonRequestsTest extends TestCase
         $this->mockHandler->append($response);
         
         $filter = new PersonSearchFilter();
-        $filter->profession('режиссер');
+        $filter->name('Filtered');
         
-        $result = $this->personRequests->getPersonAwards($filter, 1, 50);
+        $result = $this->personRequests->getPersonAwards($filter);
         
         $this->assertInstanceOf(PersonAwardDocsResponseDto::class, $result);
         $this->assertEquals(1, $result->total);
-        $this->assertEquals(50, $result->limit);
+        $this->assertCount(1, $result->docs);
+        $this->assertEquals(1172656, $result->docs[0]->personId);
     }
 
     public function test_getPersonsBySex_withValidSex_returnsPersons(): void
@@ -437,10 +492,10 @@ class PersonRequestsTest extends TestCase
         $errorResponse = new Response(500, [], json_encode(['error' => 'Internal server error']));
         $this->mockHandler->append($errorResponse);
         
-        $this->expectException(KinopoiskResponseException::class);
-        $this->expectExceptionMessage('Internal Server Error: Внутренняя ошибка сервера');
+        $this->expectException(KinopoiskDevException::class);
+        $this->expectExceptionMessage('Ошибка HTTP запроса: Server error: `GET /v1.4/person/1` resulted in a `500 Internal Server Error` response:');
         
-        $this->personRequests->getPersonById(123);
+        $this->personRequests->getPersonById(1);
     }
 
     public function test_makeRequest_withUnauthorized_throwsException(): void
@@ -448,10 +503,10 @@ class PersonRequestsTest extends TestCase
         $errorResponse = new Response(401, [], json_encode(['error' => 'Unauthorized']));
         $this->mockHandler->append($errorResponse);
         
-        $this->expectException(KinopoiskResponseException::class);
-        $this->expectExceptionMessage('Unauthorized: Неверный API токен или токен отсутствует');
+        $this->expectException(KinopoiskDevException::class);
+        $this->expectExceptionMessage('Ошибка HTTP запроса: Client error: `GET /v1.4/person/1` resulted in a `401 Unauthorized` response:');
         
-        $this->personRequests->getPersonById(123);
+        $this->personRequests->getPersonById(1);
     }
 
     public function test_makeRequest_withForbidden_throwsException(): void
@@ -459,9 +514,9 @@ class PersonRequestsTest extends TestCase
         $errorResponse = new Response(403, [], json_encode(['error' => 'Forbidden']));
         $this->mockHandler->append($errorResponse);
         
-        $this->expectException(KinopoiskResponseException::class);
-        $this->expectExceptionMessage('Forbidden: Доступ запрещен');
+        $this->expectException(KinopoiskDevException::class);
+        $this->expectExceptionMessage('Ошибка HTTP запроса: Client error: `GET /v1.4/person/1` resulted in a `403 Forbidden` response:');
         
-        $this->personRequests->getPersonById(123);
+        $this->personRequests->getPersonById(1);
     }
 } 

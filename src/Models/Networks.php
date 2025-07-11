@@ -85,7 +85,7 @@ use KinopoiskDev\Utils\DataManager;
 	 * $emptyNetworks = Networks::fromArray([]);
 	 * ```
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			items: DataManager::parseObjectArray($data, 'items', NetworkItem::class, NULL),
 		);

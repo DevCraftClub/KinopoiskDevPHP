@@ -6,14 +6,7 @@
          cacheDirectory=".phpunit.cache"
          cacheResultFile=".phpunit.cache/test-results"
          executionOrder="depends,defects"
-         forceCoversAnnotation="false"
-         beStrictAboutCoversAnnotation="false"
          beStrictAboutOutputDuringTests="false"
-         beStrictAboutTodoAnnotatedTests="false"
-         convertDeprecationsToExceptions="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
          processIsolation="false"
          stopOnDefect="false"
          stopOnFailure="false"
@@ -23,8 +16,7 @@
          stopOnSkipped="false"
          failOnRisky="false"
          failOnWarning="false"
-         failOnEmptyTestSuite="false"
-         verbose="true">
+         failOnEmptyTestSuite="false">
     <testsuites>
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
@@ -53,20 +45,12 @@
         <exclude>
             <directory suffix=".php">vendor</directory>
             <directory suffix=".php">tests</directory>
-        </exclude>
-    </source>
-
-    <coverage cacheDirectory=".phpunit.cache"
-              processUncoveredFiles="false">
-        <include>
-            <directory suffix=".php">src</directory>
-        </include>
-        <exclude>
-            <directory suffix=".php">vendor</directory>
-            <directory suffix=".php">tests</directory>
             <directory suffix=".php">examples</directory>
             <directory suffix=".php">docs</directory>
         </exclude>
+    </source>
+
+    <coverage>
         <report>
             <html outputDirectory="coverage/html"/>
             <text outputFile="coverage/coverage.txt"/>
@@ -77,21 +61,4 @@
     <php>
         <!-- Environment variables are loaded from .env.testing file via bootstrap.php -->
     </php>
-
-    <listeners>
-        <listener class="Tests\Listeners\TestListener">
-            <arguments>
-                <array>
-                    <element key="printerClass">
-                        <string>PHPUnit\TextUI\DefaultResultPrinter</string>
-                    </element>
-                </array>
-            </arguments>
-        </listener>
-    </listeners>
-
-    <extensions>
-        <extension class="PHPUnit\Event\TestRunner\ExecutionStartedSubscriber"/>
-        <extension class="PHPUnit\Event\TestRunner\ExecutionFinishedSubscriber"/>
-    </extensions>
 </phpunit>

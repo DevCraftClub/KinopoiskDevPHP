@@ -62,7 +62,7 @@ namespace KinopoiskDev\Models;
 	 *
 	 * @return \KinopoiskDev\Models\Fees Новый экземпляр класса Fees с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			world : isset($data['world']) ? CurrencyValue::fromArray($data['world']) : NULL,
 			russia: isset($data['russia']) ? CurrencyValue::fromArray($data['russia']) : NULL,

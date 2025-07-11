@@ -61,7 +61,7 @@ use KinopoiskDev\Utils\DataManager;
 	 * @return \KinopoiskDev\Models\Episode Новый экземпляр класса Episode с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			number       : $data['number'] ?? NULL,
 			name         : $data['name'] ?? NULL,

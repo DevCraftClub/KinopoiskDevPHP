@@ -90,10 +90,27 @@ class SortCriteria {
 			return NULL;
 		}
 
-		return new self(
-			$data['field'],
-			$data['direction'] ?? NULL,
-		);
+		$field = $data['field'];
+		if (!$field instanceof SortField) {
+			// Try to convert from string if needed
+			$field = SortField::tryFrom(is_string($field) ? $field : '');
+			if (!$field) {
+				return NULL;
+			}
+		}
+
+		$direction = $data['direction'] ?? null;
+		if ($direction === null) {
+			$direction = $field->getDefaultDirection();
+		} elseif (!$direction instanceof SortDirection) {
+			// Try to convert from string if needed
+			$direction = SortDirection::tryFrom(is_string($direction) ? $direction : '');
+			if (!$direction) {
+				$direction = $field->getDefaultDirection();
+			}
+		}
+
+		return new self($field, $direction);
 	}
 
 	/**

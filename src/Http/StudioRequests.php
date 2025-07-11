@@ -143,6 +143,97 @@ class StudioRequests extends Kinopoisk {
 	}
 
 	/**
+	 * Получает студию по её уникальному идентификатору
+	 *
+	 * @param int $studioId Уникальный идентификатор студии
+	 * @return Studio Объект студии
+	 * @throws KinopoiskDevException При ошибках API
+	 */
+	public function getStudioById(int $studioId): Studio {
+		$response = $this->makeRequest('GET', "studio/{$studioId}");
+		$data     = $this->parseResponse($response);
+
+		return Studio::fromArray($data);
+	}
+
+	/**
+	 * Получает случайную студию
+	 *
+	 * @param StudioSearchFilter|null $filters Фильтры для поиска
+	 * @return Studio Случайная студия
+	 */
+	public function getRandomStudio(?StudioSearchFilter $filters = null): Studio {
+		if (is_null($filters)) {
+			$filters = new StudioSearchFilter();
+		}
+		
+		$results = $this->searchStudios($filters, 1, 1);
+		if (empty($results->docs)) {
+			throw new KinopoiskDevException('Не найдено студий, соответствующих фильтрам');
+		}
+		
+		return $results->docs[0];
+	}
+
+	/**
+	 * Выполняет поиск студий по названию (алиас для getStudiosByTitle)
+	 *
+	 * @param string $name Название для поиска
+	 * @param int $page Номер страницы
+	 * @param int $limit Количество результатов
+	 * @return StudioDocsResponseDto Результаты поиска
+	 */
+	public function searchStudiosByName(string $name, int $page = 1, int $limit = 10): StudioDocsResponseDto {
+		return $this->getStudiosByTitle($name, $page, $limit);
+	}
+
+	/**
+	 * Получает студии по стране
+	 *
+	 * @param string $country Страна
+	 * @param int $page Номер страницы
+	 * @param int $limit Количество результатов
+	 * @return StudioDocsResponseDto Результаты поиска
+	 */
+	public function getStudiosByCountry(string $country, int $page = 1, int $limit = 10): StudioDocsResponseDto {
+		$filters = new StudioSearchFilter();
+		$filters->country($country);
+		
+		return $this->searchStudios($filters, $page, $limit);
+	}
+
+	/**
+	 * Получает студии по году основания
+	 *
+	 * @param int $year Год основания
+	 * @param int $page Номер страницы
+	 * @param int $limit Количество результатов
+	 * @return StudioDocsResponseDto Результаты поиска
+	 */
+	public function getStudiosByYear(int $year, int $page = 1, int $limit = 10): StudioDocsResponseDto {
+		$filters = new StudioSearchFilter();
+		$filters->year($year);
+		
+		return $this->searchStudios($filters, $page, $limit);
+	}
+
+	/**
+	 * Получает студии по диапазону годов основания
+	 *
+	 * @param int $fromYear Начальный год
+	 * @param int $toYear Конечный год
+	 * @param int $page Номер страницы
+	 * @param int $limit Количество результатов
+	 * @return StudioDocsResponseDto Результаты поиска
+	 */
+	public function getStudiosByYearRange(int $fromYear, int $toYear, int $page = 1, int $limit = 10): StudioDocsResponseDto {
+		$filters = new StudioSearchFilter();
+		$filters->year($fromYear, $toYear);
+		
+		return $this->searchStudios($filters, $page, $limit);
+	}
+
+	/**
 	 * Получает студии, связанные с определенным фильмом
 	 *
 	 * Находит все студии, которые принимали участие в создании указанного фильма.

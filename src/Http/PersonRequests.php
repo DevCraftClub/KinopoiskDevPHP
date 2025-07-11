@@ -224,6 +224,98 @@ class PersonRequests extends Kinopoisk {
 	}
 
 	/**
+	 * Получает случайную персону
+	 *
+	 * @param PersonSearchFilter|null $filters Фильтры для поиска
+	 * @return Person Случайная персона
+	 */
+	public function getRandomPerson(?PersonSearchFilter $filters = null): Person {
+		if (is_null($filters)) {
+			$filters = new PersonSearchFilter();
+		}
+		
+		$results = $this->searchPersons($filters, 1, 1);
+		if (empty($results->docs)) {
+			throw new KinopoiskDevException('Не найдено персон, соответствующих фильтрам');
+		}
+		
+		return $results->docs[0];
+	}
+
+	/**
+	 * Выполняет поиск персон по имени (алиас для searchByName)
+	 *
+	 * @param string $name Имя для поиска
+	 * @param int $page Номер страницы
+	 * @param int $limit Количество результатов
+	 * @return PersonDocsResponseDto Результаты поиска
+	 */
+	public function searchPersonsByName(string $name, int $page = 1, int $limit = 10): PersonDocsResponseDto {
+		return $this->searchByName($name, $page, $limit);
+	}
+
+	/**
+	 * Получает персон по полу
+	 *
+	 * @param string $sex Пол (М, Ж)
+	 * @param int $page Номер страницы
+	 * @param int $limit Количество результатов
+	 * @return PersonDocsResponseDto Результаты поиска
+	 */
+	public function getPersonsBySex(string $sex, int $page = 1, int $limit = 10): PersonDocsResponseDto {
+		$filters = new PersonSearchFilter();
+		$filters->sex($sex);
+		
+		return $this->searchPersons($filters, $page, $limit);
+	}
+
+	/**
+	 * Получает персон по году рождения
+	 *
+	 * @param int $year Год рождения
+	 * @param int $page Номер страницы
+	 * @param int $limit Количество результатов
+	 * @return PersonDocsResponseDto Результаты поиска
+	 */
+	public function getPersonsByBirthYear(int $year, int $page = 1, int $limit = 10): PersonDocsResponseDto {
+		$filters = new PersonSearchFilter();
+		$filters->birthYear($year);
+		
+		return $this->searchPersons($filters, $page, $limit);
+	}
+
+	/**
+	 * Получает персон по диапазону годов рождения
+	 *
+	 * @param int $fromYear Начальный год
+	 * @param int $toYear Конечный год
+	 * @param int $page Номер страницы
+	 * @param int $limit Количество результатов
+	 * @return PersonDocsResponseDto Результаты поиска
+	 */
+	public function getPersonsByBirthYearRange(int $fromYear, int $toYear, int $page = 1, int $limit = 10): PersonDocsResponseDto {
+		$filters = new PersonSearchFilter();
+		$filters->birthYear($fromYear, $toYear);
+		
+		return $this->searchPersons($filters, $page, $limit);
+	}
+
+	/**
+	 * Получает персон по году смерти
+	 *
+	 * @param int $year Год смерти
+	 * @param int $page Номер страницы
+	 * @param int $limit Количество результатов
+	 * @return PersonDocsResponseDto Результаты поиска
+	 */
+	public function getPersonsByDeathYear(int $year, int $page = 1, int $limit = 10): PersonDocsResponseDto {
+		$filters = new PersonSearchFilter();
+		$filters->deathYear($year);
+		
+		return $this->searchPersons($filters, $page, $limit);
+	}
+
+	/**
 	 * Получает награды персон с возможностью фильтрации и пагинации
 	 *
 	 * @api     /v1.4/person/awards
@@ -277,7 +369,7 @@ class PersonRequests extends Kinopoisk {
 	 * $awards = $kinopoisk->getPersonAwards($filter, 2, 50);
 	 * ```
 	 */
-	public function getPersonAwards(?PersonSearchFilter $filters, int $page = 1, int $limit = 10): PersonAwardDocsResponseDto {
+	public function getPersonAwards(?PersonSearchFilter $filters = null, int $page = 1, int $limit = 10): PersonAwardDocsResponseDto {
 		if ($limit > 250) {
 			throw new KinopoiskDevException('Limit не должен превышать 250');
 		}

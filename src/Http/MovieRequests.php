@@ -192,7 +192,7 @@ class MovieRequests extends Kinopoisk {
 		$response = $this->makeRequest('GET', 'movie/possible-values-by-field', $queryParams, 'v1');
 		$data     = $this->parseResponse($response);
 
-		return array_map(fn (PossibleValueDto $value) => $value->toArray(), $data);
+		return array_map(fn (array $value) => PossibleValueDto::fromArray($value)->toArray(), $data);
 	}
 
 	/**

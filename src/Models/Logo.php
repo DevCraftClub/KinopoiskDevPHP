@@ -64,7 +64,7 @@ namespace KinopoiskDev\Models;
 	 * $logo = Logo::fromArray($logoData);
 	 * ```
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			url: $data['url'] ?? NULL,
 		);

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Http;
+namespace KinopoiskDev\Tests\Unit\Http;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -41,7 +41,7 @@ class StudioRequestsTest extends TestCase
         $this->httpClient = new Client(['handler' => $this->handlerStack]);
         
         $this->studioRequests = new StudioRequests(
-            apiToken: $_ENV['KINOPOISK_API_TOKEN'],
+            apiToken: 'MOCK123-TEST456-UNIT789-TOKEN01',
             httpClient: $this->httpClient
         );
     }
@@ -54,10 +54,17 @@ class StudioRequestsTest extends TestCase
     public function test_getStudioById_withValidId_returnsStudio(): void
     {
         $studioData = [
-            'id' => 123,
-            'name' => 'Test Studio',
-            'type' => 'production',
-            'country' => 'USA'
+            'id' => '694777',
+            'subType' => 'studio',
+            'title' => 'Sunny Smiles Film',
+            'type' => 'Производство',
+            'movies' => [
+                [
+                    'id' => 5121842
+                ]
+            ],
+            'createdAt' => '2025-07-05T13:11:36.726Z',
+            'updatedAt' => '2025-07-05T13:11:36.726Z'
         ];
         
         $response = new Response(200, [], json_encode($studioData));
@@ -66,9 +73,10 @@ class StudioRequestsTest extends TestCase
         $studio = $this->studioRequests->getStudioById(123);
         
         $this->assertInstanceOf(Studio::class, $studio);
-        $this->assertEquals(123, $studio->getId());
-        $this->assertEquals('Test Studio', $studio->getName());
-        $this->assertEquals('production', $studio->getType());
+        $this->assertEquals('694777', $studio->id);
+        $this->assertEquals('Sunny Smiles Film', $studio->title);
+        $this->assertInstanceOf(\KinopoiskDev\Enums\StudioType::class, $studio->type);
+        $this->assertEquals('Производство', $studio->type->value);
     }
 
     public function test_getStudioById_withInvalidId_throwsException(): void
@@ -76,50 +84,80 @@ class StudioRequestsTest extends TestCase
         $errorResponse = new Response(404, [], json_encode(['error' => 'Studio not found']));
         $this->mockHandler->append($errorResponse);
         
-        $this->expectException(KinopoiskResponseException::class);
-        $this->expectExceptionMessage('Not Found: Запрашиваемый ресурс не найден');
+        $this->expectException(KinopoiskDevException::class);
+        $this->expectExceptionMessage('Ошибка HTTP запроса: Client error: `GET /v1.4/studio/999999` resulted in a `404 Not Found` response:');
         
         $this->studioRequests->getStudioById(999999);
     }
 
     public function test_getRandomStudio_withoutFilters_returnsStudio(): void
     {
-        $studioData = [
-            'id' => 456,
-            'name' => 'Random Studio',
-            'type' => 'distribution',
-            'country' => 'UK'
+        $studiosData = [
+            'docs' => [
+                [
+                    'id' => '695111',
+                    'subType' => 'studio',
+                    'title' => 'BlockFilm',
+                    'type' => 'Производство',
+                    'movies' => [
+                        [
+                            'id' => 5024373
+                        ]
+                    ],
+                    'createdAt' => '2025-07-05T13:11:36.475Z',
+                    'updatedAt' => '2025-07-05T13:11:36.475Z'
+                ]
+            ],
+            'total' => 1,
+            'limit' => 1,
+            'page' => 1,
+            'pages' => 1
         ];
         
-        $response = new Response(200, [], json_encode($studioData));
+        $response = new Response(200, [], json_encode($studiosData));
         $this->mockHandler->append($response);
         
         $studio = $this->studioRequests->getRandomStudio();
         
         $this->assertInstanceOf(Studio::class, $studio);
-        $this->assertEquals(456, $studio->getId());
-        $this->assertEquals('Random Studio', $studio->getName());
+        $this->assertEquals('695111', $studio->id);
+        $this->assertEquals('BlockFilm', $studio->title);
     }
 
     public function test_getRandomStudio_withFilters_returnsFilteredStudio(): void
     {
-        $studioData = [
-            'id' => 789,
-            'name' => 'Filtered Studio',
-            'type' => 'production',
-            'country' => 'USA'
+        $studiosData = [
+            'docs' => [
+                [
+                    'id' => '789',
+                    'subType' => 'studio',
+                    'title' => 'Filtered Studio',
+                    'type' => 'Производство',
+                    'movies' => [
+                        [
+                            'id' => 123456
+                        ]
+                    ],
+                    'createdAt' => '2025-07-05T13:11:36.475Z',
+                    'updatedAt' => '2025-07-05T13:11:36.475Z'
+                ]
+            ],
+            'total' => 1,
+            'limit' => 1,
+            'page' => 1,
+            'pages' => 1
         ];
         
-        $response = new Response(200, [], json_encode($studioData));
+        $response = new Response(200, [], json_encode($studiosData));
         $this->mockHandler->append($response);
         
         $filter = new StudioSearchFilter();
-        $filter->type('production');
+        $filter->type('Производство');
         
         $studio = $this->studioRequests->getRandomStudio($filter);
         
         $this->assertInstanceOf(Studio::class, $studio);
-        $this->assertEquals(789, $studio->getId());
+        $this->assertEquals('789', $studio->id);
     }
 
     public function test_searchStudios_withFilters_returnsStudios(): void
@@ -127,10 +165,17 @@ class StudioRequestsTest extends TestCase
         $studiosData = [
             'docs' => [
                 [
-                    'id' => 101,
-                    'name' => 'Search Result Studio',
-                    'type' => 'production',
-                    'country' => 'USA'
+                    'id' => '597748',
+                    'subType' => 'studio',
+                    'title' => 'Pith Quest Films',
+                    'type' => 'Производство',
+                    'movies' => [
+                        [
+                            'id' => 1378893
+                        ]
+                    ],
+                    'createdAt' => '2025-07-05T13:11:20.025Z',
+                    'updatedAt' => '2025-07-05T13:11:20.025Z'
                 ]
             ],
             'total' => 1,
@@ -150,7 +195,7 @@ class StudioRequestsTest extends TestCase
         $this->assertInstanceOf(StudioDocsResponseDto::class, $result);
         $this->assertEquals(1, $result->total);
         $this->assertCount(1, $result->docs);
-        $this->assertEquals('Search Result Studio', $result->docs[0]->name);
+        $this->assertEquals('Pith Quest Films', $result->docs[0]->title);
     }
 
     public function test_searchStudiosByName_withValidQuery_returnsStudios(): void
@@ -158,10 +203,17 @@ class StudioRequestsTest extends TestCase
         $studiosData = [
             'docs' => [
                 [
-                    'id' => 202,
-                    'name' => 'Name Search Studio',
-                    'type' => 'distribution',
-                    'country' => 'UK'
+                    'id' => '202',
+                    'subType' => 'studio',
+                    'title' => 'Name Search Studio',
+                    'type' => 'Дистрибуция',
+                    'movies' => [
+                        [
+                            'id' => 123456
+                        ]
+                    ],
+                    'createdAt' => '2025-07-05T13:11:36.475Z',
+                    'updatedAt' => '2025-07-05T13:11:36.475Z'
                 ]
             ],
             'total' => 1,
@@ -175,10 +227,10 @@ class StudioRequestsTest extends TestCase
         
         $result = $this->studioRequests->searchStudiosByName('Name Search');
         
-        $this->assertInstanceOf(SearchStudioResponseDto::class, $result);
+        $this->assertInstanceOf(StudioDocsResponseDto::class, $result);
         $this->assertEquals(1, $result->total);
         $this->assertCount(1, $result->docs);
-        $this->assertEquals('Name Search Studio', $result->docs[0]->name);
+        $this->assertEquals('Name Search Studio', $result->docs[0]->title);
     }
 
     public function test_getStudiosByType_withValidType_returnsStudios(): void
@@ -234,7 +286,7 @@ class StudioRequestsTest extends TestCase
         $response = new Response(200, [], json_encode($studiosData));
         $this->mockHandler->append($response);
         
-        $result = $this->studioRequests->getStudiosByType(['production', 'distribution']);
+        $result = $this->studioRequests->getStudiosByType('production');
         
         $this->assertInstanceOf(StudioDocsResponseDto::class, $result);
         $this->assertEquals(1, $result->total);
@@ -287,7 +339,7 @@ class StudioRequestsTest extends TestCase
         $response = new Response(200, [], json_encode($studiosData));
         $this->mockHandler->append($response);
         
-        $result = $this->studioRequests->getStudiosByCountry(['USA', 'UK']);
+        $result = $this->studioRequests->getStudiosByCountry('USA');
         
         $this->assertInstanceOf(StudioDocsResponseDto::class, $result);
         $this->assertEquals(1, $result->total);
@@ -365,10 +417,10 @@ class StudioRequestsTest extends TestCase
         $errorResponse = new Response(500, [], json_encode(['error' => 'Internal server error']));
         $this->mockHandler->append($errorResponse);
         
-        $this->expectException(KinopoiskResponseException::class);
-        $this->expectExceptionMessage('Internal Server Error: Внутренняя ошибка сервера');
+        $this->expectException(KinopoiskDevException::class);
+        $this->expectExceptionMessage('Ошибка HTTP запроса: Server error: `GET /v1.4/studio/1` resulted in a `500 Internal Server Error` response:');
         
-        $this->studioRequests->getStudioById(123);
+        $this->studioRequests->getStudioById(1);
     }
 
     public function test_makeRequest_withUnauthorized_throwsException(): void
@@ -376,10 +428,10 @@ class StudioRequestsTest extends TestCase
         $errorResponse = new Response(401, [], json_encode(['error' => 'Unauthorized']));
         $this->mockHandler->append($errorResponse);
         
-        $this->expectException(KinopoiskResponseException::class);
-        $this->expectExceptionMessage('Unauthorized: Неверный API токен или токен отсутствует');
+        $this->expectException(KinopoiskDevException::class);
+        $this->expectExceptionMessage('Ошибка HTTP запроса: Client error: `GET /v1.4/studio/1` resulted in a `401 Unauthorized` response:');
         
-        $this->studioRequests->getStudioById(123);
+        $this->studioRequests->getStudioById(1);
     }
 
     public function test_makeRequest_withForbidden_throwsException(): void
@@ -387,9 +439,9 @@ class StudioRequestsTest extends TestCase
         $errorResponse = new Response(403, [], json_encode(['error' => 'Forbidden']));
         $this->mockHandler->append($errorResponse);
         
-        $this->expectException(KinopoiskResponseException::class);
-        $this->expectExceptionMessage('Forbidden: Доступ запрещен');
+        $this->expectException(KinopoiskDevException::class);
+        $this->expectExceptionMessage('Ошибка HTTP запроса: Client error: `GET /v1.4/studio/1` resulted in a `403 Forbidden` response:');
         
-        $this->studioRequests->getStudioById(123);
+        $this->studioRequests->getStudioById(1);
     }
 } 

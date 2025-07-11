@@ -73,7 +73,7 @@ class CurrencyValue implements BaseModel {
 	 *
 	 * @return static Новый экземпляр класса CurrencyValue с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			value   : $data['value'] ?? NULL,
 			currency: $data['currency'] ?? NULL,

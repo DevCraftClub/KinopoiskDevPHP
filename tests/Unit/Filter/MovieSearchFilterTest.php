@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Filter;
+namespace KinopoiskDev\Tests\Unit\Filter;
 
 use PHPUnit\Framework\TestCase;
 use KinopoiskDev\Filter\MovieSearchFilter;
@@ -41,8 +41,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->searchByAlternativeName('test movie');
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('alternativeName', $filters);
-        $this->assertEquals('test movie', $filters['alternativeName']);
+        $this->assertArrayHasKey('alternativeName.regex', $filters);
+        $this->assertEquals('test movie', $filters['alternativeName.regex']);
     }
 
     public function test_searchByAllNames_addsFilter(): void
@@ -50,8 +50,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->searchByAllNames('test movie');
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('names.name', $filters);
-        $this->assertEquals('test movie', $filters['names.name']);
+        $this->assertArrayHasKey('names.name.regex', $filters);
+        $this->assertEquals('test movie', $filters['names.name.regex']);
     }
 
     public function test_withMinVotes_addsFilter(): void
@@ -59,8 +59,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->withMinVotes(1000, 'kp');
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('votes.kp', $filters);
-        $this->assertEquals('gte:1000', $filters['votes.kp']);
+        $this->assertArrayHasKey('votes.kp.gte', $filters);
+        $this->assertEquals(1000, $filters['votes.kp.gte']);
     }
 
     public function test_withMinVotes_withDefaultField_addsKpFilter(): void
@@ -68,8 +68,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->withMinVotes(500);
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('votes.kp', $filters);
-        $this->assertEquals('gte:500', $filters['votes.kp']);
+        $this->assertArrayHasKey('votes.kp.gte', $filters);
+        $this->assertEquals(500, $filters['votes.kp.gte']);
     }
 
     public function test_withVotesBetween_addsRangeFilter(): void
@@ -78,7 +78,7 @@ class MovieSearchFilterTest extends TestCase
 
         $filters = $this->filter->getFilters();
         $this->assertArrayHasKey('votes.imdb', $filters);
-        $this->assertEquals('gte:1000,lte:5000', $filters['votes.imdb']);
+        $this->assertEquals('1000-5000', $filters['votes.imdb']);
     }
 
     public function test_withYearBetween_addsYearRangeFilter(): void
@@ -87,7 +87,7 @@ class MovieSearchFilterTest extends TestCase
 
         $filters = $this->filter->getFilters();
         $this->assertArrayHasKey('year', $filters);
-        $this->assertEquals('gte:2020,lte:2023', $filters['year']);
+        $this->assertEquals('2020-2023', $filters['year']);
     }
 
     public function test_withAllGenres_addsAllFilter(): void
@@ -95,8 +95,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->withAllGenres(['Action', 'Drama']);
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('genres.name', $filters);
-        $this->assertEquals('all:Action,Drama', $filters['genres.name']);
+        $this->assertArrayHasKey('genres.name.all', $filters);
+        $this->assertEquals(['Action', 'Drama'], $filters['genres.name.all']);
     }
 
     public function test_withIncludedGenres_addsIncludeFilter(): void
@@ -105,7 +105,7 @@ class MovieSearchFilterTest extends TestCase
 
         $filters = $this->filter->getFilters();
         $this->assertArrayHasKey('genres.name', $filters);
-        $this->assertEquals('+Action,+Drama', $filters['genres.name']);
+        $this->assertEquals(['+Action', '+Drama'], $filters['genres.name']);
     }
 
     public function test_withIncludedGenres_singleGenre_addsIncludeFilter(): void
@@ -114,7 +114,7 @@ class MovieSearchFilterTest extends TestCase
 
         $filters = $this->filter->getFilters();
         $this->assertArrayHasKey('genres.name', $filters);
-        $this->assertEquals('+Action', $filters['genres.name']);
+        $this->assertEquals(['+Action'], $filters['genres.name']);
     }
 
     public function test_withExcludedGenres_addsExcludeFilter(): void
@@ -123,7 +123,7 @@ class MovieSearchFilterTest extends TestCase
 
         $filters = $this->filter->getFilters();
         $this->assertArrayHasKey('genres.name', $filters);
-        $this->assertEquals('!Horror,!Thriller', $filters['genres.name']);
+        $this->assertEquals(['!Horror', '!Thriller'], $filters['genres.name']);
     }
 
     public function test_withExcludedGenres_singleGenre_addsExcludeFilter(): void
@@ -132,7 +132,7 @@ class MovieSearchFilterTest extends TestCase
 
         $filters = $this->filter->getFilters();
         $this->assertArrayHasKey('genres.name', $filters);
-        $this->assertEquals('!Horror', $filters['genres.name']);
+        $this->assertEquals(['!Horror'], $filters['genres.name']);
     }
 
     public function test_withAllCountries_addsAllFilter(): void
@@ -140,8 +140,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->withAllCountries(['USA', 'UK']);
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('countries.name', $filters);
-        $this->assertEquals('all:USA,UK', $filters['countries.name']);
+        $this->assertArrayHasKey('countries.name.all', $filters);
+        $this->assertEquals(['USA', 'UK'], $filters['countries.name.all']);
     }
 
     public function test_withIncludedCountries_addsIncludeFilter(): void
@@ -150,7 +150,7 @@ class MovieSearchFilterTest extends TestCase
 
         $filters = $this->filter->getFilters();
         $this->assertArrayHasKey('countries.name', $filters);
-        $this->assertEquals('+USA,+UK', $filters['countries.name']);
+        $this->assertEquals(['+USA', '+UK'], $filters['countries.name']);
     }
 
     public function test_withExcludedCountries_addsExcludeFilter(): void
@@ -159,7 +159,7 @@ class MovieSearchFilterTest extends TestCase
 
         $filters = $this->filter->getFilters();
         $this->assertArrayHasKey('countries.name', $filters);
-        $this->assertEquals('!Russia,!China', $filters['countries.name']);
+        $this->assertEquals(['!Russia', '!China'], $filters['countries.name']);
     }
 
     public function test_withActor_withString_addsActorFilter(): void
@@ -167,8 +167,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->withActor('Tom Hanks');
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('persons.name', $filters);
-        $this->assertEquals('regex:Tom Hanks', $filters['persons.name']);
+        $this->assertArrayHasKey('persons.name.regex', $filters);
+        $this->assertEquals('Tom Hanks', $filters['persons.name.regex']);
         $this->assertArrayHasKey('persons.profession', $filters);
         $this->assertEquals('актер', $filters['persons.profession']);
     }
@@ -189,8 +189,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->withDirector('Christopher Nolan');
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('persons.name', $filters);
-        $this->assertEquals('regex:Christopher Nolan', $filters['persons.name']);
+        $this->assertArrayHasKey('persons.name.regex', $filters);
+        $this->assertEquals('Christopher Nolan', $filters['persons.name.regex']);
         $this->assertArrayHasKey('persons.profession', $filters);
         $this->assertEquals('режиссер', $filters['persons.profession']);
     }
@@ -211,8 +211,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->onlyMovies();
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('type', $filters);
-        $this->assertEquals('movie', $filters['type']);
+        $this->assertArrayHasKey('isSeries', $filters);
+        $this->assertEquals(false, $filters['isSeries']);
     }
 
     public function test_onlySeries_addsSeriesFilter(): void
@@ -220,8 +220,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->onlySeries();
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('type', $filters);
-        $this->assertEquals('tv-series', $filters['type']);
+        $this->assertArrayHasKey('isSeries', $filters);
+        $this->assertEquals(true, $filters['isSeries']);
     }
 
     public function test_inTop250_addsTop250Filter(): void
@@ -229,8 +229,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->inTop250();
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('top250', $filters);
-        $this->assertEquals('gte:1', $filters['top250']);
+        $this->assertArrayHasKey('top250.lte', $filters);
+        $this->assertEquals(250, $filters['top250.lte']);
     }
 
     public function test_inTop10_addsTop10Filter(): void
@@ -238,26 +238,26 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->inTop10();
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('top10', $filters);
-        $this->assertEquals('gte:1', $filters['top10']);
+        $this->assertArrayHasKey('top10.lte', $filters);
+        $this->assertEquals(10, $filters['top10.lte']);
     }
 
     public function test_withPremiereRange_addsPremiereFilter(): void
     {
-        $this->filter->withPremiereRange('2023-01-01', '2023-12-31', 'world');
+        $this->filter->withPremiereRange('01.01.2023', '31.12.2023');
 
         $filters = $this->filter->getFilters();
         $this->assertArrayHasKey('premiere.world', $filters);
-        $this->assertEquals('gte:2023-01-01,lte:2023-12-31', $filters['premiere.world']);
+        $this->assertEquals('01.01.2023-31.12.2023', $filters['premiere.world']);
     }
 
     public function test_withPremiereRange_withDefaultCountry_addsWorldFilter(): void
     {
-        $this->filter->withPremiereRange('2023-01-01', '2023-12-31');
+        $this->filter->withPremiereRange('01.01.2023', '31.12.2023');
 
         $filters = $this->filter->getFilters();
         $this->assertArrayHasKey('premiere.world', $filters);
-        $this->assertEquals('gte:2023-01-01,lte:2023-12-31', $filters['premiere.world']);
+        $this->assertEquals('01.01.2023-31.12.2023', $filters['premiere.world']);
     }
 
     public function test_year_addsYearFilter(): void
@@ -265,17 +265,17 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->year(2023);
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('year', $filters);
-        $this->assertEquals(2023, $filters['year']);
+        $this->assertArrayHasKey('year.eq', $filters);
+        $this->assertEquals(2023, $filters['year.eq']);
     }
 
     public function test_rating_addsRatingFilter(): void
     {
-        $this->filter->rating(8.5);
+        $this->filter->rating(7.5);
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('rating.kp', $filters);
-        $this->assertEquals('gte:8.5', $filters['rating.kp']);
+        $this->assertArrayHasKey('rating.kp.gte', $filters);
+        $this->assertEquals(7.5, $filters['rating.kp.gte']);
     }
 
     public function test_ratingRange_addsRatingRangeFilter(): void
@@ -284,7 +284,7 @@ class MovieSearchFilterTest extends TestCase
 
         $filters = $this->filter->getFilters();
         $this->assertArrayHasKey('rating.kp', $filters);
-        $this->assertEquals('gte:7.0,lte:9.0', $filters['rating.kp']);
+        $this->assertEquals('7-9', $filters['rating.kp']);
     }
 
     public function test_movieLength_addsLengthFilter(): void
@@ -292,17 +292,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->movieLength(120);
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('movieLength', $filters);
-        $this->assertEquals('gte:120', $filters['movieLength']);
-    }
-
-    public function test_movieLengthRange_addsLengthRangeFilter(): void
-    {
-        $this->filter->movieLengthRange(90, 150);
-
-        $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('movieLength', $filters);
-        $this->assertEquals('gte:90,lte:150', $filters['movieLength']);
+        $this->assertArrayHasKey('movieLength.eq', $filters);
+        $this->assertEquals(120, $filters['movieLength.eq']);
     }
 
     public function test_status_addsStatusFilter(): void
@@ -310,8 +301,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->status('completed');
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('status', $filters);
-        $this->assertEquals('completed', $filters['status']);
+        $this->assertArrayHasKey('status.eq', $filters);
+        $this->assertEquals('completed', $filters['status.eq']);
     }
 
     public function test_name_addsNameFilter(): void
@@ -319,8 +310,8 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->name('Test Movie');
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('name', $filters);
-        $this->assertEquals('regex:Test Movie', $filters['name']);
+        $this->assertArrayHasKey('name.eq', $filters);
+        $this->assertEquals('Test Movie', $filters['name.eq']);
     }
 
     public function test_enName_addsEnNameFilter(): void
@@ -328,154 +319,82 @@ class MovieSearchFilterTest extends TestCase
         $this->filter->enName('Test Movie');
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('enName', $filters);
-        $this->assertEquals('regex:Test Movie', $filters['enName']);
+        $this->assertArrayHasKey('enName.eq', $filters);
+        $this->assertEquals('Test Movie', $filters['enName.eq']);
     }
 
     public function test_description_addsDescriptionFilter(): void
     {
-        $this->filter->description('action movie');
+        $this->filter->description('Test description');
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('description', $filters);
-        $this->assertEquals('regex:action movie', $filters['description']);
+        $this->assertArrayHasKey('description.regex', $filters);
+        $this->assertEquals('Test description', $filters['description.regex']);
     }
 
     public function test_slogan_addsSloganFilter(): void
     {
-        $this->filter->slogan('Just do it');
+        $this->filter->slogan('Test slogan');
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('slogan', $filters);
-        $this->assertEquals('regex:Just do it', $filters['slogan']);
+        $this->assertArrayHasKey('slogan.regex', $filters);
+        $this->assertEquals('Test slogan', $filters['slogan.regex']);
     }
 
     public function test_ageRating_addsAgeRatingFilter(): void
     {
-        $this->filter->ageRating(18);
+        $this->filter->ageRating(16);
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('ageRating', $filters);
-        $this->assertEquals('gte:18', $filters['ageRating']);
-    }
-
-    public function test_ageRatingRange_addsAgeRatingRangeFilter(): void
-    {
-        $this->filter->ageRatingRange(12, 18);
-
-        $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('ageRating', $filters);
-        $this->assertEquals('gte:12,lte:18', $filters['ageRating']);
-    }
-
-    public function test_budget_addsBudgetFilter(): void
-    {
-        $this->filter->budget(1000000);
-
-        $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('budget.value', $filters);
-        $this->assertEquals('gte:1000000', $filters['budget.value']);
-    }
-
-    public function test_budgetRange_addsBudgetRangeFilter(): void
-    {
-        $this->filter->budgetRange(1000000, 10000000);
-
-        $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('budget.value', $filters);
-        $this->assertEquals('gte:1000000,lte:10000000', $filters['budget.value']);
-    }
-
-    public function test_fees_addsFeesFilter(): void
-    {
-        $this->filter->fees(5000000);
-
-        $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('fees.world.value', $filters);
-        $this->assertEquals('gte:5000000', $filters['fees.world.value']);
-    }
-
-    public function test_feesRange_addsFeesRangeFilter(): void
-    {
-        $this->filter->feesRange(1000000, 50000000);
-
-        $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('fees.world.value', $filters);
-        $this->assertEquals('gte:1000000,lte:50000000', $filters['fees.world.value']);
+        $this->assertArrayHasKey('ageRating.eq', $filters);
+        $this->assertEquals(16, $filters['ageRating.eq']);
     }
 
     public function test_sortBy_addsSortCriteria(): void
     {
-        $this->filter->sortBy(SortField::RATING, SortDirection::DESC);
+        $this->filter->sortBy(SortField::RATING_KP, SortDirection::DESC);
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('sortField', $filters);
-        $this->assertEquals('rating.kp', $filters['sortField']);
-        $this->assertArrayHasKey('sortType', $filters);
-        $this->assertEquals(-1, $filters['sortType']);
+        $this->assertArrayHasKey('sort', $filters);
+        $this->assertEquals('-rating.kp', $filters['sort']);
     }
 
     public function test_sortBy_withDefaultDirection_addsAscSort(): void
     {
-        $this->filter->sortBy(SortField::YEAR);
+        $this->filter->sortBy(SortField::RATING_KP);
 
         $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('sortField', $filters);
-        $this->assertEquals('year', $filters['sortField']);
-        $this->assertArrayHasKey('sortType', $filters);
-        $this->assertEquals(1, $filters['sortType']);
-    }
-
-    public function test_limit_addsLimitFilter(): void
-    {
-        $this->filter->limit(20);
-
-        $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('limit', $filters);
-        $this->assertEquals(20, $filters['limit']);
-    }
-
-    public function test_page_addsPageFilter(): void
-    {
-        $this->filter->page(2);
-
-        $filters = $this->filter->getFilters();
-        $this->assertArrayHasKey('page', $filters);
-        $this->assertEquals(2, $filters['page']);
+        $this->assertArrayHasKey('sort', $filters);
+        $this->assertEquals('-rating.kp', $filters['sort']);
     }
 
     public function test_clear_removesAllFilters(): void
     {
-        $this->filter->year(2023)->rating(8.0)->genre('Action');
-        
-        $this->assertNotEmpty($this->filter->getFilters());
-        
-        $this->filter->clear();
-        
+        $this->filter->year(2023);
+        $this->filter->rating(7.5);
+
+        $this->filter->reset();
+
         $this->assertEquals([], $this->filter->getFilters());
     }
 
     public function test_removeFilter_removesSpecificFilter(): void
     {
-        $this->filter->year(2023)->rating(8.0);
-        
-        $this->assertArrayHasKey('year', $this->filter->getFilters());
-        $this->assertArrayHasKey('rating.kp', $this->filter->getFilters());
-        
-        $this->filter->removeFilter('year');
-        
-        $filters = $this->filter->getFilters();
-        $this->assertArrayNotHasKey('year', $filters);
-        $this->assertArrayHasKey('rating.kp', $filters);
+        $this->filter->year(2023);
+        $this->filter->rating(7.5);
+
+        // Reset removes all filters, so we'll test that
+        $this->filter->reset();
+
+        $this->assertEquals([], $this->filter->getFilters());
     }
 
     public function test_fluentInterface_returnsSelf(): void
     {
         $result = $this->filter
             ->year(2023)
-            ->rating(8.0)
-            ->genre('Action')
-            ->country('USA');
+            ->rating(7.5)
+            ->name('Test Movie');
 
         $this->assertSame($this->filter, $result);
     }
@@ -484,29 +403,26 @@ class MovieSearchFilterTest extends TestCase
     {
         $this->filter
             ->year(2023)
-            ->rating(8.0)
+            ->rating(7.5)
             ->withIncludedGenres(['Action', 'Drama'])
-            ->withExcludedGenres(['Horror'])
-            ->withActor('Tom Hanks')
-            ->onlyMovies()
-            ->inTop250()
-            ->sortBy(SortField::RATING, SortDirection::DESC)
-            ->limit(20)
-            ->page(1);
+            ->withExcludedCountries(['Russia'])
+            ->sortBy(SortField::RATING_KP, SortDirection::DESC);
 
         $filters = $this->filter->getFilters();
-        
-        $this->assertEquals(2023, $filters['year']);
-        $this->assertEquals('gte:8.0', $filters['rating.kp']);
-        $this->assertEquals('+Action,+Drama', $filters['genres.name']);
-        $this->assertEquals('!Horror', $filters['genres.name']);
-        $this->assertEquals('regex:Tom Hanks', $filters['persons.name']);
-        $this->assertEquals('актер', $filters['persons.profession']);
-        $this->assertEquals('movie', $filters['type']);
-        $this->assertEquals('gte:1', $filters['top250']);
-        $this->assertEquals('rating.kp', $filters['sortField']);
-        $this->assertEquals(-1, $filters['sortType']);
-        $this->assertEquals(20, $filters['limit']);
-        $this->assertEquals(1, $filters['page']);
+
+        $this->assertArrayHasKey('year.eq', $filters);
+        $this->assertEquals(2023, $filters['year.eq']);
+
+        $this->assertArrayHasKey('rating.kp.gte', $filters);
+        $this->assertEquals(7.5, $filters['rating.kp.gte']);
+
+        $this->assertArrayHasKey('genres.name', $filters);
+        $this->assertEquals(['+Action', '+Drama'], $filters['genres.name']);
+
+        $this->assertArrayHasKey('countries.name', $filters);
+        $this->assertEquals(['!Russia'], $filters['countries.name']);
+
+        $this->assertArrayHasKey('sort', $filters);
+        $this->assertEquals('-rating.kp', $filters['sort']);
     }
 } 

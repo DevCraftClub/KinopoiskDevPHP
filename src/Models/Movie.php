@@ -178,7 +178,7 @@ use Lombok\Getter;
 			name              : $data['name'] ?? NULL,
 			alternativeName   : $data['alternativeName'] ?? NULL,
 			enName            : $data['enName'] ?? NULL,
-			names             : isset($data['names']) ? DataManager::parseObjectArray($data['names'], Name::class) : [],
+			names             : isset($data['names']) ? DataManager::parseObjectArray($data, 'names', Name::class) : [],
 			type              : isset($data['type']) ? MovieType::tryFrom($data['type']) : NULL,
 			typeNumber        : $data['typeNumber'] ?? NULL,
 			year              : $data['year'] ?? NULL,
@@ -186,7 +186,7 @@ use Lombok\Getter;
 			shortDescription  : $data['shortDescription'] ?? NULL,
 			slogan            : $data['slogan'] ?? NULL,
 			status            : isset($data['status']) ? MovieStatus::tryFrom($data['status']) : NULL,
-			facts             : isset($data['facts']) ? DataManager::parseObjectArray($data['facts'], FactInMovie::class) : [],
+			facts             : isset($data['facts']) ? DataManager::parseObjectArray($data, 'facts', FactInMovie::class) : [],
 			movieLength       : $data['movieLength'] ?? NULL,
 			ratingMpaa        : isset($data['ratingMpaa']) ? RatingMpaa::tryFrom($data['ratingMpaa']) : NULL,
 			ageRating         : $data['ageRating'] ?? NULL,
@@ -196,9 +196,9 @@ use Lombok\Getter;
 			poster            : isset($data['poster']) ? ShortImage::fromArray($data['poster']) : NULL,
 			backdrop          : isset($data['backdrop']) ? ShortImage::fromArray($data['backdrop']) : NULL,
 			videos            : isset($data['videos']) ? VideoTypes::fromArray($data['videos']) : NULL,
-			genres            : isset($data['genres']) ? DataManager::parseObjectArray($data['genres'], ItemName::class) : [],
-			countries         : isset($data['countries']) ? DataManager::parseObjectArray($data['countries'], ItemName::class) : [],
-			persons           : isset($data['persons']) ? DataManager::parseObjectArray($data['persons'], PersonInMovie::class) : [],
+			genres            : isset($data['genres']) ? DataManager::parseObjectArray($data, 'genres', ItemName::class) : [],
+			countries         : isset($data['countries']) ? DataManager::parseObjectArray($data, 'countries', ItemName::class) : [],
+			persons           : isset($data['persons']) ? DataManager::parseObjectArray($data, 'persons', PersonInMovie::class) : [],
 			reviewInfo        : isset($data['reviewInfo']) ? ReviewInfo::fromArray($data['reviewInfo']) : NULL,
 			seasonsInfo       : $data['seasonsInfo'] ?? [],
 			budget            : isset($data['budget']) ? CurrencyValue::fromArray($data['budget']) : NULL,
@@ -214,8 +214,8 @@ use Lombok\Getter;
 			ticketsOnSale     : $data['ticketsOnSale'] ?? NULL,
 			totalSeriesLength : $data['totalSeriesLength'] ?? NULL,
 			seriesLength      : $data['seriesLength'] ?? NULL,
-			audience          : isset($data['audience']) ? DataManager::parseObjectArray($data['audience'], Audience::class) : [],
-			lists             : isset($data['lists']) ? DataManager::parseObjectArray($data['lists'], Lists::class) : [],
+			audience          : isset($data['audience']) ? DataManager::parseObjectArray($data, 'audience', Audience::class) : [],
+			lists             : isset($data['lists']) ? DataManager::parseObjectArray($data, 'lists', Lists::class) : [],
 			networks          : isset($data['networks']) ? Networks::fromArray($data['networks']) : NULL,
 			createdAt         : $data['createdAt'] ?? NULL,
 			updatedAt         : $data['updatedAt'] ?? NULL,
@@ -239,7 +239,7 @@ use Lombok\Getter;
 
 		// Валидация года
 		if ($this->year !== NULL && ($this->year < self::MIN_YEAR || $this->year > self::MAX_YEAR)) {
-			throw new \KinopoiskDev\Exceptions\ValidationException('Movie year must be between ' . self::MIN_YEAR . ' and ' . self::MAX_YEAR);
+			throw new \KinopoiskDev\Exceptions\ValidationException('Год должен быть в диапазоне от ' . self::MIN_YEAR . ' до ' . self::MAX_YEAR);
 		}
 
 		// Валидация рейтингов

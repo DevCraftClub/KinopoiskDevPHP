@@ -399,4 +399,306 @@ final class ValidationService {
 
 		return null;
 	}
+
+	/**
+	 * Валидирует API токен
+	 *
+	 * @param string|null $token API токен для валидации
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateApiToken(?string $token): bool {
+		if (empty($token)) {
+			throw new ValidationException('API токен не может быть пустым');
+		}
+
+		// Проверка формата токена: XXXX-XXXX-XXXX-XXXX
+		if (!preg_match('/^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/', $token)) {
+			throw new ValidationException('API токен должен быть в формате: XXXX-XXXX-XXXX-XXXX');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует HTTP метод
+	 *
+	 * @param string $method HTTP метод
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateHttpMethod(string $method): bool {
+		if (empty($method)) {
+			throw new ValidationException('HTTP метод не может быть пустым');
+		}
+
+		$allowedMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
+		if (!in_array($method, $allowedMethods, true)) {
+			throw new ValidationException("Неподдерживаемый HTTP метод: {$method}");
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует endpoint
+	 *
+	 * @param string $endpoint Endpoint для валидации
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateEndpoint(string $endpoint): bool {
+		if (empty(trim($endpoint))) {
+			throw new ValidationException("Некорректный endpoint: {$endpoint}");
+		}
+
+		// Проверка на двойные слеши, ведущие/замыкающие слеши
+		if (strpos($endpoint, '//') !== false || 
+			str_starts_with($endpoint, '/') || 
+			str_ends_with($endpoint, '/')) {
+			throw new ValidationException("Некорректный endpoint: {$endpoint}");
+		}
+
+		// Проверка на слишком много частей
+		$parts = explode('/', $endpoint);
+		if (count($parts) > 3) {
+			throw new ValidationException("Некорректный endpoint: {$endpoint}");
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует год
+	 *
+	 * @param int $year Год для валидации
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateYear(int $year): bool {
+		if ($year < 1888 || $year > 2030) {
+			throw new ValidationException('Год должен быть в диапазоне от 1888 до 2030');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует рейтинг
+	 *
+	 * @param float $rating Рейтинг для валидации
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateRating(float $rating): bool {
+		if ($rating < 0.0 || $rating > 10.0) {
+			throw new ValidationException('Рейтинг должен быть в диапазоне от 0.0 до 10.0');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует лимит
+	 *
+	 * @param int $limit Лимит для валидации
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateLimit(int $limit): bool {
+		if ($limit < 1 || $limit > 250) {
+			throw new ValidationException('Лимит должен быть в диапазоне от 1 до 250');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует номер страницы
+	 *
+	 * @param int $page Номер страницы
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validatePage(int $page): bool {
+		if ($page < 1) {
+			throw new ValidationException('Номер страницы должен быть больше 0');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует ID фильма
+	 *
+	 * @param int $movieId ID фильма
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateMovieId(int $movieId): bool {
+		if ($movieId <= 0) {
+			throw new ValidationException('ID фильма должен быть положительным числом');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует ID персоны
+	 *
+	 * @param int $personId ID персоны
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validatePersonId(int $personId): bool {
+		if ($personId <= 0) {
+			throw new ValidationException('ID персоны должен быть положительным числом');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует жанр
+	 *
+	 * @param string $genre Жанр для валидации
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateGenre(string $genre): bool {
+		$allowedGenres = [
+			'драма', 'комедия', 'боевик', 'триллер', 'ужасы', 'фантастика',
+			'приключения', 'мелодрама', 'детектив', 'криминал', 'вестерн',
+			'военный', 'история', 'биография', 'спорт', 'мультфильм', 'семейный',
+			'мюзикл', 'музыка', 'новости', 'ток-шоу', 'игра', 'реальное ТВ'
+		];
+
+		if (!in_array($genre, $allowedGenres, true)) {
+			throw new ValidationException("Неподдерживаемый жанр: {$genre}");
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует страну
+	 *
+	 * @param string $country Страна для валидации
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateCountry(string $country): bool {
+		$allowedCountries = [
+			'Россия', 'США', 'Великобритания', 'Германия', 'Франция', 'Италия',
+			'Испания', 'Канада', 'Австралия', 'Япония', 'Китай', 'Индия',
+			'Бразилия', 'Мексика', 'Аргентина', 'Южная Корея', 'Швеция',
+			'Норвегия', 'Дания', 'Финляндия', 'Нидерланды', 'Бельгия'
+		];
+
+		if (!in_array($country, $allowedCountries, true)) {
+			throw new ValidationException("Неподдерживаемая страна: {$country}");
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует профессию
+	 *
+	 * @param string $profession Профессия для валидации
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateProfession(string $profession): bool {
+		$allowedProfessions = [
+			'актер', 'режиссер', 'продюсер', 'сценарист', 'оператор',
+			'композитор', 'художник', 'монтажер', 'звукорежиссер'
+		];
+
+		if (!in_array($profession, $allowedProfessions, true)) {
+			throw new ValidationException("Неподдерживаемая профессия: {$profession}");
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует поисковый запрос
+	 *
+	 * @param string $query Поисковый запрос
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateSearchQuery(string $query): bool {
+		if (empty(trim($query))) {
+			throw new ValidationException('Поисковый запрос не может быть пустым');
+		}
+
+		if (mb_strlen($query) < 2) {
+			throw new ValidationException('Поисковый запрос должен содержать минимум 2 символа');
+		}
+
+		if (mb_strlen($query) > 100) {
+			throw new ValidationException('Поисковый запрос не может превышать 100 символов');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует дату
+	 *
+	 * @param string $date Дата в формате Y-m-d
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateDate(string $date): bool {
+		if (empty($date)) {
+			throw new ValidationException('Дата не может быть пустой');
+		}
+
+		$dateTime = \DateTime::createFromFormat('Y-m-d', $date);
+		if (!$dateTime || $dateTime->format('Y-m-d') !== $date) {
+			throw new ValidationException("Некорректный формат даты: {$date}");
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует диапазон дат
+	 *
+	 * @param string $startDate Начальная дата
+	 * @param string $endDate Конечная дата
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateDateRange(string $startDate, string $endDate): bool {
+		$this->validateDate($startDate);
+		$this->validateDate($endDate);
+
+		$start = new \DateTime($startDate);
+		$end = new \DateTime($endDate);
+
+		if ($start > $end) {
+			throw new ValidationException('Начальная дата не может быть позже конечной');
+		}
+
+		return true;
+	}
+
+	/**
+	 * Валидирует непустой массив
+	 *
+	 * @param array $array Массив для валидации
+	 * @return bool
+	 * @throws ValidationException
+	 */
+	public function validateNotEmptyArray(array $array): bool {
+		if (empty($array)) {
+			throw new ValidationException('Массив не может быть пустым');
+		}
+
+		return true;
+	}
 }

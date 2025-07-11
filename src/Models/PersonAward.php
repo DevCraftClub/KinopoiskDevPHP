@@ -124,7 +124,7 @@ use KinopoiskDev\Utils\DataManager;
 	 * @return \KinopoiskDev\Models\PersonAward Новый экземпляр класса PersonAward с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			personId  : $data['personId'],
 			nomination: DataManager::parseObjectData($data, 'nomination', Nomination::class),

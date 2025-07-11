@@ -46,7 +46,7 @@ namespace KinopoiskDev\Models;
 	 *
 	 * @return \KinopoiskDev\Models\BaseModel Новый экземпляр MovieFromStudio с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id: $data['id'],
 		);

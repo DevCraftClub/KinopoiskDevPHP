@@ -101,7 +101,7 @@ namespace KinopoiskDev\Models;
 	 * $moviePerson = MovieInPerson::fromArray($personData);
 	 * ```
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			id             : $data['id'],
 			name           : $data['name'] ?? NULL,

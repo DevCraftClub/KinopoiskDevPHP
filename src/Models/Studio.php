@@ -46,8 +46,8 @@ use KinopoiskDev\Utils\DataManager;
 		public ?string     $title = NULL,
 		public ?StudioType $type = NULL,
 		public array       $movies = [],
-		public string      $updateAt,
-		public string      $createdAt,
+		public ?string     $updateAt = NULL,
+		public ?string     $createdAt = NULL,
 	) {}
 
 	/**
@@ -73,7 +73,7 @@ use KinopoiskDev\Utils\DataManager;
 	 * @return \KinopoiskDev\Models\BaseModel Новый экземпляр Studio с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): \KinopoiskDev\Models\BaseModel {
+	public static function fromArray(array $data): static {
 		return new self(
 			id       : $data['id'],
 			subType  : $data['subType'] ?? NULL,
@@ -95,6 +95,8 @@ use KinopoiskDev\Utils\DataManager;
 	 * @see Studio::fromArray() Для создания объекта из массива
 	 * @see \KinopoiskDev\Models\BaseModel::toArray() Для интерфейса BaseModel
 	 *
+	 * @param   bool  $includeNulls  Включать ли null значения в результат (по умолчанию true)
+	 *
 	 * @return array Ассоциативный массив с данными студии, содержащий ключи:
 	 *               - id: string - уникальный идентификатор студии
 	 *               - subType: string|null - подтип студии
@@ -104,8 +106,8 @@ use KinopoiskDev\Utils\DataManager;
 	 *               - updateAt: string - дата последнего обновления
 	 *               - createdAt: string - дата создания
 	 */
-	public function toArray(): array {
-		return [
+	public function toArray(bool $includeNulls = TRUE): array {
+		$data = [
 			'id'        => $this->id,
 			'subType'   => $this->subType,
 			'title'     => $this->title,
@@ -114,6 +116,45 @@ use KinopoiskDev\Utils\DataManager;
 			'updateAt'  => $this->updateAt,
 			'createdAt' => $this->createdAt,
 		];
+
+		if (!$includeNulls) {
+			$data = array_filter($data, fn($value) => $value !== NULL);
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Создает объект Studio из JSON строки
+	 *
+	 * @param string $json JSON строка с данными студии
+	 * @return static
+	 * @throws \JsonException
+	 */
+	public static function fromJson(string $json): static {
+		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
+		return static::fromArray($data);
+	}
+
+	/**
+	 * Преобразует объект Studio в JSON строку
+	 *
+	 * @param int $flags Флаги для json_encode
+	 * @return string
+	 * @throws \JsonException
+	 */
+	public function toJson(int $flags = JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE): string {
+		return json_encode($this->toArray(), $flags);
+	}
+
+	/**
+	 * Валидирует данные студии
+	 *
+	 * @return bool
+	 */
+	public function validate(): bool {
+		// Простая валидация: id, updateAt, createdAt не пустые
+		return !empty($this->id) && !empty($this->updateAt) && !empty($this->createdAt);
 	}
 
 }

@@ -91,7 +91,7 @@ use Lombok\Getter;
 	 *
 	 * @return self Новый экземпляр класса ExternalId с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			kpHD: $data['kpHD'] ?? NULL,
 			imdb: $data['imdb'] ?? NULL,

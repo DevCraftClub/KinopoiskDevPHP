@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Http;
+namespace KinopoiskDev\Tests\Unit\Http;
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -45,7 +45,7 @@ class MovieRequestsTest extends TestCase
         $this->httpClient = new Client(['handler' => $this->handlerStack]);
         
         $this->movieRequests = new MovieRequests(
-            apiToken: $_ENV['KINOPOISK_API_TOKEN'],
+            apiToken: 'MOCK123-TEST456-UNIT789-TOKEN01',
             httpClient: $this->httpClient
         );
     }
@@ -70,9 +70,9 @@ class MovieRequestsTest extends TestCase
         $movie = $this->movieRequests->getMovieById(123);
         
         $this->assertInstanceOf(Movie::class, $movie);
-        $this->assertEquals(123, $movie->getId());
-        $this->assertEquals('Test Movie', $movie->getName());
-        $this->assertEquals(2023, $movie->getYear());
+        $this->assertEquals(123, $movie->id);
+        $this->assertEquals('Test Movie', $movie->name);
+        $this->assertEquals(2023, $movie->year);
     }
 
     public function test_getMovieById_withInvalidId_throwsException(): void
@@ -80,8 +80,8 @@ class MovieRequestsTest extends TestCase
         $errorResponse = new Response(404, [], json_encode(['error' => 'Movie not found']));
         $this->mockHandler->append($errorResponse);
         
-        $this->expectException(KinopoiskResponseException::class);
-        $this->expectExceptionMessage('Not Found: Запрашиваемый ресурс не найден');
+        $this->expectException(KinopoiskDevException::class);
+        $this->expectExceptionMessage('Ошибка HTTP запроса: Client error: `GET /v1.4//movie/999999` resulted in a `404 Not Found` response:');
         
         $this->movieRequests->getMovieById(999999);
     }
@@ -100,8 +100,8 @@ class MovieRequestsTest extends TestCase
         $movie = $this->movieRequests->getRandomMovie();
         
         $this->assertInstanceOf(Movie::class, $movie);
-        $this->assertEquals(456, $movie->getId());
-        $this->assertEquals('Random Movie', $movie->getName());
+        $this->assertEquals(456, $movie->id);
+        $this->assertEquals('Random Movie', $movie->name);
     }
 
     public function test_getRandomMovie_withFilters_returnsFilteredMovie(): void
@@ -121,7 +121,7 @@ class MovieRequestsTest extends TestCase
         $movie = $this->movieRequests->getRandomMovie($filter);
         
         $this->assertInstanceOf(Movie::class, $movie);
-        $this->assertEquals(789, $movie->getId());
+        $this->assertEquals(789, $movie->id);
     }
 
     /**
@@ -130,9 +130,9 @@ class MovieRequestsTest extends TestCase
     public function test_getPossibleValuesByField_withValidField_returnsValues(string $field): void
     {
         $valuesData = [
-            ['name' => 'Action', 'slug' => 'action'],
-            ['name' => 'Drama', 'slug' => 'drama'],
-            ['name' => 'Comedy', 'slug' => 'comedy']
+            ['name' => 'драма', 'slug' => 'drama'],
+            ['name' => 'комедия', 'slug' => 'komediya'],
+            ['name' => 'боевик', 'slug' => 'boevik']
         ];
         
         $response = new Response(200, [], json_encode($valuesData));
@@ -142,25 +142,25 @@ class MovieRequestsTest extends TestCase
         
         $this->assertIsArray($values);
         $this->assertCount(3, $values);
-        $this->assertEquals('Action', $values[0]['name']);
-        $this->assertEquals('action', $values[0]['slug']);
+        $this->assertEquals('драма', $values[0]['name']);
+        $this->assertEquals('drama', $values[0]['slug']);
     }
 
     public function possibleValuesFieldProvider(): array
     {
         return [
-            'genres' => [FilterField::GENRES->value],
-            'countries' => [FilterField::COUNTRIES->value],
-            'type' => [FilterField::TYPE->value],
-            'type_number' => [FilterField::TYPE_NUMBER->value],
-            'status' => [FilterField::STATUS->value],
+            'genres' => ['genres.name'],
+            'countries' => ['countries.name'],
+            'type' => ['type'],
+            'type_number' => ['typeNumber'],
+            'status' => ['status'],
         ];
     }
 
     public function test_getPossibleValuesByField_withInvalidField_throwsException(): void
     {
         $this->expectException(KinopoiskDevException::class);
-        $this->expectExceptionMessage('Лишь следующие поля поддерживаются для этого запроса: genres, countries, type, type_number, status');
+        $this->expectExceptionMessage('Лишь следующие поля поддерживаются для этого запроса: genres.name, countries.name, type, typeNumber, status');
         
         $this->movieRequests->getPossibleValuesByField('invalid_field');
     }
@@ -170,9 +170,18 @@ class MovieRequestsTest extends TestCase
         $awardsData = [
             'docs' => [
                 [
-                    'id' => 1,
-                    'name' => 'Oscar',
-                    'nomination' => 'Best Picture'
+                    'id' => '6608cf153bb63c827e2c35d6',
+                    'nomination' => [
+                        'award' => [
+                            'title' => 'Оскар',
+                            'year' => 2024
+                        ],
+                        'title' => 'Лучший грим и прически'
+                    ],
+                    'winning' => false,
+                    'movieId' => 4664634,
+                    'createdAt' => '2024-03-31T02:48:53.006Z',
+                    'updatedAt' => '2024-03-31T02:48:53.006Z'
                 ]
             ],
             'total' => 1,
@@ -197,9 +206,18 @@ class MovieRequestsTest extends TestCase
         $awardsData = [
             'docs' => [
                 [
-                    'id' => 2,
-                    'name' => 'Golden Globe',
-                    'nomination' => 'Best Actor'
+                    'id' => '6608cf143bb63c827e2c35c8',
+                    'nomination' => [
+                        'award' => [
+                            'title' => 'Оскар',
+                            'year' => 2024
+                        ],
+                        'title' => 'Лучшая мужская роль'
+                    ],
+                    'winning' => true,
+                    'movieId' => 4664634,
+                    'createdAt' => '2024-03-31T02:48:52.928Z',
+                    'updatedAt' => '2024-03-31T02:48:52.928Z'
                 ]
             ],
             'total' => 1,
@@ -422,8 +440,8 @@ class MovieRequestsTest extends TestCase
         $errorResponse = new Response(500, [], json_encode(['error' => 'Internal server error']));
         $this->mockHandler->append($errorResponse);
         
-        $this->expectException(KinopoiskResponseException::class);
-        $this->expectExceptionMessage('Internal Server Error: Внутренняя ошибка сервера');
+        $this->expectException(KinopoiskDevException::class);
+        $this->expectExceptionMessage('Ошибка HTTP запроса: Server error: `GET /v1.4//movie/123` resulted in a `500 Internal Server Error` response:');
         
         $this->movieRequests->getMovieById(123);
     }
@@ -433,8 +451,8 @@ class MovieRequestsTest extends TestCase
         $errorResponse = new Response(401, [], json_encode(['error' => 'Unauthorized']));
         $this->mockHandler->append($errorResponse);
         
-        $this->expectException(KinopoiskResponseException::class);
-        $this->expectExceptionMessage('Unauthorized: Неверный API токен или токен отсутствует');
+        $this->expectException(KinopoiskDevException::class);
+        $this->expectExceptionMessage('Ошибка HTTP запроса: Client error: `GET /v1.4//movie/123` resulted in a `401 Unauthorized` response:');
         
         $this->movieRequests->getMovieById(123);
     }
@@ -444,8 +462,8 @@ class MovieRequestsTest extends TestCase
         $errorResponse = new Response(403, [], json_encode(['error' => 'Forbidden']));
         $this->mockHandler->append($errorResponse);
         
-        $this->expectException(KinopoiskResponseException::class);
-        $this->expectExceptionMessage('Forbidden: Доступ запрещен');
+        $this->expectException(KinopoiskDevException::class);
+        $this->expectExceptionMessage('Ошибка HTTP запроса: Client error: `GET /v1.4//movie/123` resulted in a `403 Forbidden` response:');
         
         $this->movieRequests->getMovieById(123);
     }

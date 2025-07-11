@@ -49,7 +49,7 @@ namespace KinopoiskDev\Models;
 	 *
 	 * @return \KinopoiskDev\Models\NominationAward Новый экземпляр класса NominationAward с данными из массива
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			title: $data['title'] ?? null,
 			year: $data['year'] ?? null,

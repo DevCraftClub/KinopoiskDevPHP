@@ -100,7 +100,7 @@ use Lombok\Setter;
 	 *
 	 * @return static Экземпляр модели ключевого слова
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		$movies = [];
 		if (isset($data['movies']) && is_array($data['movies'])) {
 			foreach ($data['movies'] as $movieData) {

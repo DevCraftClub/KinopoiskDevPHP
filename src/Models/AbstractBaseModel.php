@@ -32,7 +32,7 @@ abstract class AbstractBaseModel implements BaseModel {
 	public static function fromArray(array $data): static {
 		$class = static::class;
 
-		$reflection = new \ReflectionClass($class);
+		$reflection = new ReflectionClass($class);
 		if ($reflection->isAbstract() || $reflection->isInterface()) {
 			throw new \LogicException("Не стоит напрямую запускать имплементацию или абстракцию: {$class}");
 		}
@@ -154,11 +154,10 @@ abstract class AbstractBaseModel implements BaseModel {
 		$currentData = $this->toArray();
 		$newData = array_merge($currentData, $changes);
 
-		// Statt static::fromArray($newData) verwenden:
 		$instance = static::fromArray($newData);
 		$instance->validate();
+		
 		return $instance;
-
 	}
 
 	/**

@@ -36,8 +36,8 @@ namespace KinopoiskDev\Models;
 	 * @param   string|null  $currency  Код валюты (например, USD, RUB, EUR) или null если не указана
 	 */
 	public function __construct(
-		public ?int    $value = NULL,
-		public ?string $currency = NULL,
+		public ?int    $value = null,
+		public ?string $currency = null,
 	) {}
 
 	/**

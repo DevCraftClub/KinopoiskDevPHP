@@ -235,4 +235,68 @@ final class ValidationService {
 
 		return $errors;
 	}
+
+	/**
+	 * Валидирует значение на основе правил валидации
+	 *
+	 * @param   mixed      $value       Значение для валидации
+	 * @param   Validation $validation  Правила валидации
+	 *
+	 * @return string|null Сообщение об ошибке или null если валидация прошла успешно
+	 */
+	private function validateValue(mixed $value, Validation $validation): ?string {
+		// Проверка обязательности поля
+		if ($validation->required && ($value === null || $value === '')) {
+			return $validation->customMessage ?? 'Поле обязательно для заполнения';
+		}
+
+		// Если значение null и поле не обязательное, пропускаем остальные проверки
+		if ($value === null) {
+			return null;
+		}
+
+		// Проверка типа значения
+		if (!is_string($value) && !is_numeric($value)) {
+			return $validation->customMessage ?? 'Значение должно быть строкой или числом';
+		}
+
+		$value = (string)$value;
+		$length = mb_strlen($value);
+
+		// Проверка минимальной длины
+		if ($validation->minLength !== null && $length < $validation->minLength) {
+			return $validation->customMessage ?? "Минимальная длина должна быть {$validation->minLength} символов";
+		}
+
+		// Проверка максимальной длины
+		if ($validation->maxLength !== null && $length > $validation->maxLength) {
+			return $validation->customMessage ?? "Максимальная длина должна быть {$validation->maxLength} символов";
+		}
+
+		// Проверка регулярного выражения
+		if ($validation->pattern !== null && !preg_match($validation->pattern, $value)) {
+			return $validation->customMessage ?? 'Значение не соответствует требуемому формату';
+		}
+
+		// Проверка допустимых значений
+		if (!empty($validation->allowedValues) && !in_array($value, $validation->allowedValues, true)) {
+			$allowedValues = implode(', ', $validation->allowedValues);
+			return $validation->customMessage ?? "Значение должно быть одним из: {$allowedValues}";
+		}
+
+		// Проверка числовых ограничений
+		if (is_numeric($value)) {
+			$numericValue = (float)$value;
+
+			if ($validation->min !== null && $numericValue < $validation->min) {
+				return $validation->customMessage ?? "Значение должно быть не меньше {$validation->min}";
+			}
+
+			if ($validation->max !== null && $numericValue > $validation->max) {
+				return $validation->customMessage ?? "Значение должно быть не больше {$validation->max}";
+			}
+		}
+
+		return null;
+	}
 }

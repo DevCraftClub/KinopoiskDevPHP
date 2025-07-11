@@ -55,7 +55,7 @@ namespace KinopoiskDev\Models;
 	 * @see FactInMovie::toArray() Для обратного преобразования объекта в массив
 	 * @see FactInMovie::__construct() Конструктор класса с описанием параметров
 	 *
-	 * @param   array  $data  Ассоциативный массив с данными факта от API, содержащий ключи:
+	 * @param   array<string, mixed>  $data  Ассоциативный массив с данными факта от API, содержащий ключи:
 	 *                        - value: string - обязательное поле с текстом факта
 	 *                        - type: string|null - опциональный тип факта (по умолчанию null)
 	 *                        - spoiler: bool|null - опциональный флаг спойлера (по умолчанию null)
@@ -74,7 +74,7 @@ namespace KinopoiskDev\Models;
 	 * $fact = FactInMovie::fromArray($data);
 	 * ```
 	 */
-	public static function fromArray(array $data): self {
+	public static function fromArray(array $data): static {
 		return new self(
 			value  : $data['value'],
 			type   : $data['type'] ?? NULL,

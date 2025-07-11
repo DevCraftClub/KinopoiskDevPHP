@@ -79,12 +79,9 @@ class SortCriteria {
 	}
 
 	/**
-	 * Создает критерии из массива данных
+	 * Создает экземпляр SortCriteria из массива данных
 	 *
-	 * Фабричный метод для создания SortCriteria из ассоциативного массива
-	 * с ключами 'field' и 'direction'.
-	 *
-	 * @param   array<string, mixed>  $data  Массив с данными сортировки
+	 * @param   array<string, mixed> $data Массив с данными для создания объекта
 	 *
 	 * @return self|null Новый экземпляр SortCriteria или null при некорректных данных
 	 */
@@ -93,19 +90,16 @@ class SortCriteria {
 			return NULL;
 		}
 
-		return self::fromStrings(
+		return new self(
 			$data['field'],
 			$data['direction'] ?? NULL,
 		);
 	}
 
 	/**
-	 * Создает критерии из строковых значений
+	 * Создает экземпляр SortCriteria из строковых значений
 	 *
-	 * Фабричный метод для создания SortCriteria из строковых представлений
-	 * поля и направления сортировки с возможностью указания fallback значений.
-	 *
-	 * @param   string       $field      Строковое значение поля
+	 * @param   string      $field     Строковое значение поля
 	 * @param   string|null  $direction  Строковое значение направления (опционально)
 	 *
 	 * @return self|null Новый экземпляр SortCriteria или null при неудачном преобразовании

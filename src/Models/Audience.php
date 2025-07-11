@@ -22,7 +22,7 @@ namespace KinopoiskDev\Models;
 class Audience extends AbstractBaseModel {
 
 	/**
-	 * Конструктор для создания объекта данных об аудитории
+	 * Конструктор модели аудитории
 	 *
 	 * Создает новый экземпляр класса Audience с указанными параметрами
 	 * количества зрителей и страны. Все параметры являются опциональными
@@ -42,9 +42,6 @@ class Audience extends AbstractBaseModel {
 	/**
 	 * Создает объект Audience из массива данных API
 	 *
-	 * Фабричный метод для создания экземпляра класса Audience из массива данных,
-	 * полученных от API Kinopoisk.dev. Безопасно обрабатывает отсутствующие
-	 * значения, устанавливая их в null.
 	 *
 	 * @see Audience::toArray() Для обратного преобразования в массив
 	 *
@@ -56,18 +53,16 @@ class Audience extends AbstractBaseModel {
 	 *
 	 */
 	public static function fromArray(array $data): static {
-		return new static(
-			count  : $data['count'] ?? NULL,
-			country: $data['country'] ?? NULL,
+		return new self(
+			count  : $data['count'] ?? null,
+			country: $data['country'] ?? null,
 		);
 	}
 
 	/**
-	 * Преобразует объект в массив данных
+	 * Преобразует объект в массив
 	 *
-	 * Конвертирует текущий экземпляр класса Audience в массив,
-	 * совместимый с форматом API Kinopoisk.dev. Используется для
-	 * сериализации данных при отправке запросов к API.
+	 * @param   bool $includeNulls Включать ли null значения
 	 *
 	 * @see Audience::fromArray() Для создания объекта из массива
 	 * @return array<string, mixed> Массив с данными об аудитории, содержащий ключи:
@@ -76,10 +71,17 @@ class Audience extends AbstractBaseModel {
 	 *
 	 */
 	public function toArray(bool $includeNulls = true): array {
-		return [
-			'count'   => $this->count,
-			'country' => $this->country,
-		];
+		$result = [];
+
+		if ($this->count !== null || $includeNulls) {
+			$result['count'] = $this->count;
+		}
+
+		if ($this->country !== null || $includeNulls) {
+			$result['country'] = $this->country;
+		}
+
+		return $result;
 	}
 
 }

@@ -8,11 +8,11 @@ use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use KinopoiskDev\Attributes\Sensitive;
-use KinopoiskDev\Contracts\{CacheInterface, HttpClientInterface, LoggerInterface};
+use KinopoiskDev\Contracts\{CacheInterface, LoggerInterface};
 use KinopoiskDev\Enums\HttpStatusCode;
 use KinopoiskDev\Exceptions\{KinopoiskDevException, KinopoiskResponseException, ValidationException};
 use KinopoiskDev\Responses\Errors\{ForbiddenErrorResponseDto, NotFoundErrorResponseDto, UnauthorizedErrorResponseDto};
-use KinopoiskDev\Services\{CacheService, HttpService, ValidationService};
+use KinopoiskDev\Services\{CacheService, ValidationService};
 use Lombok\{Getter, Helper};
 use Psr\Cache\InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
@@ -28,18 +28,18 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
  * @package KinopoiskDev
  * @since   1.0.0
  * @author  Maxim Harder
- * @version 2.0.0
+ * @version 1.0.0
  */
 class Kinopoisk extends Helper {
 
 	private const string BASE_URL = 'https://api.kinopoisk.dev';
 	private const string API_VERSION = 'v1.4';
-	private const string APP_VERSION = '2.0.0';
+	private const string APP_VERSION = '1.0.0';
 	private const int DEFAULT_TIMEOUT = 30;
 	private const int CACHE_TTL = 3600; // 1 час
 
 	#[Getter]
-	private HttpClientInterface $httpClient;
+	private HttpClient $httpClient;
 
 	#[Getter, Sensitive]
 	private string $apiToken;
@@ -54,7 +54,7 @@ class Kinopoisk extends Helper {
 	 * Конструктор клиента API Kinopoisk
 	 *
 	 * @param   string|null             $apiToken    Токен авторизации API
-	 * @param   HttpClientInterface|null $httpClient  HTTP клиент
+	 * @param   HttpClient|null $httpClient  HTTP клиент
 	 * @param   CacheInterface|null     $cache       Сервис кэширования
 	 * @param   LoggerInterface|null    $logger      Логгер
 	 * @param   bool                    $useCache    Использовать кэширование
@@ -64,10 +64,10 @@ class Kinopoisk extends Helper {
 	 */
 	public function __construct(
 		?string $apiToken = null,
-		?HttpClientInterface $httpClient = null,
+		?HttpClient $httpClient = null,
 		?CacheInterface $cache = null,
 		?LoggerInterface $logger = null,
-		private  bool $useCache = false,
+		private bool $useCache = false,
 	) {
 		parent::__construct();
 
@@ -201,7 +201,7 @@ class Kinopoisk extends Helper {
 	private function validateAndSetApiToken(?string $apiToken): void {
 		$token = $apiToken ?? $_ENV['KINOPOISK_TOKEN'] ?? null;
 
-		if (empty($token)) {
+		if (is_null($token)) {
 			throw ValidationException::forField(
 				field: 'apiToken',
 				message: 'API токен обязателен для работы с сервисом',
@@ -348,7 +348,7 @@ class Kinopoisk extends Helper {
 	 * @throws ValidationException При неверной точке
 	 */
 	private function validateEndpoint(string $endpoint): void {
-		if (empty($endpoint) || !preg_match('/^[a-zA-Z0-9\/_-]+$/', $endpoint)) {
+		if (is_null($endpoint) || $endpoint === '' || !preg_match('/^[a-zA-Z0-9\/_-]+$/', $endpoint)) {
 			throw ValidationException::forField(
 				field: 'endpoint',
 				message: 'Неверный формат конечной точки API',
@@ -366,6 +366,8 @@ class Kinopoisk extends Helper {
 	 */
 	private function isValidApiToken(string $token): bool {
 		// Проверка формата токена Kinopoisk.dev (например: ABC1DEF-2GH3IJK-4LM5NOP-6QR7STU)
-		return preg_match('/^[A-Z0-9]{7}-[A-Z0-9]{7}-[A-Z0-9]{7}-[A-Z0-9]{7}$/', $token) === 1;
+		// Используем более безопасное регулярное выражение с ограничением длины
+		return preg_match('/^[A-Z0-9]{7}-[A-Z0-9]{7}-[A-Z0-9]{7}-[A-Z0-9]{7}$/', $token) === 1 
+			&& strlen($token) === 31;
 	}
 }

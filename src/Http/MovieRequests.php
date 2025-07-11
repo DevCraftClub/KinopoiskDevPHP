@@ -228,25 +228,39 @@ class MovieRequests extends Kinopoisk {
 	}
 
 	/**
-	 *  Получает новейшие фильмы
+	 * Получает последние фильмы
+	 *
+	 * @api    /v1.4/movie
+	 * @link   https://kinopoiskdev.readme.io/reference/moviecontroller_findmanybyqueryv1_4
 	 *
 	 * @param   int|null  $year   Год (по умолчанию: текущий год)
-	 * @param   int       $page   Номер страницы
-	 * @param   int       $limit  Результатов на странице
+	 * @param   int       $page   Номер страницы (по умолчанию: 1)
+	 * @param   int       $limit  Количество результатов на странице (по умолчанию: 10)
 	 *
-	 * @return MovieDocsResponseDto Новейшие фильмы
-	 * @throws \JsonException При ошибках парсинга JSON
-	 * @throws KinopoiskDevException|KinopoiskResponseException При ошибках API
+	 * @return MovieDocsResponseDto Результаты поиска с пагинацией
+	 * @throws KinopoiskDevException При ошибках API
 	 */
-	public function getLatestMovies(?int $year = NULL, int $page = 1, int $limit = 10): MovieDocsResponseDto {
-		$year = $year ?? (int) date('Y');
-
+	public function getLatestMovies(?int $year = null, int $page = 1, int $limit = 10): MovieDocsResponseDto {
 		$filters = new MovieSearchFilter();
-		$filters
-			->year($year)
-			->sortByCreated();
+		$filters->addFilter('page', $page);
+		$filters->addFilter('limit', $limit);
 
-		return $this->searchMovies($filters, $page, $limit);
+		if ($year !== null) {
+			$filters->addFilter('year', $year);
+		}
+
+		$queryParams = $filters->getFilters();
+
+		$response = $this->makeRequest('GET', '/movie', $queryParams);
+		$data     = $this->parseResponse($response);
+
+		return new MovieDocsResponseDto(
+			docs : array_map(fn ($movieData) => Movie::fromArray($movieData), $data['docs'] ?? []),
+			total: $data['total'] ?? 0,
+			limit: $data['limit'] ?? $limit,
+			page : $data['page'] ?? $page,
+			pages: $data['pages'] ?? 1,
+		);
 	}
 
 	/**

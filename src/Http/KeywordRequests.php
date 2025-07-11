@@ -37,9 +37,8 @@ class KeywordRequests extends Kinopoisk {
 	 * @param   int                       $page     Номер страницы результатов (по умолчанию: 1)
 	 * @param   int                       $limit    Количество результатов на странице (по умолчанию: 10, максимум: 250)
 	 *
-	 * @return KeywordDocsResponseDto Результаты поиска с информацией о пагинации
-	 * @throws KinopoiskDevException При ошибках API или превышении лимитов
-	 * @throws \JsonException При ошибках парсинга JSON-ответа
+	 * @return KeywordDocsResponseDto Результаты поиска с пагинацией
+	 * @throws KinopoiskDevException При ошибках API
 	 */
 	public function searchKeywords(?KeywordSearchFilter $filters = NULL, int $page = 1, int $limit = 10): KeywordDocsResponseDto {
 		if ($limit > 250) {
@@ -53,9 +52,9 @@ class KeywordRequests extends Kinopoisk {
 			$filters = new KeywordSearchFilter();
 		}
 
+		$filters->addFilter('page', $page);
+		$filters->addFilter('limit', $limit);
 		$queryParams = $filters->getFilters();
-		$queryParams['page'] = $page;
-		$queryParams['limit'] = $limit;
 
 		$response = $this->makeRequest('GET', 'keyword', $queryParams);
 		$data     = $this->parseResponse($response);

@@ -21,14 +21,7 @@ namespace KinopoiskDev\Models;
  class Premiere implements BaseModel {
 
 	/**
-	 * Конструктор для создания объекта информации о премьерах
-	 *
-	 * Создает новый экземпляр класса Premiere с указанными параметрами.
-	 * Все параметры являются опциональными и могут быть null при отсутствии
-	 * соответствующей информации в источнике данных.
-	 *
-	 * @see Premiere::fromArray() Для создания объекта из массива данных API
-	 * @see Premiere::toArray() Для преобразования объекта в массив
+	 * Конструктор модели премьеры
 	 *
 	 * @param   string|null  $country  Страна премьеры
 	 * @param   string|null  $world    Дата мировой премьеры в формате ISO
@@ -51,13 +44,7 @@ namespace KinopoiskDev\Models;
 	/**
 	 * Создает объект Premiere из массива данных API
 	 *
-	 * Фабричный метод для создания экземпляра класса Premiere из массива данных,
-	 * полученных от API Kinopoisk.dev. Безопасно обрабатывает отсутствующие
-	 * значения, устанавливая их в null.
-	 *
-	 * @see Premiere::toArray() Для обратного преобразования в массив
-	 *
-	 * @param   array  $data  Массив данных о премьерах от API, содержащий ключи:
+	 * @param   array<string, mixed> $data Массив данных о премьерах от API, содержащий ключи:
 	 *                        - country: string|null - страна премьеры
 	 *                        - world: string|null - дата мировой премьеры
 	 *                        - russia: string|null - дата премьеры в России
@@ -65,6 +52,9 @@ namespace KinopoiskDev\Models;
 	 *                        - cinema: string|null - дата премьеры в кинотеатрах
 	 *                        - bluray: string|null - дата релиза на Blu-ray
 	 *                        - dvd: string|null - дата релиза на DVD
+	 *
+	 * @see Premiere::toArray() Для обратного преобразования в массив
+	 
 	 *
 	 * @return \KinopoiskDev\Models\Premiere Новый экземпляр класса Premiere с данными из массива
 	 */

@@ -38,9 +38,8 @@ class StudioRequests extends Kinopoisk {
 	 * @param   int                      $page     Номер страницы результатов (по умолчанию: 1)
 	 * @param   int                      $limit    Количество результатов на странице (по умолчанию: 10, максимум: 250)
 	 *
-	 * @return StudioDocsResponseDto Результаты поиска с информацией о пагинации
-	 * @throws KinopoiskDevException При ошибках API или превышении лимитов
-	 * @throws \JsonException|\KinopoiskDev\Exceptions\KinopoiskResponseException При ошибках парсинга JSON-ответа
+	 * @return StudioDocsResponseDto Результаты поиска с пагинацией
+	 * @throws KinopoiskDevException При ошибках API
 	 */
 	public function searchStudios(?StudioSearchFilter $filters = NULL, int $page = 1, int $limit = 10): StudioDocsResponseDto {
 		if ($limit > 250) {

@@ -69,7 +69,7 @@ class SeasonRequests extends Kinopoisk {
 	 *
 	 * @param   SeasonSearchFilter|null  $filters  Объект фильтра для поиска
 	 * @param   int                      $page     Номер страницы (по умолчанию: 1)
-	 * @param   int                      $limit    Количество результатов на странице (по умолчанию: 10, макс: 250)
+	 * @param   int                      $limit    Количество результатов на странице (по умолчанию: 10)
 	 *
 	 * @return SeasonDocsResponseDto Результаты поиска с пагинацией
 	 * @throws KinopoiskDevException При ошибках API
@@ -104,7 +104,7 @@ class SeasonRequests extends Kinopoisk {
 	}
 
 	/**
-	 * Получает определенный сезон по номеру для фильма
+	 * Получает сезон по ID фильма и номеру сезона
 	 *
 	 * @param   int  $movieId       Идентификатор фильма/сериала
 	 * @param   int  $seasonNumber  Номер сезона

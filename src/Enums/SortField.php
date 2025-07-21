@@ -60,6 +60,7 @@ enum SortField: string {
 	case TYPE = 'type';
 
 	case TITLE = 'title';
+	case MOVIES = 'movies';
 
 	/**
 	 * Возвращает все поля рейтингов
@@ -158,6 +159,7 @@ enum SortField: string {
 			self::PREMIERE_USA                => 'Дата премьеры в США',
 			self::TITLE                       => 'Название',
 			self::TYPE                        => 'Тип',
+			self::MOVIES                      => 'Список фильмов',
 		};
 
 		$cache[$this->value] = $result;

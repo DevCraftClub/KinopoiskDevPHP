@@ -2,8 +2,11 @@
 
 namespace KinopoiskDev\Http;
 
+use KinopoiskDev\Enums\SortDirection;
+use KinopoiskDev\Enums\SortField;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Filter\KeywordSearchFilter;
+use KinopoiskDev\Filter\SortCriteria;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Keyword;
 use KinopoiskDev\Responses\Api\KeywordDocsResponseDto;
@@ -145,7 +148,7 @@ class KeywordRequests extends Kinopoisk {
 	 */
 	public function getPopularKeywords(int $page = 1, int $limit = 10): KeywordDocsResponseDto {
 		$filters = new KeywordSearchFilter();
-		$filters->sortByPopularity();
+		$filters->addSortCriteria(new SortCriteria(SortField::MOVIES, SortDirection::DESC));
 
 		return $this->searchKeywords($filters, $page, $limit);
 	}

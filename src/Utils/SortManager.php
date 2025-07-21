@@ -246,19 +246,20 @@ trait SortManager {
 	 * Формирует строку сортировки в формате, ожидаемом API Kinopoisk.dev.
 	 * Множественные критерии объединяются запятыми.
 	 *
-	 * @return string|null Строка сортировки для API или null, если критерии не установлены
+	 * @return array|null Массив с данными о критериях сортировки или null, если критерии не установлены
 	 */
-	public function getSortString(): ?string {
+	public function getSortData(): array|null {
 		if (empty($this->sortCriteria)) {
 			return NULL;
 		}
 
-		$sortStrings = array_map(
-			fn (SortCriteria $criteria) => $criteria->toApiString(),
+		return array_map(
+			fn (SortCriteria $criteria) => [
+				'sortField' => $criteria->field->value,
+				'sortType'  => $criteria->direction->getConvertedValue(),
+			],
 			$this->sortCriteria,
 		);
-
-		return implode(',', $sortStrings);
 	}
 
 	/**

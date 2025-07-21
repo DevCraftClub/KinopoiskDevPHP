@@ -145,7 +145,11 @@ class SortCriteriaTest extends TestCase {
 
 		$result = $sortCriteria->toApiString();
 
-		$this->assertEquals('rating.kp', $result);
+		$this->assertIsArray($result);
+		$this->assertArrayHasKey('sortField', $result);
+		$this->assertArrayHasKey('sortType', $result);
+		$this->assertEquals('rating.kp', $result['sortField']);
+		$this->assertEquals('1', $result['sortType']);
 	}
 
 	public function test_toApiString_withDescDirection_returnsCorrectString(): void {
@@ -153,7 +157,11 @@ class SortCriteriaTest extends TestCase {
 
 		$result = $sortCriteria->toApiString();
 
-		$this->assertEquals('-rating.kp', $result);
+		$this->assertIsArray($result);
+		$this->assertArrayHasKey('sortField', $result);
+		$this->assertArrayHasKey('sortType', $result);
+		$this->assertEquals('rating.kp', $result['sortField']);
+		$this->assertEquals('-1', $result['sortType']);
 	}
 
 	public function test_reverse_returnsOppositeDirection(): void {

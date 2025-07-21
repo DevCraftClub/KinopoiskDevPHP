@@ -120,7 +120,7 @@ class ImageRequests extends Kinopoisk {
 	 */
 	public function getHighRatedPosters(float $minRating = 7.0, int $page = 1, int $limit = 10): ImageDocsResponseDto {
 		$filters = new MovieSearchFilter();
-		$filters->addFilter('type', 'poster');
+		$filters->addFilter('type', 'cover');
 
 		// Здесь можно было бы добавить фильтрацию по рейтингу, если API это поддерживает
 

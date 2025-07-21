@@ -20,8 +20,7 @@ if (file_exists($envFile)) {
     $_ENV['QUEUE_DRIVER'] = $_ENV['QUEUE_DRIVER'] ?? 'sync';
 }
 
-// Set default values for required environment variables
-$_ENV['KINOPOISK_API_TOKEN'] = $_ENV['KINOPOISK_API_TOKEN'] ?? 'TEST-TOKEN-1234-5678-9ABC-DEF0';
+// Set default values for required environment variables (only if not already set)
 $_ENV['APP_ENV'] = $_ENV['APP_ENV'] ?? 'testing';
 $_ENV['CACHE_DRIVER'] = $_ENV['CACHE_DRIVER'] ?? 'array';
 $_ENV['SESSION_DRIVER'] = $_ENV['SESSION_DRIVER'] ?? 'array';

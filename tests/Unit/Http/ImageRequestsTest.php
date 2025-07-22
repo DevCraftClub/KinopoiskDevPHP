@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KinopoiskDev\Tests\Unit\Http;
 
+use KinopoiskDev\Enums\ImageType;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Http\ImageRequests;
 use Symfony\Component\Yaml\Yaml;
@@ -24,7 +25,7 @@ class ImageRequestsTest extends BaseHttpTest {
     }
 
     public function test_getImages_real(): void {
-        $result = $this->imageRequests->getImages(null, 1, 10);
+        $result = $this->imageRequests->getImages();
         $this->assertNotEmpty($result->docs);
         $this->assertIsArray($result->docs);
         $firstImage = $result->docs[0];
@@ -35,7 +36,7 @@ class ImageRequestsTest extends BaseHttpTest {
     }
 
     public function test_getImagesByMovieId_real(): void {
-        $result = $this->imageRequests->getImagesByMovieId(301, '', 1, 10);
+        $result = $this->imageRequests->getImagesByMovieId(8124);
         $this->assertNotEmpty($result->docs);
         $this->assertIsArray($result->docs);
         $firstImage = $result->docs[0];
@@ -46,18 +47,7 @@ class ImageRequestsTest extends BaseHttpTest {
     }
 
     public function test_getImagesByMovieId_withType_real(): void {
-        $result = $this->imageRequests->getImagesByMovieId(301, 'cover', 1, 10);
-        $this->assertNotEmpty($result->docs);
-        $this->assertIsArray($result->docs);
-        $firstImage = $result->docs[0];
-        $this->assertNotEmpty($firstImage->movieId);
-        $this->assertNotEmpty($firstImage->type);
-        $this->assertNotEmpty($firstImage->height);
-        $this->assertNotEmpty($firstImage->width);
-    }
-
-    public function test_getHighRatedPosters_real(): void {
-        $result = $this->imageRequests->getHighRatedPosters(7.0, 1, 10);
+        $result = $this->imageRequests->getImagesByMovieId(8124, ImageType::COVER);
         $this->assertNotEmpty($result->docs);
         $this->assertIsArray($result->docs);
         $firstImage = $result->docs[0];

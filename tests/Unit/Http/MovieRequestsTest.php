@@ -25,7 +25,7 @@ class MovieRequestsTest extends BaseHttpTest {
     }
 
     public function test_getMovieById_real(): void {
-        $result = $this->movieRequests->getMovieById(301);
+        $result = $this->movieRequests->getMovieById(8124);
         $this->assertNotEmpty($result->id);
         $this->assertNotEmpty($result->name);
         $this->assertNotEmpty($result->type);
@@ -33,7 +33,7 @@ class MovieRequestsTest extends BaseHttpTest {
     }
 
     public function test_searchByName_real(): void {
-        $result = $this->movieRequests->searchByName('матрица', 1, 10);
+        $result = $this->movieRequests->searchByName('матрица');
         $this->assertNotEmpty($result->docs);
         $this->assertIsArray($result->docs);
         $firstMovie = $result->docs[0];
@@ -45,7 +45,7 @@ class MovieRequestsTest extends BaseHttpTest {
     public function test_searchMovies_withYear_real(): void {
         $filter = new \KinopoiskDev\Filter\MovieSearchFilter();
         $filter->year(1999);
-        $result = $this->movieRequests->searchMovies($filter, 1, 10);
+        $result = $this->movieRequests->searchMovies($filter);
         $this->assertNotEmpty($result->docs);
         $this->assertIsArray($result->docs);
         foreach ($result->docs as $movie) {
@@ -58,7 +58,7 @@ class MovieRequestsTest extends BaseHttpTest {
     public function test_getMoviesByCountry_real(): void {
         $filter = new \KinopoiskDev\Filter\MovieSearchFilter();
         $filter->countries('США');
-        $result = $this->movieRequests->searchMovies($filter, 1, 10);
+        $result = $this->movieRequests->searchMovies($filter);
         $this->assertNotEmpty($result->docs);
         $this->assertIsArray($result->docs);
         foreach ($result->docs as $movie) {

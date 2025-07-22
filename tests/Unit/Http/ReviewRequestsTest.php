@@ -72,7 +72,7 @@ class ReviewRequestsTest extends TestCase {
 	public function test_searchReviews_withMovieIdFilter_returnsMovieReviews(): void {
 		$filter = new \KinopoiskDev\Filter\ReviewSearchFilter();
 		$filter->movieId(4295935);
-		$result = $this->reviewRequests->searchReviews($filter, 1, 10);
+		$result = $this->reviewRequests->searchReviews($filter);
 		$this->assertNotEmpty($result->docs);
 		$this->assertIsArray($result->docs);
 		$firstReview = $result->docs[0];

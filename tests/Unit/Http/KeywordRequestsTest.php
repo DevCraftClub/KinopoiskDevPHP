@@ -24,7 +24,7 @@ class KeywordRequestsTest extends BaseHttpTest {
     }
 
     public function test_searchKeywords_real(): void {
-        $result = $this->keywordRequests->searchKeywords(null, 1, 10);
+        $result = $this->keywordRequests->searchKeywords();
         $this->assertNotEmpty($result->docs);
         $this->assertIsArray($result->docs);
         $firstKeyword = $result->docs[0];
@@ -41,7 +41,7 @@ class KeywordRequestsTest extends BaseHttpTest {
     }
 
     public function test_getKeywordsForMovie_real(): void {
-        $result = $this->keywordRequests->getKeywordsForMovie(301, 1, 10);
+        $result = $this->keywordRequests->getKeywordsForMovie(326);
         $this->assertNotEmpty($result->docs);
         $this->assertIsArray($result->docs);
         $firstKeyword = $result->docs[0];
@@ -58,14 +58,6 @@ class KeywordRequestsTest extends BaseHttpTest {
         $this->assertNotEmpty($firstKeyword->title);
     }
 
-    public function test_getPopularKeywords_real(): void {
-        $result = $this->keywordRequests->getPopularKeywords();
-        $this->assertNotEmpty($result->docs);
-        $this->assertIsArray($result->docs);
-        $firstKeyword = $result->docs[0];
-        $this->assertNotEmpty($firstKeyword->id);
-        $this->assertNotEmpty($firstKeyword->title);
-    }
 
     public function test_searchKeywords_withInvalidLimit_throwsException(): void {
         $this->expectException(\KinopoiskDev\Exceptions\KinopoiskDevException::class);

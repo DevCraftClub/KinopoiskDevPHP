@@ -2,6 +2,8 @@
 
 namespace KinopoiskDev\Utils;
 
+use KinopoiskDev\Enums\ReviewType;
+
 /**
  * Трейт для общих методов фильтрации
  *
@@ -60,12 +62,13 @@ trait FilterTrait {
 	/**
 	 * Добавляет фильтр по типу
 	 *
-	 * @param   string  $type      Тип
-	 * @param   string  $operator  Оператор сравнения
+	 * @param   string|\KinopoiskDev\Enums\ReviewType  $type      Тип
+	 * @param   string                                 $operator  Оператор сравнения
 	 *
-	 * @return $this
+	 * @return \KinopoiskDev\Filter\MovieSearchFilter|\KinopoiskDev\Filter\ImageSearchFilter|\KinopoiskDev\Filter\KeywordSearchFilter|\KinopoiskDev\Filter\PersonSearchFilter|\KinopoiskDev\Filter\ReviewSearchFilter|\KinopoiskDev\Filter\SeasonSearchFilter|\KinopoiskDev\Filter\StudioSearchFilter|\KinopoiskDev\Utils\FilterTrait
 	 */
-	public function type(string $type, string $operator = 'eq'): self {
+	public function type(string|ReviewType $type, string $operator = 'eq'): self {
+		$type = is_string($type)? $type : $type->value;
 		$this->addFilter('type', $type, $operator);
 
 		return $this;

@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use KinopoiskDev\Enums\ReviewType;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Filter\ReviewSearchFilter;
 use KinopoiskDev\Http\ReviewRequests;
@@ -25,7 +26,7 @@ class ReviewRequestsTest extends TestCase {
 	private ReviewRequests $reviewRequests;
 
 	public function test_searchReviews_withoutFilters_returnsReviews(): void {
-		$result = $this->reviewRequests->searchReviews(null, 1, 10);
+		$result = $this->reviewRequests->searchReviews();
 		$this->assertNotEmpty($result->docs);
 		$this->assertIsArray($result->docs);
 		$firstReview = $result->docs[0];
@@ -36,18 +37,20 @@ class ReviewRequestsTest extends TestCase {
 
 	public function test_searchReviews_withFilters_returnsFilteredReviews(): void {
 		$filter = new \KinopoiskDev\Filter\ReviewSearchFilter();
-		$filter->type('Позитивный');
-		$result = $this->reviewRequests->searchReviews($filter, 1, 10);
+		$filter->type(ReviewType::POSITIVE);
+		$filter->setMaxLimit(2);
+		$result = $this->reviewRequests->searchReviews($filter);
 		$this->assertNotEmpty($result->docs);
 		$this->assertIsArray($result->docs);
 		$firstReview = $result->docs[0];
 		$this->assertNotEmpty($firstReview->id);
 		$this->assertNotEmpty($firstReview->type);
 		$this->assertNotEmpty($firstReview->author);
+		$this->assertNotEmpty($firstReview->review);
 	}
 
 	public function test_getPositiveReviews_returnsPositiveReviews(): void {
-		$result = $this->reviewRequests->getPositiveReviews(1, 10);
+		$result = $this->reviewRequests->getPositiveReviews();
 		$this->assertNotEmpty($result->docs);
 		$this->assertIsArray($result->docs);
 		$firstReview = $result->docs[0];
@@ -57,7 +60,7 @@ class ReviewRequestsTest extends TestCase {
 	}
 
 	public function test_getNegativeReviews_returnsNegativeReviews(): void {
-		$result = $this->reviewRequests->getNegativeReviews(1, 10);
+		$result = $this->reviewRequests->getNegativeReviews();
 		$this->assertNotEmpty($result->docs);
 		$this->assertIsArray($result->docs);
 		$firstReview = $result->docs[0];

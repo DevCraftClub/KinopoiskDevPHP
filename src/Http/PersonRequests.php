@@ -2,8 +2,11 @@
 
 namespace KinopoiskDev\Http;
 
+use KinopoiskDev\Enums\SortDirection;
+use KinopoiskDev\Enums\SortField;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Filter\PersonSearchFilter;
+use KinopoiskDev\Filter\SortCriteria;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Person;
 use KinopoiskDev\Models\PersonAward;
@@ -93,43 +96,46 @@ class PersonRequests extends Kinopoisk {
 	}
 
 	/**
-	 * Выполняет поиск персон по имени
+	 * Получает список актёров
 	 *
-	 * Удобный метод для поиска персон по имени с использованием регулярных выражений.
-	 * Поддерживает поиск как по русским, так и по английским именам. Полезен для
-	 * быстрого поиска персон без сложной фильтрации.
+	 * Удобный метод для получения списка персон с профессией "актёр".
+	 * Является обёрткой над методом getPersonsByProfession().
 	 *
-	 * @api     /v1.4/person/search
-	 * @since   1.0.0
+	 * @see    PersonRequests::getPersonsByProfession() Для получения персон других профессий
 	 *
-	 * @link    https://kinopoiskdev.readme.io/reference/personcontroller_searchpersonv1_4
+	 * @param   int  $limit  Количество результатов на странице (максимум 250)
 	 *
-	 * @param   string  $name   Имя персоны для поиска (может быть русским или английским)
-	 * @param   int     $page   Номер страницы результатов (начиная с 1)
-	 * @param   int     $limit  Количество результатов на странице (максимум 250)
+	 * @param   int  $page   Номер страницы результатов (начиная с 1)
 	 *
-	 * @return PersonDocsResponseDto Результаты поиска с информацией о пагинации
-	 * @throws KinopoiskDevException При ошибках API или валидации
-	 * @throws KinopoiskResponseException При ошибках HTTP-запроса
+	 * @return PersonDocsResponseDto Список актёров с информацией о пагинации
 	 * @throws \JsonException При ошибках парсинга JSON-ответа
-	 *
-	 * @example
-	 * ```php
-	 * // Поиск по русскому имени
-	 * $results = $personRequests->searchByName('Том Круз');
-	 *
-	 * // Поиск по английскому имени
-	 * $results = $personRequests->searchByName('Tom Cruise', 1, 20);
-	 * ```
+	 * @throws KinopoiskDevException При ошибках API
 	 */
-	public function searchByName(string $name, int $page = 1, int $limit = 10): PersonDocsResponseDto {
-		$filters = new PersonSearchFilter();
-		$filters->addFilter('query', $name);
-		$filters->addFilter('page', $page);
-		$filters->addFilter('limit', $limit);
+	public function getActors(int $page = 1, int $limit = 10): PersonDocsResponseDto {
+		return $this->getPersonsByProfession('актер', $page, $limit);
+	}
 
-		$response = $this->makeRequest('GET', 'person/search', $filters->getFilters());
-		$data     = $this->parseResponse($response);
+	/**
+	 * Получает персон по профессии
+	 *
+	 * Выполняет поиск персон, которые работают в указанной профессиональной области.
+	 * Поддерживает русские названия профессий из справочника Kinopoisk.
+	 *
+	 * @see    PersonRequests::getActors() Для получения актёров
+	 * @see    PersonRequests::getDirectors() Для получения режиссёров
+	 *
+	 * @param   int     $limit       Количество результатов на странице (максимум 250)
+	 *
+	 * @param   string  $profession  Профессия (актёр, режиссёр, сценарист, продюсер и т.д.)
+	 * @param   int     $page        Номер страницы результатов (начиная с 1)
+	 *
+	 * @return PersonDocsResponseDto Персоны указанной профессии с информацией о пагинации
+	 * @throws KinopoiskDevException При ошибках API
+	 * @throws \JsonException При ошибках парсинга JSON-ответа
+	 */
+	public function getPersonsByProfession(string $profession, int $page = 1, int $limit = 10): PersonDocsResponseDto {
+		$filters = new PersonSearchFilter();
+		$filters->profession($profession);
 
 		return $this->searchPersons($filters, $page, $limit);
 	}
@@ -179,75 +185,81 @@ class PersonRequests extends Kinopoisk {
 	}
 
 	/**
-	 * Получает список актёров
+	 * Получает случайную персону из базы данных API с применением случайных критериев сортировки
 	 *
-	 * Удобный метод для получения списка персон с профессией "актёр".
-	 * Является обёрткой над методом getPersonsByProfession().
+	 * Метод создает случайный набор критериев сортировки, применяет их к поисковому запросу
+	 * и возвращает первую персону из результата. Если фильтры не переданы, создается
+	 * новый экземпляр PersonSearchFilter. Добавляет от 1 до (количество полей - 1)
+	 * случайных критериев сортировки для обеспечения максимальной случайности результата.
 	 *
-	 * @see    PersonRequests::getPersonsByProfession() Для получения персон других профессий
+	 * Алгоритм работы:
+	 * 1. Создает пустой фильтр, если не передан
+	 * 2. Получает доступные поля и направления сортировки
+	 * 3. Генерирует случайное количество критериев сортировки (1 до max-1)
+	 * 4. Для каждого критерия выбирает случайное поле и направление
+	 * 5. Выполняет поиск с лимитом 1 запись на 1 странице
+	 * 6. Возвращает первую найденную персону
 	 *
-	 * @param   int  $limit  Количество результатов на странице (максимум 250)
+	 * @since 1.0.0
 	 *
-	 * @param   int  $page   Номер страницы результатов (начиная с 1)
+	 * @see   PersonSearchFilter Класс для настройки фильтров поиска персон
+	 * @see   SortField::getPersonFields() Получение доступных полей для сортировки персон
+	 * @see   SortDirection::getAllDirections() Получение всех направлений сортировки
+	 * @see   SortCriteria Класс для создания критериев сортировки
 	 *
-	 * @return PersonDocsResponseDto Список актёров с информацией о пагинации
-	 * @throws \JsonException При ошибках парсинга JSON-ответа
-	 * @throws KinopoiskDevException При ошибках API
+	 * @param   PersonSearchFilter|null  $filters  Фильтры для поиска персон. Если null, создается новый экземпляр
+	 *
+	 * @return Person Случайно выбранная персона из базы данных
+	 *
+	 * @throws \Random\RandomException В случае ошибки генерации случайного числа
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException Если не найдено персон, соответствующих фильтрам, или при других ошибках API
+	 *
+	 * @example
+	 * ```php
+	 * // Получение случайной персоны без фильтров
+	 * $randomPerson = $personRequests->getRandomPerson();
+	 *
+	 * // Получение случайной персоны только среди актеров
+	 * $filter = new PersonSearchFilter();
+	 * $filter->onlyActors();
+	 * $randomActor = $personRequests->getRandomPerson($filter);
+	 *
+	 * // Получение случайной персоны определенного возраста
+	 * $filter = new PersonSearchFilter();
+	 * $filter->age(30, 'gte')->age(60, 'lte');
+	 * $randomAdultPerson = $personRequests->getRandomPerson($filter);
+	 * ```
 	 */
-	public function getActors(int $page = 1, int $limit = 10): PersonDocsResponseDto {
-		return $this->getPersonsByProfession('актер', $page, $limit);
-	}
-
-	/**
-	 * Получает персон по профессии
-	 *
-	 * Выполняет поиск персон, которые работают в указанной профессиональной области.
-	 * Поддерживает русские названия профессий из справочника Kinopoisk.
-	 *
-	 * @see    PersonRequests::getActors() Для получения актёров
-	 * @see    PersonRequests::getDirectors() Для получения режиссёров
-	 *
-	 * @param   int     $limit       Количество результатов на странице (максимум 250)
-	 *
-	 * @param   string  $profession  Профессия (актёр, режиссёр, сценарист, продюсер и т.д.)
-	 * @param   int     $page        Номер страницы результатов (начиная с 1)
-	 *
-	 * @return PersonDocsResponseDto Персоны указанной профессии с информацией о пагинации
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON-ответа
-	 */
-	public function getPersonsByProfession(string $profession, int $page = 1, int $limit = 10): PersonDocsResponseDto {
-		$filters = new PersonSearchFilter();
-		$filters->profession($profession);
-
-		return $this->searchPersons($filters, $page, $limit);
-	}
-
-	/**
-	 * Получает случайную персону
-	 *
-	 * @param PersonSearchFilter|null $filters Фильтры для поиска
-	 * @return Person Случайная персона
-	 */
-	public function getRandomPerson(?PersonSearchFilter $filters = null): Person {
+	public function getRandomPerson(?PersonSearchFilter $filters = NULL): Person {
 		if (is_null($filters)) {
 			$filters = new PersonSearchFilter();
 		}
-		
+
+		$sortFields = SortField::getPersonFields();
+		$sortTypes  = SortDirection::getAllDirections();
+
+		for ($i = 0, $max = random_int(1, count($sortFields) - 1); $i < $max; $i++) {
+			$randomField    = $sortFields[array_rand($sortFields)];
+			$randomSortType = $sortTypes[array_rand($sortTypes)];
+			$filters->addSortCriteria(
+				new SortCriteria($randomField, $randomSortType),
+			);
+		}
 		$results = $this->searchPersons($filters, 1, 1);
 		if (empty($results->docs)) {
 			throw new KinopoiskDevException('Не найдено персон, соответствующих фильтрам');
 		}
-		
+
 		return $results->docs[0];
 	}
 
 	/**
 	 * Выполняет поиск персон по имени (алиас для searchByName)
 	 *
-	 * @param string $name Имя для поиска
-	 * @param int $page Номер страницы
-	 * @param int $limit Количество результатов
+	 * @param   string  $name   Имя для поиска
+	 * @param   int     $page   Номер страницы
+	 * @param   int     $limit  Количество результатов
+	 *
 	 * @return PersonDocsResponseDto Результаты поиска
 	 */
 	public function searchPersonsByName(string $name, int $page = 1, int $limit = 10): PersonDocsResponseDto {
@@ -255,63 +267,109 @@ class PersonRequests extends Kinopoisk {
 	}
 
 	/**
+	 * Выполняет поиск персон по имени
+	 *
+	 * Удобный метод для поиска персон по имени с использованием регулярных выражений.
+	 * Поддерживает поиск как по русским, так и по английским именам. Полезен для
+	 * быстрого поиска персон без сложной фильтрации.
+	 *
+	 * @api     /v1.4/person/search
+	 * @since   1.0.0
+	 *
+	 * @link    https://kinopoiskdev.readme.io/reference/personcontroller_searchpersonv1_4
+	 *
+	 * @param   string  $name   Имя персоны для поиска (может быть русским или английским)
+	 * @param   int     $page   Номер страницы результатов (начиная с 1)
+	 * @param   int     $limit  Количество результатов на странице (максимум 250)
+	 *
+	 * @return PersonDocsResponseDto Результаты поиска с информацией о пагинации
+	 * @throws KinopoiskDevException При ошибках API или валидации
+	 * @throws KinopoiskResponseException При ошибках HTTP-запроса
+	 * @throws \JsonException При ошибках парсинга JSON-ответа
+	 *
+	 * @example
+	 * ```php
+	 * // Поиск по русскому имени
+	 * $results = $personRequests->searchByName('Том Круз');
+	 *
+	 * // Поиск по английскому имени
+	 * $results = $personRequests->searchByName('Tom Cruise', 1, 20);
+	 * ```
+	 */
+	public function searchByName(string $name, int $page = 1, int $limit = 10): PersonDocsResponseDto {
+		$filters = new PersonSearchFilter();
+		$filters->addFilter('query', $name);
+		$filters->setPageNumber($page);
+		$filters->setMaxLimit($limit);
+
+		$response = $this->makeRequest('GET', 'person/search', $filters->getFilters());
+		$data     = $this->parseResponse($response);
+
+		return PersonDocsResponseDto::fromArray($data);
+	}
+
+	/**
 	 * Получает персон по полу
 	 *
-	 * @param string $sex Пол (М, Ж)
-	 * @param int $page Номер страницы
-	 * @param int $limit Количество результатов
+	 * @param   string  $sex    Пол (М, Ж)
+	 * @param   int     $page   Номер страницы
+	 * @param   int     $limit  Количество результатов
+	 *
 	 * @return PersonDocsResponseDto Результаты поиска
 	 */
 	public function getPersonsBySex(string $sex, int $page = 1, int $limit = 10): PersonDocsResponseDto {
 		$filters = new PersonSearchFilter();
 		$filters->sex($sex);
-		
+
 		return $this->searchPersons($filters, $page, $limit);
 	}
 
 	/**
 	 * Получает персон по году рождения
 	 *
-	 * @param int $year Год рождения
-	 * @param int $page Номер страницы
-	 * @param int $limit Количество результатов
+	 * @param   int  $year   Год рождения
+	 * @param   int  $page   Номер страницы
+	 * @param   int  $limit  Количество результатов
+	 *
 	 * @return PersonDocsResponseDto Результаты поиска
 	 */
 	public function getPersonsByBirthYear(int $year, int $page = 1, int $limit = 10): PersonDocsResponseDto {
 		$filters = new PersonSearchFilter();
 		$filters->birthYear($year);
-		
+
 		return $this->searchPersons($filters, $page, $limit);
 	}
 
 	/**
 	 * Получает персон по диапазону годов рождения
 	 *
-	 * @param int $fromYear Начальный год
-	 * @param int $toYear Конечный год
-	 * @param int $page Номер страницы
-	 * @param int $limit Количество результатов
+	 * @param   int  $fromYear  Начальный год
+	 * @param   int  $toYear    Конечный год
+	 * @param   int  $page      Номер страницы
+	 * @param   int  $limit     Количество результатов
+	 *
 	 * @return PersonDocsResponseDto Результаты поиска
 	 */
 	public function getPersonsByBirthYearRange(int $fromYear, int $toYear, int $page = 1, int $limit = 10): PersonDocsResponseDto {
 		$filters = new PersonSearchFilter();
 		$filters->birthYear($fromYear, $toYear);
-		
+
 		return $this->searchPersons($filters, $page, $limit);
 	}
 
 	/**
 	 * Получает персон по году смерти
 	 *
-	 * @param int $year Год смерти
-	 * @param int $page Номер страницы
-	 * @param int $limit Количество результатов
+	 * @param   int  $year   Год смерти
+	 * @param   int  $page   Номер страницы
+	 * @param   int  $limit  Количество результатов
+	 *
 	 * @return PersonDocsResponseDto Результаты поиска
 	 */
 	public function getPersonsByDeathYear(int $year, int $page = 1, int $limit = 10): PersonDocsResponseDto {
 		$filters = new PersonSearchFilter();
 		$filters->deathYear($year);
-		
+
 		return $this->searchPersons($filters, $page, $limit);
 	}
 
@@ -369,7 +427,7 @@ class PersonRequests extends Kinopoisk {
 	 * $awards = $kinopoisk->getPersonAwards($filter, 2, 50);
 	 * ```
 	 */
-	public function getPersonAwards(?PersonSearchFilter $filters = null, int $page = 1, int $limit = 10): PersonAwardDocsResponseDto {
+	public function getPersonAwards(?PersonSearchFilter $filters = NULL, int $page = 1, int $limit = 10): PersonAwardDocsResponseDto {
 		if ($limit > 250) {
 			throw new KinopoiskDevException('Limit не должен превышать 250');
 		}

@@ -6,6 +6,7 @@ namespace KinopoiskDev\Tests\Unit\Http;
 
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Http\SeasonRequests;
+use KinopoiskDev\Models\Season;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -40,14 +41,14 @@ class SeasonRequestsTest extends BaseHttpTest {
         $this->assertIsArray($result->docs);
         $firstSeason = $result->docs[0];
         $this->assertNotEmpty($firstSeason->movieId);
-        $this->assertNotEmpty($firstSeason->number);
+        $this->assertIsInt($firstSeason->number);
         $this->assertNotEmpty($firstSeason->name);
     }
 
     public function test_getSeasonByNumber_real(): void {
         $result = $this->seasonRequests->getSeasonByNumber(464963, 1);
 		$this->assertNotNull($result);
-        $this->assertNotEmpty($result->id);
+        $this->assertIsInt($result->number);
         $this->assertNotEmpty($result->name);
     }
 

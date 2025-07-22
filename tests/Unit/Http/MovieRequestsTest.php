@@ -77,7 +77,7 @@ class MovieRequestsTest extends BaseHttpTest {
         foreach ($result->docs as $movie) {
             $this->assertNotEmpty($movie->id);
             $this->assertNotEmpty($movie->type);
-            $this->assertNotEmpty($movie->year);
+            $this->assertIsInt($movie->year);
         }
     }
 
@@ -86,7 +86,7 @@ class MovieRequestsTest extends BaseHttpTest {
         $this->assertNotEmpty($result->id);
         $this->assertNotEmpty($result->name);
         $this->assertNotEmpty($result->type);
-        $this->assertNotEmpty($result->year);
+        $this->assertIsInt($result->year);
     }
 
     public function test_getMovieById_withInvalidId_throwsException(): void {

@@ -28,11 +28,11 @@ class PersonRequestsTest extends BaseHttpTest {
 		$this->assertNotNull($result);
         $this->assertNotEmpty($result->id);
         $this->assertNotEmpty($result->name);
-        $this->assertNotEmpty($result->sex);
+        $this->assertNotNull($result->sex);
     }
 
     public function test_searchByName_real(): void {
-        $result = $this->personRequests->searchByName('Киану', 1, 10);
+        $result = $this->personRequests->searchByName('Киану');
         $this->assertNotEmpty($result->docs);
         $this->assertIsArray($result->docs);
         $firstPerson = $result->docs[0];

@@ -59,8 +59,111 @@ enum SortField: string {
 	// Студии
 	case TYPE = 'type';
 
-	case TITLE = 'title';
+	case TITLE  = 'title';
 	case MOVIES = 'movies';
+
+	// Персоны
+	case PHOTO                   = 'photo';
+	case SEX                     = 'sex';
+	case GROWTH                  = 'growth';
+	case BIRTHDAY                = 'birthday';
+	case DEATH                   = 'death';
+	case AGE                     = 'age';
+	case BIRTH_PLACE             = 'birthPlace.value';
+	case DEATH_PLACE             = 'deathPlace.value';
+	case COUNT_AWARDS            = 'countAwards';
+	case PROFESSION              = 'profession.value';
+	case SPOUSES_ID              = 'spouses.id';
+	case SPOUSES_NAME            = 'spouses.name';
+	case SPOUSES_DIVORCED        = 'spouses.divorced';
+	case SPOUSES_DIVORCED_REASON = 'spouses.divorcedReason';
+	case SPOUSES_SEX             = 'spouses.sex';
+	case SPOUSES_CHILDREN        = 'spouses.children';
+	case SPOUSES_RELATION        = 'spouses.relation';
+	case FACTS                   = 'facts.value';
+	case MOVIES_ID               = 'movies.id';
+	case MOVIES_NAME             = 'movies.name';
+	case MOVIES_ALTERNATIVE_NAME = 'movies.alternativeName';
+	case MOVIES_RATING           = 'movies.rating';
+	case MOVIES_GENERAL          = 'movies.general';
+	case MOVIES_DESCRIPTION      = 'movies.description';
+	case MOVIES_EN_PROFESSION    = 'movies.enProfession';
+
+	/**
+	 * Возвращает массив полей персон для выбора
+	 *
+	 * Предоставляет статически кэшируемый список всех доступных полей персон,
+	 * которые могут быть использованы при запросах к API для получения информации
+	 * о персонах. Включает основные данные персоны, информацию о супругах,
+	 * фильмографию и дополнительные метаданные.
+	 *
+	 * Возвращаемые поля включают:
+	 * - Базовую информацию: ID, имя, год рождения, пол, рост
+	 * - Даты: дата создания/обновления записи, день рождения, дата смерти
+	 * - Профессиональную информацию: профессия, количество наград, возраст
+	 * - Места: место рождения и смерти
+	 * - Фото и факты
+	 * - Информацию о супругах: ID, имя, пол, развод и причины, дети, тип отношений
+	 * - Фильмографию: ID фильмов, названия, альтернативные названия, рейтинги,
+	 *   общую информацию, описания, английские профессии
+	 *
+	 * Метод использует статическое кэширование для оптимизации производительности
+	 * при множественных вызовах в рамках одного запроса.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array<int, string> Массив строковых значений полей персон
+	 *
+	 * @example
+	 * ```php
+	 * $fields = PersonField::getPersonFields();
+	 * $selectFields = implode(',', $fields); // Для API запроса
+	 *
+	 * // Использование в запросе
+	 * $filter->selectFields($fields);
+	 * ```
+	 */
+	public static function getPersonFields(): array {
+		static $fields = NULL;
+
+		if ($fields === NULL) {
+			$fields = [
+				self::ID,
+				self::NAME,
+				self::EN_NAME,
+				self::YEAR,
+				self::CREATED_AT,
+				self::UPDATED_AT,
+				self::PHOTO,
+				self::SEX,
+				self::GROWTH,
+				self::BIRTHDAY,
+				self::DEATH,
+				self::PROFESSION,
+				self::SPOUSES_ID,
+				self::SPOUSES_NAME,
+				self::SPOUSES_DIVORCED,
+				self::SPOUSES_DIVORCED_REASON,
+				self::SPOUSES_SEX,
+				self::SPOUSES_CHILDREN,
+				self::SPOUSES_RELATION,
+				self::FACTS,
+				self::MOVIES_ID,
+				self::MOVIES_NAME,
+				self::MOVIES_ALTERNATIVE_NAME,
+				self::MOVIES_RATING,
+				self::MOVIES_GENERAL,
+				self::MOVIES_DESCRIPTION,
+				self::MOVIES_EN_PROFESSION,
+				self::BIRTH_PLACE,
+				self::DEATH_PLACE,
+				self::COUNT_AWARDS,
+				self::AGE,
+			];
+		}
+
+		return $fields;
+	}
 
 	/**
 	 * Возвращает все поля рейтингов
@@ -312,7 +415,7 @@ enum SortField: string {
 			// По возрастанию для названий (алфавитный порядок)
 			self::NAME, self::EN_NAME, self::ALTERNATIVE_NAME                => SortDirection::ASC,
 			// По возрастанию для технических параметров
-			default                                                           => SortDirection::DESC,
+			default                                                          => SortDirection::DESC,
 		};
 
 		$cache[$this->value] = $result;

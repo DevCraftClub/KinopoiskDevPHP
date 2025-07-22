@@ -150,10 +150,13 @@ class StudioRequests extends Kinopoisk {
 	 * @throws KinopoiskDevException При ошибках API
 	 */
 	public function getStudioById(int $studioId): Studio {
-		$response = $this->makeRequest('GET', "studio/{$studioId}");
+		$filters = new StudioSearchFilter();
+		$filters->id($studioId);
+		$filters->addFilter('limit', 1);
+		$response = $this->makeRequest('GET', "studio", $filters->getFilters());
 		$data     = $this->parseResponse($response);
 
-		return Studio::fromArray($data);
+		return Studio::fromArray($data['docs'][0] ?? []);
 	}
 
 	/**

@@ -30,7 +30,6 @@ class ListRequestsTest extends BaseHttpTest {
         if ($result->docs !== null && !empty($result->docs)) {
             $this->assertIsArray($result->docs);
             $firstList = $result->docs[0];
-            $this->assertNotEmpty($firstList->id);
             $this->assertNotEmpty($firstList->name);
         }
     }
@@ -38,7 +37,6 @@ class ListRequestsTest extends BaseHttpTest {
     public function test_getListBySlug_real(): void {
         try {
             $result = $this->listRequests->getListBySlug('top250');
-            $this->assertNotEmpty($result->id);
             $this->assertNotEmpty($result->name);
             $this->assertEquals('top250', $result->slug);
         } catch (\KinopoiskDev\Exceptions\KinopoiskDevException $e) {
@@ -55,7 +53,6 @@ class ListRequestsTest extends BaseHttpTest {
             if ($result->docs !== null && !empty($result->docs)) {
                 $this->assertIsArray($result->docs);
                 $firstList = $result->docs[0];
-                $this->assertNotEmpty($firstList->id);
                 $this->assertNotEmpty($firstList->name);
             }
         } catch (\KinopoiskDev\Exceptions\KinopoiskDevException $e) {

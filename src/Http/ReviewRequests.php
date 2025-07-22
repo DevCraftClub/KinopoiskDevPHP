@@ -2,6 +2,7 @@
 
 namespace KinopoiskDev\Http;
 
+use KinopoiskDev\Enums\ReviewType;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Filter\ReviewSearchFilter;
 use KinopoiskDev\Kinopoisk;
@@ -82,7 +83,7 @@ class ReviewRequests extends Kinopoisk {
 	 */
 	public function getPositiveReviews(int $page = 1, int $limit = 10): ReviewDocsResponseDto {
 		$filters = new ReviewSearchFilter();
-		$filters->type('Позитивный');
+		$filters->type(ReviewType::POSITIVE);
 
 		return $this->searchReviews($filters, $page, $limit);
 	}
@@ -132,11 +133,11 @@ class ReviewRequests extends Kinopoisk {
 			$filters = new ReviewSearchFilter();
 		}
 
-		$filters->addFilter('page', $page);
-		$filters->addFilter('limit', $limit);
+		$filters->setPageNumber($page);
+		$filters->setMaxLimit($limit);
 		$queryParams = $filters->getFilters();
 
-		$response = $this->makeRequest('GET', '/review', $queryParams);
+		$response = $this->makeRequest('GET', 'review', $queryParams);
 		$data     = $this->parseResponse($response);
 
 		return new ReviewDocsResponseDto(
@@ -176,7 +177,7 @@ class ReviewRequests extends Kinopoisk {
 	 */
 	public function getNegativeReviews(int $page = 1, int $limit = 10): ReviewDocsResponseDto {
 		$filters = new ReviewSearchFilter();
-		$filters->type('Негативный');
+		$filters->type(ReviewType::NEGATIVE);
 
 		return $this->searchReviews($filters, $page, $limit);
 	}

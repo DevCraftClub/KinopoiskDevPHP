@@ -243,7 +243,7 @@ class SortFieldTest extends TestCase {
 
 	public function test_all_cases_are_covered(): void {
 		$cases = SortField::cases();
-		$this->assertCount(30, $cases);
+		$this->assertCount(31, $cases);
 
 		$expectedValues = [
 			'id',
@@ -276,6 +276,7 @@ class SortFieldTest extends TestCase {
 			'premiere.usa',
 			'type',
 			'title',
+			'movies',
 		];
 		$actualValues   = array_map(fn ($case) => $case->value, $cases);
 

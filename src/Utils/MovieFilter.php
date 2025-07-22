@@ -807,14 +807,14 @@ class MovieFilter {
 	 * @return array<string, mixed>
 	 */
 	public function getFilters(): array {
-		$filters = $this->filters;
+		$filters  = $this->filters;
 		$sortData = $this->getSortData();
-		
+
 		if ($sortData !== NULL && !empty($sortData)) {
 			// Добавляем отдельные параметры для каждого критерия сортировки
 			foreach ($sortData as $sort) {
 				$filters['sortField'][] = $sort['sortField'];
-				$filters['sortType'][] = $sort['sortType'];
+				$filters['sortType'][]  = $sort['sortType'];
 			}
 		}
 
@@ -844,6 +844,54 @@ class MovieFilter {
 	public function reset(): self {
 		$this->filters = [];
 		$this->clearSort();
+
+		return $this;
+	}
+
+	/**
+	 * Устанавливает лимит количества элементов в результате запроса
+	 *
+	 * Метод устанавливает ограничение на количество возвращаемых элементов
+	 * в текущем запросе. Используется для пагинации и контроля объема данных.
+	 * Добавляет фильтр 'limit' в массив фильтров запроса.
+	 *
+	 * @param int $int Максимальное количество элементов для возврата (должно быть положительным числом)
+	 *
+	 * @return self Возвращает текущий экземпляр объекта для поддержки цепочки вызовов (fluent interface)
+	 */
+	public function setMaxLimit(int $int): self {
+		$this->filters['limit'] = $int;
+
+		return $this;
+	}
+
+	/**
+	 * Устанавливает номер страницы для пагинации результатов
+	 *
+	 * Задает номер страницы для получения определенного набора результатов
+	 * при выполнении запросов с пагинацией. Страницы нумеруются начиная с 1.
+	 * Значение сохраняется в массиве фильтров под ключом 'page' для
+	 * последующего использования в API-запросах.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $int Номер страницы для получения результатов (должен быть больше 0)
+	 *
+	 * @return self Возвращает текущий экземпляр для цепочного вызова методов
+	 *
+	 * @example
+	 * ```php
+	 * $filter = new MovieSearchFilter();
+	 * $filter->page(2)->limit(20); // Получить вторую страницу с 20 результатами
+	 *
+	 * // Использование в цепочке методов
+	 * $results = $movieRequests->searchMovies(
+	 *     $filter->year(2023)->page(3)->limit(50)
+	 * );
+	 * ```
+	 */
+	public function setPageNumber(int $int): self {
+		$this->filters['page'] = $int;
 
 		return $this;
 	}

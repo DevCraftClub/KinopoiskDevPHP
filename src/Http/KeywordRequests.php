@@ -133,24 +133,4 @@ class KeywordRequests extends Kinopoisk {
 		return $result->docs[0] ?? NULL;
 	}
 
-	/**
-	 * Получает популярные ключевые слова
-	 *
-	 * Возвращает ключевые слова, отсортированные по популярности
-	 * (количеству связанных с ними фильмов).
-	 *
-	 * @param   int  $page   Номер страницы результатов
-	 * @param   int  $limit  Количество результатов на странице
-	 *
-	 * @return KeywordDocsResponseDto Популярные ключевые слова
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
-	 */
-	public function getPopularKeywords(int $page = 1, int $limit = 10): KeywordDocsResponseDto {
-		$filters = new KeywordSearchFilter();
-		$filters->addSortCriteria(new SortCriteria(SortField::MOVIES, SortDirection::DESC));
-
-		return $this->searchKeywords($filters, $page, $limit);
-	}
-
 }

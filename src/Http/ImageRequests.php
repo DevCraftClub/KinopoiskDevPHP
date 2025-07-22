@@ -2,6 +2,7 @@
 
 namespace KinopoiskDev\Http;
 
+use KinopoiskDev\Enums\ImageType;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Exceptions\KinopoiskResponseException;
 use KinopoiskDev\Filter\MovieSearchFilter;
@@ -37,12 +38,12 @@ class ImageRequests extends Kinopoisk {
 	 * @throws \JsonException При ошибках парсинга JSON
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
 	 */
-	public function getImagesByMovieId(int $movieId, string $type = '', int $page = 1, int $limit = 10): ImageDocsResponseDto {
+	public function getImagesByMovieId(int $movieId, ImageType $type = null, int $page = 1, int $limit = 10): ImageDocsResponseDto {
 		$filters = new MovieSearchFilter();
 		$filters->addFilter('movieId', $movieId);
 
-		if (!empty($type)) {
-			$filters->addFilter('type', $type);
+		if (!is_null($type)) {
+			$filters->addFilter('type', $type->value);
 		}
 
 		return $this->getImages($filters, $page, $limit);
@@ -90,8 +91,8 @@ class ImageRequests extends Kinopoisk {
 			$filters = new MovieSearchFilter();
 		}
 
-		$filters->addFilter('page', $page);
-		$filters->addFilter('limit', $limit);
+		$filters->setPageNumber($page);
+		$filters->setMaxLimit($limit);
 		$queryParams = $filters->getFilters();
 
 		$response = $this->makeRequest('GET', 'image', $queryParams);
@@ -104,27 +105,6 @@ class ImageRequests extends Kinopoisk {
 			page : $data['page'] ?? $page,
 			pages: $data['pages'] ?? 1,
 		);
-	}
-
-	/**
-	 * Получает постеры фильмов с высоким рейтингом
-	 *
-	 * @param   float  $minRating  Минимальный рейтинг КиноПоиска (по умолчанию 7.0)
-	 * @param   int    $page       Номер страницы
-	 * @param   int    $limit      Количество результатов на странице
-	 *
-	 * @return ImageDocsResponseDto Постеры высоко оцененных фильмов
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
-	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
-	 */
-	public function getHighRatedPosters(float $minRating = 7.0, int $page = 1, int $limit = 10): ImageDocsResponseDto {
-		$filters = new MovieSearchFilter();
-		$filters->addFilter('type', 'cover');
-
-		// Здесь можно было бы добавить фильтрацию по рейтингу, если API это поддерживает
-
-		return $this->getImages($filters, $page, $limit);
 	}
 
 }

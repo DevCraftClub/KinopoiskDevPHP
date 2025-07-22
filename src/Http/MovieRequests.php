@@ -92,7 +92,7 @@ class MovieRequests extends Kinopoisk {
 	 * ```
 	 */
 	public function getMovieById(int $movieId): Movie {
-		$response = $this->makeRequest('GET', "/movie/{$movieId}");
+		$response = $this->makeRequest('GET', "movie/{$movieId}");
 		$data     = $this->parseResponse($response);
 
 		return Movie::fromArray($data);
@@ -135,7 +135,7 @@ class MovieRequests extends Kinopoisk {
 		}
 		$queryParams = $filters->getFilters();
 
-		$response = $this->makeRequest('GET', '/movie/random', $queryParams);
+		$response = $this->makeRequest('GET', 'movie/random', $queryParams);
 		$data     = $this->parseResponse($response);
 
 		return Movie::fromArray($data);
@@ -280,7 +280,7 @@ class MovieRequests extends Kinopoisk {
 		$filters = new MovieSearchFilter();
 		$filters->addFilter('query', $query);
 
-		$response = $this->makeRequest('GET', '/movie/search', $filters->getFilters());
+		$response = $this->makeRequest('GET', 'movie/search', $filters->getFilters());
 		$data     = $this->parseResponse($response);
 
 		return new SearchMovieResponseDto(

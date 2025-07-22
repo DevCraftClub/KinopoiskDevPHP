@@ -2,6 +2,7 @@
 
 namespace KinopoiskDev\Http;
 
+use KinopoiskDev\Enums\PersonProfession;
 use KinopoiskDev\Enums\SortDirection;
 use KinopoiskDev\Enums\SortField;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
@@ -112,7 +113,7 @@ class PersonRequests extends Kinopoisk {
 	 * @throws KinopoiskDevException При ошибках API
 	 */
 	public function getActors(int $page = 1, int $limit = 10): PersonDocsResponseDto {
-		return $this->getPersonsByProfession('актер', $page, $limit);
+		return $this->getPersonsByProfession(PersonProfession::ACTOR->getRussianName(), $page, $limit);
 	}
 
 	/**

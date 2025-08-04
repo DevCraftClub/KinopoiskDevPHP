@@ -1,0 +1,84 @@
+version: 2
+updates:
+  # Composer dependencies
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "Gokujo"
+    assignees:
+      - "Gokujo"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "composer"
+    ignore:
+      # Игнорируем major версии для критических зависимостей
+      - dependency-name: "phpunit/phpunit"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "guzzlehttp/guzzle"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "symfony/*"
+        update-types: ["version-update:semver-major"]
+    # Автоматическое слияние для patch и minor обновлений
+    allow:
+      - dependency-type: "direct"
+        update-type: "patch"
+      - dependency-type: "direct"
+        update-type: "minor"
+    # Автоматическое слияние только для определенных зависимостей
+    automerged-updates:
+      - match:
+          dependency-type: "direct"
+          update-type: "patch"
+        automerge: true
+      - match:
+          dependency-type: "direct"
+          update-type: "minor"
+        automerge: true
+      - match:
+          dependency-type: "indirect"
+          update-type: "patch"
+        automerge: true
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "Europe/Berlin"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "Gokujo"
+    assignees:
+      - "Gokujo"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    # Автоматическое слияние для Actions
+    allow:
+      - dependency-type: "direct"
+        update-type: "patch"
+      - dependency-type: "direct"
+        update-type: "minor"
+    automerged-updates:
+      - match:
+          dependency-type: "direct"
+          update-type: "patch"
+        automerge: true
+      - match:
+          dependency-type: "direct"
+          update-type: "minor"
+        automerge: true

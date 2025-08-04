@@ -13,6 +13,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -51,23 +54,36 @@ jobs:
             echo "has_changes=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Get branch info
+        id: branch-info
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "branch_name=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+            echo "is_pr=true" >> $GITHUB_OUTPUT
+          else
+            echo "branch_name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            echo "is_pr=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Commit documentation changes (PR)
         if: github.event_name == 'pull_request' && steps.check-docs.outputs.has_changes == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git checkout -b ${{ steps.branch-info.outputs.branch_name }}
           git add docs/
           git commit -m "📚 Auto-generate documentation [skip ci]"
-          git push
+          git push origin ${{ steps.branch-info.outputs.branch_name }}
 
       - name: Commit documentation changes (Push to main)
         if: github.event_name == 'push' && steps.check-docs.outputs.has_changes == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git checkout -b ${{ steps.branch-info.outputs.branch_name }}
           git add docs/
           git commit -m "📚 Auto-generate documentation [skip ci]"
-          git push
+          git push origin ${{ steps.branch-info.outputs.branch_name }}
 
       - name: Comment on PR
         if: github.event_name == 'pull_request' && steps.check-docs.outputs.has_changes == 'true'

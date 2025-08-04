@@ -1,5 +1,5 @@
 {
-	"name": "devcraftclub/kinopoisk-dev-php",
+	"name": "devcraftclub/kinopoisk-dev",
 	"description": "PHP клиент для API Kinopoisk.dev",
 	"type": "library",
 	"keywords": [
@@ -70,7 +70,7 @@
 		}
 	},
 	"support": {
-		"issues": "https://github.com/your-username/kinopoisk-dev-client/issues",
-		"source": "https://github.com/your-username/kinopoisk-dev-client"
+		    "issues": "https://github.com/DevCraftClub/KinopoiskDevPHP/issues",
+    "source": "https://github.com/DevCraftClub/KinopoiskDevPHP"
 	}
 }

@@ -21,7 +21,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\Logo Для работы с логотипами
  * @see     \KinopoiskDev\Models\Movie Для использования в фильмах
  */
- class NetworkItem implements BaseModel {
+class NetworkItem extends AbstractBaseModel {
 
 	/**
 	 * Конструктор для создания объекта элемента сети
@@ -65,7 +65,7 @@ use KinopoiskDev\Utils\DataManager;
 	 *                        - name: string|null - название сети или телеканала
 	 *                        - logo: array|null - данные о логотипе с URL изображения
 	 *
-	 * @return self Новый экземпляр класса NetworkItem с данными из массива
+	 * @return static Новый экземпляр класса NetworkItem с данными из массива
 	 *
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException Если указанный класс Logo не существует
 	 *                                                        или не имеет метода fromArray()
@@ -116,49 +116,20 @@ use KinopoiskDev\Utils\DataManager;
 	 * // ['name' => 'Netflix', 'logo' => ['url' => 'https://example.com/logo.png']]
 	 * ```
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'name' => $this->name,
 			'logo' => $this->logo?->toArray(),
 		];
 	}
 
-
 	/**
 	 * Валидирует данные модели
 	 *
 	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
 	 */
 	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
+		return TRUE; // Basic validation - override in specific models if needed
 	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

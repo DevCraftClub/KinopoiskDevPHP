@@ -26,7 +26,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\MeiliPersonEntity Родительский класс
  * @link    https://kinopoiskdev.readme.io/reference/personcontroller_findonev1_4
  */
- class Person extends MeiliPersonEntity {
+class Person extends MeiliPersonEntity {
 
 	/**
 	 * Конструктор для создания объекта персоны
@@ -81,23 +81,6 @@ use KinopoiskDev\Utils\DataManager;
 		public ?string    $createdAt = NULL,
 	) {
 		parent::__construct($id, $name, $enName, $photo, $sex, $growth, $birthday, $death, $age, $birthPlace, $deathPlace, $profession);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param   string  $json  JSON строка
-	 *
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data     = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-
-		return $instance;
 	}
 
 	/**
@@ -157,9 +140,6 @@ use KinopoiskDev\Utils\DataManager;
 	 * @return string JSON строка
 	 * @throws \JsonException При ошибке сериализации
 	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
 
 	/**
 	 * Преобразует объект в массив данных
@@ -203,12 +183,13 @@ use KinopoiskDev\Utils\DataManager;
 	 * Возвращается первое найденное не-null значение. Если оба имени отсутствуют,
 	 * возвращается пустая строка.
 	 *
-	 * @see Person::$name
-	 * @see Person::$enName
-	 * @return string Имя персоны или пустая строка, если имена не доступны.
 	 * @since 1.0.0
+	 * @see   Person::$enName
+	 * @see   Person::$name
+	 * @return string Имя персоны или пустая строка, если имена не доступны.
 	 */
 	public function getName(): string {
-		return $this->name?? $this->enName?? '';
+		return $this->name ?? $this->enName ?? '';
 	}
+
 }

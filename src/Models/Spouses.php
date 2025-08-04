@@ -19,7 +19,7 @@ use KinopoiskDev\Enums\PersonSex;
  * @see     \KinopoiskDev\Enums\PersonSex Для определения пола супруга
  * @see     \KinopoiskDev\Models\Person Для основной модели персоны
  */
- class Spouses implements BaseModel {
+class Spouses extends AbstractBaseModel {
 
 	/**
 	 * Конструктор для создания объекта супруга
@@ -33,20 +33,20 @@ use KinopoiskDev\Enums\PersonSex;
 	 *
 	 * @param   int        $id              Уникальный идентификатор супруга в базе данных
 	 * @param   string     $name            Полное имя супруга
-	 * @param   bool       $divorced        Статус развода (true - в разводе, false - в браке, по умолчанию false)
 	 * @param   string     $divorcedReason  Причина развода (пустая строка если развода не было)
 	 * @param   PersonSex  $sex             Пол супруга (мужской или женский)
 	 * @param   int        $children        Количество детей в браке
 	 * @param   string     $relation        Описание типа отношений или дополнительная информация
+	 * @param   bool       $divorced        Статус развода (true - в разводе, false - в браке, по умолчанию false)
 	 */
 	public function __construct(
 		public int       $id,
 		public string    $name,
-		public bool      $divorced = FALSE,
 		public string    $divorcedReason,
 		public PersonSex $sex,
 		public int       $children,
 		public string    $relation,
+		public bool      $divorced = FALSE,
 	) {}
 
 	/**
@@ -61,25 +61,25 @@ use KinopoiskDev\Enums\PersonSex;
 	 * @see PersonSex::tryFrom() Для безопасного преобразования строки в enum
 	 *
 	 * @param   array<string, mixed>  $data  Массив данных о супруге от API, содержащий ключи:
-	 *                        - id: int - уникальный идентификатор супруга
-	 *                        - name: string - полное имя супруга
-	 *                        - divorced: bool - статус развода
-	 *                        - divorcedReason: string - причина развода
-	 *                        - sex: string - пол супруга ('male' или 'female')
-	 *                        - children: int - количество детей
-	 *                        - relation: string - тип отношений
+	 *                                       - id: int - уникальный идентификатор супруга
+	 *                                       - name: string - полное имя супруга
+	 *                                       - divorced: bool - статус развода
+	 *                                       - divorcedReason: string - причина развода
+	 *                                       - sex: string - пол супруга ('male' или 'female')
+	 *                                       - children: int - количество детей
+	 *                                       - relation: string - тип отношений
 	 *
-	 * @return self Новый экземпляр класса Spouses с данными из массива
+	 * @return static Новый экземпляр класса Spouses с данными из массива
 	 */
 	public static function fromArray(array $data): static {
 		return new self(
 			id            : $data['id'],
 			name          : $data['name'],
-			divorced      : $data['divorced'],
 			divorcedReason: $data['divorcedReason'],
 			sex           : PersonSex::tryFrom($data['sex']),
 			children      : $data['children'],
 			relation      : $data['relation'],
+			divorced      : $data['divorced'],
 		);
 	}
 
@@ -103,7 +103,7 @@ use KinopoiskDev\Enums\PersonSex;
 	 *               - children: int - количество детей
 	 *               - relation: string - тип отношений
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'id'             => $this->id,
 			'name'           => $this->name,
@@ -115,42 +115,13 @@ use KinopoiskDev\Enums\PersonSex;
 		];
 	}
 
-
 	/**
 	 * Валидирует данные модели
 	 *
 	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
 	 */
 	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
+		return TRUE; // Basic validation - override in specific models if needed
 	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = self::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
- class Premiere implements BaseModel {
+class Premiere extends AbstractBaseModel {
 
 	/**
 	 * Конструктор модели премьеры
@@ -44,17 +44,16 @@ namespace KinopoiskDev\Models;
 	/**
 	 * Создает объект Premiere из массива данных API
 	 *
-	 * @param   array<string, mixed> $data Массив данных о премьерах от API, содержащий ключи:
-	 *                        - country: string|null - страна премьеры
-	 *                        - world: string|null - дата мировой премьеры
-	 *                        - russia: string|null - дата премьеры в России
-	 *                        - digital: string|null - дата цифрового релиза
-	 *                        - cinema: string|null - дата премьеры в кинотеатрах
-	 *                        - bluray: string|null - дата релиза на Blu-ray
-	 *                        - dvd: string|null - дата релиза на DVD
-	 *
 	 * @see Premiere::toArray() Для обратного преобразования в массив
-	 
+	 *
+	 * @param   array<string, mixed>  $data  Массив данных о премьерах от API, содержащий ключи:
+	 *                                       - country: string|null - страна премьеры
+	 *                                       - world: string|null - дата мировой премьеры
+	 *                                       - russia: string|null - дата премьеры в России
+	 *                                       - digital: string|null - дата цифрового релиза
+	 *                                       - cinema: string|null - дата премьеры в кинотеатрах
+	 *                                       - bluray: string|null - дата релиза на Blu-ray
+	 *                                       - dvd: string|null - дата релиза на DVD
 	 *
 	 * @return \KinopoiskDev\Models\Premiere Новый экземпляр класса Premiere с данными из массива
 	 */
@@ -81,7 +80,7 @@ namespace KinopoiskDev\Models;
 	 *
 	 * @return array Массив с данными о премьерах, содержащий все поля объекта
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'country' => $this->country,
 			'world'   => $this->world,
@@ -93,42 +92,13 @@ namespace KinopoiskDev\Models;
 		];
 	}
 
-
 	/**
 	 * Валидирует данные модели
 	 *
 	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
 	 */
 	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
+		return TRUE; // Basic validation - override in specific models if needed
 	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

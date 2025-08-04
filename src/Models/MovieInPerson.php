@@ -20,7 +20,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Person Для полной информации о персоне
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
- class MovieInPerson implements BaseModel {
+ class MovieInPerson extends AbstractBaseModel {
 
 	/**
 	 * Конструктор модели фильма в персоне
@@ -125,7 +125,7 @@ namespace KinopoiskDev\Models;
 	 * @see MovieInPerson::fromArray() Для создания объекта из массива
 	 * @see BaseModel::toArray() Реализация интерфейса BaseModel
 	 *
-	 * @return array Массив с данными о персоне в фильме, содержащий ключи:
+	 * @param bool $includeNulls* @return array Массив с данными о персоне в фильме, содержащий ключи:
 	 *               - id: int - уникальный идентификатор персоны
 	 *               - name: string|null - имя персоны на русском языке
 	 *               - alternativeName: string|null - альтернативное имя персоны
@@ -141,7 +141,7 @@ namespace KinopoiskDev\Models;
 	 * // Результат: ['id' => 123456, 'name' => 'Иван Петров', 'alternativeName' => 'Ivan Petrov', ...]
 	 * ```
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'id'              => $this->id,
 			'name'            => $this->name,
@@ -153,4 +153,9 @@ namespace KinopoiskDev\Models;
 		];
 	}
 
-}
+
+	 public function validate(): bool {
+		return TRUE;
+	 }
+
+ }

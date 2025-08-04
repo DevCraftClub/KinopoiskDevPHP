@@ -21,7 +21,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\Movie Для основной модели фильма/сериала
  * @link    https://kinopoiskdev.readme.io/reference/seasoncontroller_findmanyv1_4
  */
- class Season implements BaseModel {
+class Season extends AbstractBaseModel {
 
 	/**
 	 * Конструктор для создания объекта сезона
@@ -30,34 +30,34 @@ use KinopoiskDev\Utils\DataManager;
 	 * Большинство параметров являются опциональными и могут быть null при отсутствии
 	 * соответствующей информации в источнике данных.
 	 *
-	 * @param   int                  $movieId        ID фильма/сериала к которому относится сезон
-	 * @param   int|null             $number         Номер сезона
-	 * @param   int|null             $episodesCount  Количество эпизодов в сезоне
+	 * @param   int              $movieId        ID фильма/сериала к которому относится сезон
+	 * @param   int|null         $number         Номер сезона
+	 * @param   int|null         $episodesCount  Количество эпизодов в сезоне
 	 * @param   Episode[]        $episodes       Массив эпизодов сезона
-	 * @param   ShortImage|null      $poster         Постер сезона
-	 * @param   string|null          $name           Название сезона на русском языке
-	 * @param   string|null          $enName         Название сезона на английском языке
-	 * @param   int|null             $duration       Длительность сезона в минутах
-	 * @param   string|null          $description    Описание сезона на русском языке
-	 * @param   string|null          $enDescription  Описание сезона на английском языке
-	 * @param   string|null          $airDate        Дата выхода сезона
-	 * @param   string|null          $updatedAt      Дата последнего обновления записи
-	 * @param   string|null          $createdAt      Дата создания записи
+	 * @param   ShortImage|null  $poster         Постер сезона
+	 * @param   string|null      $name           Название сезона на русском языке
+	 * @param   string|null      $enName         Название сезона на английском языке
+	 * @param   int|null         $duration       Длительность сезона в минутах
+	 * @param   string|null      $description    Описание сезона на русском языке
+	 * @param   string|null      $enDescription  Описание сезона на английском языке
+	 * @param   string|null      $airDate        Дата выхода сезона
+	 * @param   string|null      $updatedAt      Дата последнего обновления записи
+	 * @param   string|null      $createdAt      Дата создания записи
 	 */
 	public function __construct(
-		public int          $movieId,
-		public ?int         $number = null,
-		public ?int         $episodesCount = null,
-		public array        $episodes = [],
-		public ?ShortImage  $poster = null,
-		public ?string      $name = null,
-		public ?string      $enName = null,
-		public ?int         $duration = null,
-		public ?string      $description = null,
-		public ?string      $enDescription = null,
-		public ?string      $airDate = null,
-		public ?string      $updatedAt = null,
-		public ?string      $createdAt = null,
+		public int         $movieId,
+		public ?int        $number = NULL,
+		public ?int        $episodesCount = NULL,
+		public array       $episodes = [],
+		public ?ShortImage $poster = NULL,
+		public ?string     $name = NULL,
+		public ?string     $enName = NULL,
+		public ?int        $duration = NULL,
+		public ?string     $description = NULL,
+		public ?string     $enDescription = NULL,
+		public ?string     $airDate = NULL,
+		public ?string     $updatedAt = NULL,
+		public ?string     $createdAt = NULL,
 	) {}
 
 	/**
@@ -74,19 +74,19 @@ use KinopoiskDev\Utils\DataManager;
 	 */
 	public static function fromArray(array $data): static {
 		return new self(
-			movieId       : $data['movieId'],
-			number        : $data['number'] ?? null,
-			episodesCount : $data['episodesCount'] ?? null,
-			episodes      : DataManager::parseObjectArray($data, 'episodes', Episode::class),
-			poster        : DataManager::parseObjectData($data, 'poster', ShortImage::class),
-			name          : $data['name'] ?? null,
-			enName        : $data['enName'] ?? null,
-			duration      : $data['duration'] ?? null,
-			description   : $data['description'] ?? null,
-			enDescription : $data['enDescription'] ?? null,
-			airDate       : $data['airDate'] ?? null,
-			updatedAt     : $data['updatedAt'] ?? null,
-			createdAt     : $data['createdAt'] ?? null,
+			movieId      : $data['movieId'],
+			number       : $data['number'] ?? NULL,
+			episodesCount: $data['episodesCount'] ?? NULL,
+			episodes     : DataManager::parseObjectArray($data, 'episodes', Episode::class),
+			poster       : DataManager::parseObjectData($data, 'poster', ShortImage::class),
+			name         : $data['name'] ?? NULL,
+			enName       : $data['enName'] ?? NULL,
+			duration     : $data['duration'] ?? NULL,
+			description  : $data['description'] ?? NULL,
+			enDescription: $data['enDescription'] ?? NULL,
+			airDate      : $data['airDate'] ?? NULL,
+			updatedAt    : $data['updatedAt'] ?? NULL,
+			createdAt    : $data['createdAt'] ?? NULL,
 		);
 	}
 
@@ -98,7 +98,7 @@ use KinopoiskDev\Utils\DataManager;
 	 *
 	 * @return array Массив с полными данными о сезоне
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'movieId'       => $this->movieId,
 			'number'        => $this->number,
@@ -156,37 +156,9 @@ use KinopoiskDev\Utils\DataManager;
 	 * Валидирует данные модели
 	 *
 	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
 	 */
 	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
+		return TRUE; // Basic validation - override in specific models if needed
 	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

@@ -19,7 +19,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\MovieFromStudio Для фильмов, связанных со студией
  * @see     \KinopoiskDev\Models\BaseModel Базовый интерфейс для всех моделей
  */
- class Studio implements BaseModel {
+class Studio extends AbstractBaseModel {
 
 	/**
 	 * Конструктор для создания объекта студии
@@ -70,7 +70,7 @@ use KinopoiskDev\Utils\DataManager;
 	 *                        - updateAt: string - дата последнего обновления (обязательный)
 	 *                        - createdAt: string - дата создания (обязательный)
 	 *
-	 * @return \KinopoiskDev\Models\BaseModel Новый экземпляр Studio с данными из массива
+	 * @return static Новый экземпляр Studio с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
 	public static function fromArray(array $data): static {
@@ -118,7 +118,7 @@ use KinopoiskDev\Utils\DataManager;
 		];
 
 		if (!$includeNulls) {
-			$data = array_filter($data, fn($value) => $value !== NULL);
+			$data = array_filter($data, fn ($value) => $value !== NULL);
 		}
 
 		return $data;
@@ -127,25 +127,20 @@ use KinopoiskDev\Utils\DataManager;
 	/**
 	 * Создает объект Studio из JSON строки
 	 *
-	 * @param string $json JSON строка с данными студии
+	 * @param   string  $json  JSON строка с данными студии
+	 *
 	 * @return static
 	 * @throws \JsonException
 	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		return static::fromArray($data);
-	}
 
 	/**
 	 * Преобразует объект Studio в JSON строку
 	 *
-	 * @param int $flags Флаги для json_encode
+	 * @param   int  $flags  Флаги для json_encode
+	 *
 	 * @return string
 	 * @throws \JsonException
 	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
 
 	/**
 	 * Валидирует данные студии

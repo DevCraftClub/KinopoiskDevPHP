@@ -18,7 +18,7 @@ use Lombok\Setter;
  * @link    https://kinopoiskdev.readme.io/reference/
  */
 #[Setter, Getter]
- class Lists implements BaseModel {
+ class Lists extends AbstractBaseModel {
 
 	/**
 	 * Категория коллекции
@@ -99,21 +99,6 @@ use Lombok\Setter;
 	}
 
 	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param   string  $json  JSON строка
-	 *
-	 * @return static Экземпляр модели
-	 */
-	public static function fromJson(string $json): static {
-		$data     = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
-		$instance = self::fromArray($data);
-		$instance->validate();
-
-		return $instance;
-	}
-
-	/**
 	 * Создает экземпляр модели из массива данных
 	 *
 	 * @param   array<string, mixed>  $data  Массив данных от API
@@ -180,9 +165,6 @@ use Lombok\Setter;
 	 *
 	 * @return string JSON строка
 	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
 
 	/**
 	 * Преобразует модель в массив

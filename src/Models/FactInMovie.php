@@ -17,7 +17,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie Основная модель фильма
  * @see     \KinopoiskDev\Models\SearchMovie Поисковая модель фильма
  */
- class FactInMovie implements BaseModel {
+class FactInMovie extends AbstractBaseModel {
 
 	/**
 	 * Конструктор для создания объекта факта о фильме
@@ -56,11 +56,11 @@ namespace KinopoiskDev\Models;
 	 * @see FactInMovie::__construct() Конструктор класса с описанием параметров
 	 *
 	 * @param   array<string, mixed>  $data  Ассоциативный массив с данными факта от API, содержащий ключи:
-	 *                        - value: string - обязательное поле с текстом факта
-	 *                        - type: string|null - опциональный тип факта (по умолчанию null)
-	 *                        - spoiler: bool|null - опциональный флаг спойлера (по умолчанию null)
+	 *                                       - value: string - обязательное поле с текстом факта
+	 *                                       - type: string|null - опциональный тип факта (по умолчанию null)
+	 *                                       - spoiler: bool|null - опциональный флаг спойлера (по умолчанию null)
 	 *
-	 * @return self Новый экземпляр FactInMovie с данными из массива
+	 * @return static Новый экземпляр FactInMovie с данными из массива
 	 *
 	 * @throws \TypeError Если поле 'value' отсутствует в массиве или имеет неправильный тип
 	 *
@@ -98,7 +98,7 @@ namespace KinopoiskDev\Models;
 	 *               - type: string|null - тип факта (null если не определен)
 	 *               - spoiler: bool|null - признак спойлера (null если не определен)
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'value'   => $this->value,
 			'type'    => $this->type,
@@ -106,42 +106,13 @@ namespace KinopoiskDev\Models;
 		];
 	}
 
-
 	/**
 	 * Валидирует данные модели
 	 *
 	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
 	 */
 	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
+		return TRUE; // Basic validation - override in specific models if needed
 	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

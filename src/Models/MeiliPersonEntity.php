@@ -20,7 +20,7 @@ use KinopoiskDev\Enums\PersonSex;
  * @see       \KinopoiskDev\Enums\PersonSex Enum для определения пола персоны
  * @see       \KinopoiskDev\Models\Person Основная модель персоны
  */
- class MeiliPersonEntity implements BaseModel {
+class MeiliPersonEntity extends AbstractBaseModel {
 
 	/**
 	 * Создает новый экземпляр сущности персоны для MeiliSearch
@@ -61,23 +61,6 @@ use KinopoiskDev\Enums\PersonSex;
 	) {}
 
 	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param   string  $json  JSON строка
-	 *
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data     = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-
-		return $instance;
-	}
-
-	/**
 	 * Создает объект MeiliPersonEntity из массива данных API
 	 *
 	 * Фабричный метод для создания экземпляра класса MeiliPersonEntity из массива данных,
@@ -114,7 +97,6 @@ use KinopoiskDev\Enums\PersonSex;
 	 * Валидирует данные модели
 	 *
 	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
 	 */
 	public function validate(): bool {
 		return TRUE; // Basic validation - override in specific models if needed
@@ -426,23 +408,6 @@ use KinopoiskDev\Enums\PersonSex;
 	 */
 	public function isOtherProfession(): bool {
 		return $this->profession !== NULL && in_array(PersonProfession::OTHER->value, $this->profession, TRUE);
-	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param   int  $flags  Флаги для json_encode
-	 *
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE): string {
-		$json = json_encode($this->toArray(), $flags);
-		if ($json === FALSE) {
-			throw new \JsonException('Ошибка кодирования JSON');
-		}
-
-		return $json;
 	}
 
 	/**

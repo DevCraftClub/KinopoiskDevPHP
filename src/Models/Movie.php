@@ -27,7 +27,7 @@ use Lombok\Getter;
  * @see     \KinopoiskDev\Models\ExternalId Для внешних идентификаторов
  * @link    https://kinopoiskdev.readme.io/reference/moviecontroller_findonev1_4
  */
- class Movie implements BaseModel {
+ class Movie extends AbstractBaseModel {
 
 	private const int MIN_YEAR = 1888;
 
@@ -137,25 +137,6 @@ use Lombok\Getter;
 		#[Getter] public ?string        $updatedAt = NULL,
 	) {}
 
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * Парсит JSON строку и создает из неё объект Movie.
-	 * Автоматически валидирует полученные данные.
-	 *
-	 * @param   string  $json  JSON строка
-	 *
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data     = json_decode($json, TRUE, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-
-		return $instance;
-	}
 
 	/**
 	 * Создает объект Movie из массива данных API
@@ -228,13 +209,11 @@ use Lombok\Getter;
 	 * Проверяет корректность основных полей объекта Movie.
 	 * Проверяет наличие обязательного идентификатора и валидность опциональных полей.
 	 *
-	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
-	 */
+	 * @return bool True если данные валидны	 */
 	public function validate(): bool {
 		// Основная валидация - должен быть ID
 		if ($this->id === NULL || $this->id <= 0) {
-			throw new \KinopoiskDev\Exceptions\ValidationException('Movie ID is required and must be positive');
+			throw new \KinopoiskDev\Exceptions\ValidationException('Movie ID обязателен и должен быть больше нуля');
 		}
 
 		// Валидация года
@@ -244,16 +223,16 @@ use Lombok\Getter;
 
 		// Валидация рейтингов
 		if ($this->rating?->kp !== NULL && ($this->rating->kp < 0 || $this->rating->kp > 10)) {
-			throw new \KinopoiskDev\Exceptions\ValidationException('Kinopoisk rating must be between 0 and 10');
+			throw new \KinopoiskDev\Exceptions\ValidationException('Kinopoisk rating должен быть в диапазоне от 0 до 10');
 		}
 
 		if ($this->rating?->imdb !== NULL && ($this->rating->imdb < 0 || $this->rating->imdb > 10)) {
-			throw new \KinopoiskDev\Exceptions\ValidationException('IMDB rating must be between 0 and 10');
+			throw new \KinopoiskDev\Exceptions\ValidationException('IMDB rating должен быть в диапазоне от 0 до 10');
 		}
 
 		// Валидация возрастного рейтинга
 		if ($this->ageRating !== NULL && ($this->ageRating < 0 || $this->ageRating > 21)) {
-			throw new \KinopoiskDev\Exceptions\ValidationException('Age rating must be between 0 and 21');
+			throw new \KinopoiskDev\Exceptions\ValidationException('Age rating должен быть в диапазоне от 0 до 21');
 		}
 
 		return TRUE;
@@ -366,26 +345,6 @@ use Lombok\Getter;
 	 */
 	public function getTmdbUrl(): ?string {
 		return $this->externalId?->getTmdbUrl();
-	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * Сериализует объект Movie в JSON строку с использованием указанных флагов.
-	 * По умолчанию включает поддержку Unicode и выбрасывает исключения при ошибках.
-	 *
-	 * @param   int  $flags  Флаги для json_encode
-	 *
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE): string {
-		$json = json_encode($this->toArray(), $flags);
-		if ($json === FALSE) {
-			throw new \JsonException('Ошибка кодирования JSON');
-		}
-
-		return $json;
 	}
 
 	/**

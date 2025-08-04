@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Person Для работы с персонами
  * @see     \KinopoiskDev\Models\PersonPlaceValue Для более детальной географической информации
  */
- class PersonPlace implements BaseModel {
+class PersonPlace extends AbstractBaseModel {
 
 	/**
 	 * Строковое значение места рождения или смерти персоны
@@ -65,7 +65,7 @@ namespace KinopoiskDev\Models;
 	 * @param   array  $data  Массив данных от API, содержащий ключи:
 	 *                        - value: string - текстовое значение места рождения/смерти
 	 *
-	 * @return \KinopoiskDev\Models\PersonPlace Новый экземпляр класса PersonPlace с данными из массива
+	 * @return static Новый экземпляр класса PersonPlace с данными из массива
 	 */
 	public static function fromArray(array $data): static {
 		return new self(
@@ -87,48 +87,19 @@ namespace KinopoiskDev\Models;
 	 * @return array Массив с данными о месте, содержащий:
 	 *               - value: string - текстовое значение места рождения/смерти
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'value' => $this->value,
 		];
 	}
 
-
 	/**
 	 * Валидирует данные модели
 	 *
 	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
 	 */
 	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
+		return !empty($this->value);
 	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

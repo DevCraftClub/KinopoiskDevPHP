@@ -23,7 +23,7 @@ use Lombok\Getter;
  * @see     \KinopoiskDev\Models\ShortImage Для упрощенной модели изображений
  * @see     \KinopoiskDev\Models\Logo Для логотипов
  */
- class Image implements BaseModel {
+class Image extends AbstractBaseModel {
 
 	/**
 	 * Конструктор модели изображения
@@ -109,7 +109,7 @@ use Lombok\Getter;
 
 		$pixels = $this->width * $this->height;
 
-		return match (true) {
+		return match (TRUE) {
 			$pixels >= 8294400 => '4K',      // 3840x2160 или выше
 			$pixels >= 2073600 => 'Full HD', // 1920x1080 или выше
 			$pixels >= 921600  => 'HD',      // 1280x720 или выше
@@ -127,10 +127,10 @@ use Lombok\Getter;
 	 * Автоматически преобразует строковые значения размеров в целые числа.
 	 *
 	 * @param   array<string, mixed>  $data  Массив данных изображения от API, содержащий ключи:
-	 *                        - url: string|null - URL полноразмерного изображения
-	 *                        - previewUrl: string|null - URL превью изображения
-	 *                        - height: int|string|null - высота изображения
-	 *                        - width: int|string|null - ширина изображения
+	 *                                       - url: string|null - URL полноразмерного изображения
+	 *                                       - previewUrl: string|null - URL превью изображения
+	 *                                       - height: int|string|null - высота изображения
+	 *                                       - width: int|string|null - ширина изображения
 	 *
 	 * @return \KinopoiskDev\Models\Image Новый экземпляр класса Image с данными из массива
 	 */
@@ -156,7 +156,7 @@ use Lombok\Getter;
 	 *               - height: int|null - высота изображения
 	 *               - width: int|null - ширина изображения
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'url'        => $this->url,
 			'previewUrl' => $this->previewUrl,
@@ -249,42 +249,13 @@ use Lombok\Getter;
 		return $ratio !== NULL ? abs($ratio - 1) < 0.01 : NULL;
 	}
 
-
 	/**
 	 * Валидирует данные модели
 	 *
 	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
 	 */
 	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
+		return TRUE; // Basic validation - override in specific models if needed
 	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

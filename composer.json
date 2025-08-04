@@ -11,7 +11,7 @@
 		"cinema",
 		"database"
 	],
-	"homepage": "https://devcraft.club/downloads/kinopoisk-dev-php.33/",
+	"homepage": "https://devcraft.club/downloads/kinopoiskdev-wrapper.34/",
 	"license": "MIT",
 	"authors": [
 		{
@@ -70,7 +70,10 @@
 		}
 	},
 	"support": {
-		"issues": "https://github.com/your-username/kinopoisk-dev-client/issues",
-		"source": "https://github.com/your-username/kinopoisk-dev-client"
+		"issues": "https://github.com/DevCraftClub/KinopoiskDevPHP/issues",
+		"source": "https://github.com/DevCraftClub/KinopoiskDevPHP",
+		"website": "https://devcraft.club/tickets/categories/razrabotki.2/create",
+		"telegram": "https://t.me/devcraftclub_support",
+		"docs": "https://readme.devcraft.club/latest/dev/kinopoiskdev/"
 	}
 }

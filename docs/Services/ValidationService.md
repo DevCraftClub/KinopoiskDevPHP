@@ -13,23 +13,21 @@
 **Пример:**
 ```php
 class Movie {
-    #[Validation(required: true, minLength: 1, maxLength: 255)]
-    public string $title;
-    #[Validation(min: 1900, max: 2030)]
-    public int $year;
+#[Validation(required: true, minLength: 1, maxLength: 255)]
+public string $title;
+#[Validation(min: 1900, max: 2030)]
+public int $year;
 }
-
 $validator = new ValidationService();
 $movie = new Movie();
 $movie->title = '';
 $movie->year = 1800;
-
 try {
-    $validator->validate($movie);
+$validator->validate($movie);
 } catch (ValidationException $e) {
-    foreach ($e->getErrors() as $field => $error) {
-        echo "{$field}: {$error}\n";
-    }
+foreach ($e->getErrors() as $field => $error) {
+echo "{$field}: {$error}\n";
+}
 }
 ```
 
@@ -61,10 +59,10 @@ $movie = new Movie();
 $movie->title = 'The Matrix';
 $movie->year = 1999;
 try {
-    $validator->validate($movie);
+$validator->validate($movie);
 echo "Объект валиден";
 } catch (ValidationException $e) {
-    echo "Ошибки валидации: " . $e->getMessage();
+echo "Ошибки валидации: " . $e->getMessage();
 }
 ```
 
@@ -126,20 +124,20 @@ echo "Объект валиден";
 **Пример:**
 ```php
 $data = [
-    'title' => 'The Matrix',
-    'year' => 1999,
-    'rating' => 8.7
+'title' => 'The Matrix',
+'year' => 1999,
+'rating' => 8.7
 ];
 $rules = [
-    'title' => ['required' => true, 'min_length' => 1, 'max_length' => 255],
-    'year' => ['min' => 1900, 'max' => 2030],
-    'rating' => ['min' => 0, 'max' => 10]
+'title' => ['required' => true, 'min_length' => 1, 'max_length' => 255],
+'year' => ['min' => 1900, 'max' => 2030],
+'rating' => ['min' => 0, 'max' => 10]
 ];
 try {
-    $validator->validateArray($data, $rules);
+$validator->validateArray($data, $rules);
 echo "Данные валидны";
 } catch (ValidationException $e) {
-    echo "Ошибки: " . $e->getMessage();
+echo "Ошибки: " . $e->getMessage();
 }
 ```
 

@@ -164,35 +164,10 @@ class Kinopoisk extends Helper {
 			);
 		}
 
-		if (!$this->isValidApiToken($token)) {
-			throw ValidationException::forField(
-				field  : 'apiToken',
-				message: 'Неверный формат API токена',
-				value  : $token,
-			);
-		}
 
 		$this->apiToken = $token;
 	}
 
-	/**
-	 * Проверяет валидность API токена
-	 *
-	 * Валидирует формат токена Kinopoisk.dev. Токен должен соответствовать
-	 * формату: 4 группы по 7 символов, разделенные дефисами.
-	 *
-	 * @param   string  $token  Токен API для проверки
-	 *
-	 * @return bool True если токен валиден, false в противном случае
-	 *
-	 * @internal Внутренний метод, используется только в validateAndSetApiToken()
-	 */
-	private function isValidApiToken(string $token): bool {
-		// Проверка формата токена Kinopoisk.dev (например: ABC1DEF-2GH3IJK-4LM5NOP-6QR7STU)
-		// Используем более безопасное регулярное выражение с ограничением длины
-		return preg_match('/^[A-Z0-9]{7}-[A-Z0-9]{7}-[A-Z0-9]{7}-[A-Z0-9]{7}$/', $token) === 1
-		       && strlen($token) === 31;
-	}
 
 	/**
 	 * Создает HTTP клиент по умолчанию
@@ -414,7 +389,7 @@ class Kinopoisk extends Helper {
 	 * @internal Внутренний метод, используется только в makeRequest()
 	 */
 	private function validateEndpoint(string $endpoint): void {
-		if (is_null($endpoint) || $endpoint === '' || !preg_match('/^[a-zA-Z0-9\/_-]+$/', $endpoint)) {
+		if (is_null($endpoint) || $endpoint === '' || !preg_match('/^[a-zA-Z0-9\/_-]+$/', $endpoint) || startsWith('/', $endpoint) || endsWith('/')) {
 			throw ValidationException::forField(
 				field  : 'endpoint',
 				message: 'Неверный формат конечной точки API',

@@ -12,7 +12,7 @@ use KinopoiskDev\Responses\BaseResponseDto;
  * Этот класс наследует от BaseResponseDto и предоставляет специализированное
  * представление ошибки 404 Not Found, которая возникает когда запрошенный
  * ресурс не найден или лимит запросов к API Kinopoisk.dev был превышен.
- * Все свойства класса являются readonly для обеспечения неизменности данных ответа.
+ * Все свойства класса являются  для обеспечения неизменности данных ответа.
  *
  * @package KinopoiskDev\Responses
  * @since   1.0.0
@@ -27,7 +27,7 @@ class NotFoundErrorResponseDto extends BaseResponseDto {
 	 * Конструктор для создания DTO ошибки "не найдено"
 	 *
 	 * Инициализирует все свойства ответа об ошибке 404 Not Found со значениями
-	 * по умолчанию. Все параметры являются readonly для обеспечения неизменности
+	 * по умолчанию. Все параметры являются  для обеспечения неизменности
 	 * данных после создания объекта.
 	 *
 	 * @param   int     $statusCode  HTTP статус код 404
@@ -35,9 +35,9 @@ class NotFoundErrorResponseDto extends BaseResponseDto {
 	 * @param   string  $error       Техническое описание ошибки (по умолчанию: "Not Found")
 	 */
 	public function __construct(
-		public readonly int    $statusCode = 404,
-		public readonly string $message = 'Запрошенный метод не дал никаких результатов, либо лимит запросов на сегодня был превышен!',
-		public readonly string $error = 'Not Found',
+		public  int    $statusCode = 404,
+		public  string $message = 'Запрошенный метод не дал никаких результатов, либо лимит запросов на сегодня был превышен!',
+		public  string $error = 'Not Found',
 	) {}
 
 	/**

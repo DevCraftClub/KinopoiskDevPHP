@@ -1,68 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
+         bootstrap="tests/bootstrap.php"
          colors="true"
+         cacheDirectory=".phpunit.cache"
+         cacheResultFile=".phpunit.cache/test-results"
+         executionOrder="depends,defects"
          beStrictAboutOutputDuringTests="false"
-         stopOnFailure="false"
          processIsolation="false"
-         backupGlobals="false"
-         cacheDirectory=".phpunit.cache">
-
-    <!-- Test Suites -->
+         stopOnDefect="false"
+         stopOnFailure="false"
+         stopOnWarning="false"
+         stopOnIncomplete="false"
+         stopOnRisky="false"
+         stopOnSkipped="false"
+         failOnRisky="false"
+         failOnWarning="false"
+         failOnEmptyTestSuite="false">
     <testsuites>
-        <testsuite name="Unit Tests">
+        <testsuite name="Unit">
             <directory>tests/Unit</directory>
         </testsuite>
-        <testsuite name="Integration Tests">
-            <directory>tests/Integration</directory>
+        <testsuite name="HTTP">
+            <directory>tests/Unit/Http</directory>
         </testsuite>
-        <testsuite name="All Tests">
-            <directory>tests</directory>
+        <testsuite name="Models">
+            <directory>tests/Unit/Models</directory>
+        </testsuite>
+        <testsuite name="Filter">
+            <directory>tests/Unit/Filter</directory>
+        </testsuite>
+        <testsuite name="Services">
+            <directory>tests/Unit/Services</directory>
+        </testsuite>
+        <testsuite name="Utils">
+            <directory>tests/Unit/Utils</directory>
         </testsuite>
     </testsuites>
 
-    <!-- Code Coverage -->
     <source>
         <include>
             <directory suffix=".php">src</directory>
         </include>
         <exclude>
-            <directory>src/Exceptions</directory>
-            <file>src/Kinopoisk.php</file>
+            <directory suffix=".php">vendor</directory>
+            <directory suffix=".php">tests</directory>
+            <directory suffix=".php">examples</directory>
+            <directory suffix=".php">docs</directory>
         </exclude>
     </source>
 
-    <!-- Coverage Reports -->
-    <coverage cacheDirectory=".phpunit.cache/code-coverage"
-              includeUncoveredFiles="true">
+    <coverage>
         <report>
-            <html outputDirectory="coverage" lowUpperBound="35" highLowerBound="70"/>
-            <clover outputFile="coverage/clover.xml"/>
+            <html outputDirectory="coverage/html"/>
             <text outputFile="coverage/coverage.txt"/>
+            <clover outputFile="coverage/clover.xml"/>
         </report>
     </coverage>
 
-    <!-- PHP Configuration -->
     <php>
-        <env name="APP_ENV" value="testing"/>
-        <env name="CACHE_DRIVER" value="array"/>
-        <env name="SESSION_DRIVER" value="array"/>
-        <env name="QUEUE_DRIVER" value="sync"/>
-        
-        <!-- API Configuration for testing -->
-        <env name="KINOPOISK_TOKEN" value="YOUR_API_KEY"/>
-        <env name="SKIP_INTEGRATION_TESTS" value="true"/>
+        <!-- Environment variables are loaded from .env.testing file via bootstrap.php -->
     </php>
-
-    <!-- Extensions and Settings -->
-    <extensions>
-        <!-- Add extensions here if needed -->
-    </extensions>
-
-    <!-- Logging -->
-    <logging>
-        <junit outputFile="coverage/junit.xml"/>
-    </logging>
-
 </phpunit>

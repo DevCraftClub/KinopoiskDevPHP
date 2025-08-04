@@ -264,4 +264,27 @@ class KeywordSearchFilter extends MovieFilter {
 		$this->addFilter('sort', "movieCount:{$direction}");
 		return $this;
 	}
+
+	/**
+	 * Возвращает массив фильтров
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function getFilters(): array {
+		$filters = $this->filters;
+		$sortData = $this->getSortData();
+		
+		// Если есть специальный фильтр sort (например, для popularity), используем его
+		if (isset($filters['sort']) && is_string($filters['sort'])) {
+			// Оставляем как есть - это специальный случай
+		} elseif ($sortData !== NULL && !empty($sortData)) {
+			// Добавляем отдельные параметры для каждого критерия сортировки
+			foreach ($sortData as $sort) {
+				$filters['sortField'][] = $sort['sortField'];
+				$filters['sortType'][] = $sort['sortType'];
+			}
+		}
+
+		return $filters;
+	}
 }

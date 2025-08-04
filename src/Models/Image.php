@@ -23,14 +23,10 @@ use Lombok\Getter;
  * @see     \KinopoiskDev\Models\ShortImage Для упрощенной модели изображений
  * @see     \KinopoiskDev\Models\Logo Для логотипов
  */
-readonly class Image implements BaseModel {
+class Image extends AbstractBaseModel {
 
 	/**
-	 * Конструктор для создания объекта изображения
-	 *
-	 * Создает новый экземпляр класса Image с указанными параметрами.
-	 * Все параметры являются опциональными и позволяют создавать
-	 * объекты с частичной информацией об изображении.
+	 * Конструктор модели изображения
 	 *
 	 * @param   string|null  $url         URL полноразмерного изображения (null если недоступно)
 	 * @param   string|null  $previewUrl  URL превью изображения (null если недоступно)
@@ -72,7 +68,7 @@ readonly class Image implements BaseModel {
 	}
 
 	/**
-	 * Проверяет наличие изображения
+	 * Проверяет, доступно ли изображение
 	 *
 	 * Определяет, доступно ли изображение, проверяя наличие хотя бы одного
 	 * из URL-адресов (полноразмерного или превью).
@@ -84,9 +80,8 @@ readonly class Image implements BaseModel {
 	}
 
 	/**
-	 * Получает форматированную строку размеров
+	 * Возвращает размеры изображения в виде строки
 	 *
-	 * Возвращает размеры изображения в стандартном формате "ширина x высота".
 	 * Если размеры неизвестны, возвращает null.
 	 *
 	 * @return string|null Строка размеров в формате "1920x1080" или null если размеры неизвестны
@@ -100,11 +95,10 @@ readonly class Image implements BaseModel {
 	}
 
 	/**
-	 * Определяет категорию разрешения изображения
+	 * Возвращает категорию разрешения изображения
 	 *
-	 * Анализирует количество пикселей в изображении и возвращает
-	 * соответствующую категорию качества: 4K, Full HD, HD, SD или Low.
-	 * Использует стандартные пороговые значения для классификации.
+	 * Определяет категорию разрешения на основе размеров изображения.
+	 * Если размеры неизвестны, возвращает null.
 	 *
 	 * @return string|null Категория разрешения ('4K', 'Full HD', 'HD', 'SD', 'Low') или null если размеры неизвестны
 	 */
@@ -115,23 +109,13 @@ readonly class Image implements BaseModel {
 
 		$pixels = $this->width * $this->height;
 
-		if ($pixels >= 8294400) { // 4K (3840x2160)
-			return '4K';
-		}
-
-		if ($pixels >= 2073600) { // Full HD (1920x1080)
-			return 'Full HD';
-		}
-
-		if ($pixels >= 921600) { // HD (1280x720)
-			return 'HD';
-		}
-
-		if ($pixels >= 307200) { // SD (640x480)
-			return 'SD';
-		}
-
-		return 'Low';
+		return match (TRUE) {
+			$pixels >= 8294400 => '4K',      // 3840x2160 или выше
+			$pixels >= 2073600 => 'Full HD', // 1920x1080 или выше
+			$pixels >= 921600  => 'HD',      // 1280x720 или выше
+			$pixels >= 307200  => 'SD',      // 640x480 или выше
+			default            => 'Low',     // Меньше 640x480
+		};
 	}
 
 	/**
@@ -142,11 +126,11 @@ readonly class Image implements BaseModel {
 	 * отсутствующие значения, устанавливая их в null.
 	 * Автоматически преобразует строковые значения размеров в целые числа.
 	 *
-	 * @param   array  $data  Массив данных изображения от API, содержащий ключи:
-	 *                        - url: string|null - URL полноразмерного изображения
-	 *                        - previewUrl: string|null - URL превью изображения
-	 *                        - height: int|string|null - высота изображения
-	 *                        - width: int|string|null - ширина изображения
+	 * @param   array<string, mixed>  $data  Массив данных изображения от API, содержащий ключи:
+	 *                                       - url: string|null - URL полноразмерного изображения
+	 *                                       - previewUrl: string|null - URL превью изображения
+	 *                                       - height: int|string|null - высота изображения
+	 *                                       - width: int|string|null - ширина изображения
 	 *
 	 * @return \KinopoiskDev\Models\Image Новый экземпляр класса Image с данными из массива
 	 */
@@ -160,19 +144,19 @@ readonly class Image implements BaseModel {
 	}
 
 	/**
-	 * Преобразует объект в массив данных
+	 * Преобразует объект в массив
 	 *
 	 * Конвертирует текущий экземпляр класса Image в массив,
 	 * совместимый с форматом API Kinopoisk.dev. Используется для
 	 * сериализации данных при отправке запросов к API или экспорте в JSON.
 	 *
-	 * @return array Массив с данными изображения, содержащий ключи:
+	 * @return array<string, mixed> Массив с данными изображения, содержащий ключи:
 	 *               - url: string|null - URL полноразмерного изображения
 	 *               - previewUrl: string|null - URL превью изображения
 	 *               - height: int|null - высота изображения
 	 *               - width: int|null - ширина изображения
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'url'        => $this->url,
 			'previewUrl' => $this->previewUrl,
@@ -182,10 +166,9 @@ readonly class Image implements BaseModel {
 	}
 
 	/**
-	 * Получает наилучший доступный URL изображения
+	 * Возвращает лучший доступный URL изображения
 	 *
-	 * Возвращает URL полноразмерного изображения, если доступно,
-	 * иначе возвращает URL превью. Предпочитает качество перед скоростью загрузки.
+	 * Приоритет: полноразмерное изображение > превью
 	 *
 	 * @return string|null URL наилучшего доступного изображения или null если изображения недоступны
 	 */
@@ -194,12 +177,11 @@ readonly class Image implements BaseModel {
 	}
 
 	/**
-	 * Получает размеры изображения
+	 * Возвращает размеры изображения в виде массива
 	 *
-	 * Возвращает массив с размерами изображения, содержащий ширину и высоту.
 	 * Если размеры неизвестны, возвращает null.
 	 *
-	 * @return array|null Массив размеров с ключами 'width' и 'height' или null если размеры неизвестны
+	 * @return array<string, int>|null Массив размеров с ключами 'width' и 'height' или null если размеры неизвестны
 	 */
 	public function getDimensions(): ?array {
 		if ($this->width === NULL || $this->height === NULL) {
@@ -227,10 +209,7 @@ readonly class Image implements BaseModel {
 	}
 
 	/**
-	 * Вычисляет соотношение сторон изображения
-	 *
-	 * Рассчитывает соотношение ширины к высоте изображения.
-	 * Используется для определения ориентации и пропорций изображения.
+	 * Возвращает соотношение сторон изображения
 	 *
 	 * @return float|null Соотношение сторон (ширина/высота) или null если размеры неизвестны или высота равна 0
 	 */
@@ -270,42 +249,13 @@ readonly class Image implements BaseModel {
 		return $ratio !== NULL ? abs($ratio - 1) < 0.01 : NULL;
 	}
 
-
 	/**
 	 * Валидирует данные модели
 	 *
 	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
 	 */
 	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
+		return TRUE; // Basic validation - override in specific models if needed
 	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

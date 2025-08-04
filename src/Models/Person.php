@@ -113,14 +113,33 @@ class Person extends MeiliPersonEntity {
 			deathPlace : $data['deathPlace'] ?? [],
 			spouses    : $data['spouses'] ?? [],
 			countAwards: $data['countAwards'] ?? 0,
-			profession : isset($data['profession']) && is_array($data['profession']) ? 
-			array_map(fn($pr) => is_string($pr) ? $pr : $pr->value, $data['profession']) : [],
+			profession : isset($data['profession']) && is_array($data['profession']) ?
+				array_map(fn ($pr) => is_string($pr) ? $pr : $pr->value, $data['profession']) : [],
 			facts      : $data['facts'] ?? [],
 			movies     : $data['movies'] ?? [],
 			updatedAt  : $data['updatedAt'] ?? NULL,
 			createdAt  : $data['createdAt'] ?? NULL,
 		);
 	}
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * @return bool True если данные валидны
+	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
+	 */
+	public function validate(): bool {
+		return TRUE; // Basic validation - override in specific models if needed
+	}
+
+	/**
+	 * Возвращает JSON представление объекта
+	 *
+	 * @param   int  $flags  Флаги для json_encode
+	 *
+	 * @return string JSON строка
+	 * @throws \JsonException При ошибке сериализации
+	 */
 
 	/**
 	 * Преобразует объект в массив данных
@@ -134,7 +153,7 @@ class Person extends MeiliPersonEntity {
 	 *
 	 * @return array Массив с полными данными о персоне, содержащий все поля объекта
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'id'          => $this->id,
 			'photo'       => $this->photo,
@@ -157,42 +176,20 @@ class Person extends MeiliPersonEntity {
 		];
 	}
 
-
 	/**
-	 * Валидирует данные модели
+	 * Возвращает наиболее подходящее имя персоны.
 	 *
-	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
-	 */
-	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
-	}
-
-	/**
-	 * Возвращает JSON представление объекта
+	 * Метод последовательно проверяет наличие русского имени (`name`) и английского имени (`enName`).
+	 * Возвращается первое найденное не-null значение. Если оба имени отсутствуют,
+	 * возвращается пустая строка.
 	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
+	 * @since 1.0.0
+	 * @see   Person::$enName
+	 * @see   Person::$name
+	 * @return string Имя персоны или пустая строка, если имена не доступны.
 	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
+	public function getName(): string {
+		return $this->name ?? $this->enName ?? '';
 	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

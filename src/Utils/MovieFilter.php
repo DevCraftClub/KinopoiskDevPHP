@@ -24,7 +24,7 @@ class MovieFilter {
 	 * Добавляет фильтр по ID фильма
 	 *
 	 * @param   int|array<int>  $id        ID фильма или массив ID
-	 * @param   string     $operator  Оператор сравнения (eq, ne, in, nin)
+	 * @param   string          $operator  Оператор сравнения (eq, ne, in, nin)
 	 *
 	 * @return $this
 	 */
@@ -43,47 +43,41 @@ class MovieFilter {
 	 *
 	 * @return $this
 	 */
-	public function addFilter(string $field, mixed $value, string $operator = 'eq'): self {
-		// Оптимизированная обработка различных типов фильтров
+	public function addFilter(string $field, $value, string $operator = 'eq'): self {
 		switch ($operator) {
-			// Обработка диапазонов
 			case 'range':
 				if (is_array($value) && count($value) === 2) {
 					$this->filters[$field] = $value[0] . '-' . $value[1];
 				}
 				break;
-
-			// Обработка включения/исключения для жанров и стран
 			case 'include':
 			case 'exclude':
-				// Быстрая проверка на жанры или страны
 				$isGenreOrCountry = str_starts_with($field, 'genres.name') || str_starts_with($field, 'countries.name');
 				if ($isGenreOrCountry) {
-					$prefix = ($operator === 'include') ? '+' : '!';
-
+					$prefix = ($operator === 'include') ? '%2B' : '%21';
 					if (is_array($value)) {
 						if (!isset($this->filters[$field])) {
 							$this->filters[$field] = [];
 						}
-
-						// Предварительно выделяем память для массива
 						$count = count($value);
 						if ($count > 0) {
-							// Используем array_map вместо цикла для лучшей производительности
 							$prefixedValues        = array_map(fn ($item) => $prefix . $item, $value);
 							$this->filters[$field] = array_merge($this->filters[$field], $prefixedValues);
 						}
 					} else {
 						$this->filters[$field][] = $prefix . $value;
 					}
-					break;
 				}
-			// Если не жанр/страна, обрабатываем как обычный фильтр
-			// Намеренно пропускаем break, чтобы перейти к default
+				break;
 
-			// Обработка обычных фильтров
+			case 'range-dash': // поддержка диапазона через -
+				if (is_array($value) && count($value) === 2) {
+					$this->filters[$field] = $value[0] . '-' . $value[1];
+				}
+				break;
+			case 'eq':
 			default:
-				$this->filters[$field . '.' . $operator] = $value;
+				$this->filters[$field] = $value;
 				break;
 		}
 
@@ -149,7 +143,7 @@ class MovieFilter {
 	 * Добавляет фильтр по всем названиям фильма
 	 *
 	 * @param   string|array<string>  $names     Название или массив названий
-	 * @param   string        $operator  Оператор сравнения (eq, ne, in, nin, regex)
+	 * @param   string                $operator  Оператор сравнения (eq, ne, in, nin, regex)
 	 *
 	 * @return $this
 	 */
@@ -301,8 +295,8 @@ class MovieFilter {
 	 * Добавляет фильтр по рейтингу
 	 *
 	 * @param   float|array<float>  $rating    Рейтинг или массив с параметрами рейтинга
-	 * @param   string       $field     Поле рейтинга (kp, imdb, tmdb, filmCritics, russianFilmCritics, await)
-	 * @param   string       $operator  Оператор сравнения (eq, ne, in, nin, gt, gte, lt, lte)
+	 * @param   string              $field     Поле рейтинга (kp, imdb, tmdb, filmCritics, russianFilmCritics, await)
+	 * @param   string              $operator  Оператор сравнения (eq, ne, in, nin, gt, gte, lt, lte)
 	 *
 	 * @return $this
 	 */
@@ -363,8 +357,8 @@ class MovieFilter {
 	 * Добавляет фильтр по голосам
 	 *
 	 * @param   int|array<int>  $votes     Количество голосов или массив с параметрами голосов
-	 * @param   string     $field     Поле голосов (kp, imdb, tmdb, filmCritics, russianFilmCritics, await)
-	 * @param   string     $operator  Оператор сравнения (eq, ne, in, nin, gt, gte, lt, lte)
+	 * @param   string          $field     Поле голосов (kp, imdb, tmdb, filmCritics, russianFilmCritics, await)
+	 * @param   string          $operator  Оператор сравнения (eq, ne, in, nin, gt, gte, lt, lte)
 	 *
 	 * @return $this
 	 */
@@ -478,7 +472,7 @@ class MovieFilter {
 	 * Добавляет фильтр по жанрам
 	 *
 	 * @param   string|array<string>  $genres    Жанр или массив жанров
-	 * @param   string        $operator  Оператор сравнения (eq, ne, in, nin)
+	 * @param   string                $operator  Оператор сравнения (eq, ne, in, nin)
 	 *
 	 * @return $this
 	 */
@@ -518,7 +512,7 @@ class MovieFilter {
 	 * Добавляет фильтр по странам
 	 *
 	 * @param   string|array<string>  $countries  Страна или массив стран
-	 * @param   string        $operator   Оператор сравнения (eq, ne, in, nin)
+	 * @param   string                $operator   Оператор сравнения (eq, ne, in, nin)
 	 *
 	 * @return $this
 	 */
@@ -813,10 +807,15 @@ class MovieFilter {
 	 * @return array<string, mixed>
 	 */
 	public function getFilters(): array {
-		$filters    = $this->filters;
-		$sortString = $this->getSortString();
-		if ($sortString !== NULL) {
-			$filters['sort'] = $sortString;
+		$filters  = $this->filters;
+		$sortData = $this->getSortData();
+
+		if ($sortData !== NULL && !empty($sortData)) {
+			// Добавляем отдельные параметры для каждого критерия сортировки
+			foreach ($sortData as $sort) {
+				$filters['sortField'][] = $sort['sortField'];
+				$filters['sortType'][]  = $sort['sortType'];
+			}
 		}
 
 		return $filters;
@@ -831,8 +830,9 @@ class MovieFilter {
 	 */
 	public function notNullFields(array $fields): self {
 		foreach ($fields as $field) {
-			$this->addFilter($field, null, 'ne');
+			$this->addFilter($field, NULL, 'ne');
 		}
+
 		return $this;
 	}
 
@@ -844,6 +844,54 @@ class MovieFilter {
 	public function reset(): self {
 		$this->filters = [];
 		$this->clearSort();
+
+		return $this;
+	}
+
+	/**
+	 * Устанавливает лимит количества элементов в результате запроса
+	 *
+	 * Метод устанавливает ограничение на количество возвращаемых элементов
+	 * в текущем запросе. Используется для пагинации и контроля объема данных.
+	 * Добавляет фильтр 'limit' в массив фильтров запроса.
+	 *
+	 * @param int $int Максимальное количество элементов для возврата (должно быть положительным числом)
+	 *
+	 * @return self Возвращает текущий экземпляр объекта для поддержки цепочки вызовов (fluent interface)
+	 */
+	public function setMaxLimit(int $int): self {
+		$this->filters['limit'] = $int;
+
+		return $this;
+	}
+
+	/**
+	 * Устанавливает номер страницы для пагинации результатов
+	 *
+	 * Задает номер страницы для получения определенного набора результатов
+	 * при выполнении запросов с пагинацией. Страницы нумеруются начиная с 1.
+	 * Значение сохраняется в массиве фильтров под ключом 'page' для
+	 * последующего использования в API-запросах.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $int Номер страницы для получения результатов (должен быть больше 0)
+	 *
+	 * @return self Возвращает текущий экземпляр для цепочного вызова методов
+	 *
+	 * @example
+	 * ```php
+	 * $filter = new MovieSearchFilter();
+	 * $filter->page(2)->limit(20); // Получить вторую страницу с 20 результатами
+	 *
+	 * // Использование в цепочке методов
+	 * $results = $movieRequests->searchMovies(
+	 *     $filter->year(2023)->page(3)->limit(50)
+	 * );
+	 * ```
+	 */
+	public function setPageNumber(int $int): self {
+		$this->filters['page'] = $int;
 
 		return $this;
 	}

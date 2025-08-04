@@ -3,38 +3,84 @@
 namespace KinopoiskDev\Http;
 
 use KinopoiskDev\Exceptions\KinopoiskDevException;
+use KinopoiskDev\Filter\SeasonSearchFilter;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Season;
 use KinopoiskDev\Responses\Api\SeasonDocsResponseDto;
-use KinopoiskDev\Filter\SeasonSearchFilter;
 
 /**
  * Класс для API-запросов, связанных с сезонами
  *
- * Этот класс предоставляет методы для всех конечных точек сезонов API Kinopoisk.dev.
- * Позволяет получать информацию о сезонах сериалов, их эпизодах и связанных данных.
+ * Предоставляет методы для работы с сезонами сериалов через API Kinopoisk.dev.
+ * Включает получение информации о сезонах, их эпизодах, поиск по различным
+ * критериям и фильтрацию. Поддерживает работу с многосезонными сериалами.
+ *
+ * Основные возможности:
+ * - Получение сезона по ID
+ * - Получение всех сезонов сериала
+ * - Поиск сезонов по различным критериям
+ * - Получение сезона по номеру и ID фильма
+ * - Фильтрация по номеру сезона, количеству эпизодов
+ * - Пагинация результатов
  *
  * @package KinopoiskDev\Http
  * @since   1.0.0
  * @author  Maxim Harder
  * @version 1.0.0
- * @see     \KinopoiskDev\Models\Season Для структуры данных сезона
- * @see     \KinopoiskDev\Filter\SeasonSearchFilter Для фильтрации запросов
+ *
+ * @see     \KinopoiskDev\Filter\SeasonSearchFilter Для настройки фильтрации
+ * @see     \KinopoiskDev\Models\Season Модель сезона
+ * @see     \KinopoiskDev\Responses\Api\SeasonDocsResponseDto Ответ с сезонами
+ * @link    https://kinopoiskdev.readme.io/reference/
+ *
+ * @example
+ * ```php
+ * $seasonRequests = new SeasonRequests('your-api-token');
+ *
+ * // Получение сезона по ID
+ * $season = $seasonRequests->getSeasonById(123);
+ *
+ * // Получение всех сезонов сериала
+ * $seasons = $seasonRequests->getSeasonsForMovie(456);
+ *
+ * // Поиск сезонов с фильтрами
+ * $filter = new SeasonSearchFilter();
+ * $filter->number(1)->episodesCount(10, 20);
+ * $seasons = $seasonRequests->searchSeasons($filter, 1, 20);
+ *
+ * // Получение конкретного сезона по номеру
+ * $season = $seasonRequests->getSeasonByNumber(456, 2);
+ * ```
  */
 class SeasonRequests extends Kinopoisk {
 
 	/**
 	 * Получает сезон по его ID
 	 *
-	 * @api  /v1.4/season/{id}
-	 * @link https://kinopoiskdev.readme.io/reference/seasoncontroller_findonev1_4
+	 * Выполняет запрос к API для получения полной информации о сезоне
+	 * по его уникальному идентификатору. Возвращает объект Season
+	 * со всеми доступными данными: названием, номером, эпизодами,
+	 * датами выхода и другими метаданными.
 	 *
-	 * @param   int  $seasonId  Уникальный идентификатор сезона
+	 * @api     /v1.4/season/{id}
+	 * @since   1.0.0
+	 *
+	 * @link    https://kinopoiskdev.readme.io/reference/seasoncontroller_findonev1_4
+	 *
+	 * @param   int  $seasonId  Уникальный идентификатор сезона в системе Kinopoisk
 	 *
 	 * @return Season Сезон со всеми доступными данными
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
-	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException При работе с API
+	 * @throws KinopoiskDevException При ошибках API или проблемах с сетью
+	 * @throws KinopoiskResponseException При ошибках HTTP-запроса (401, 403, 404)
+	 * @throws \JsonException При ошибках парсинга JSON-ответа
+	 *
+	 * @example
+	 * ```php
+	 * $season = $seasonRequests->getSeasonById(123);
+	 * echo $season->name; // Название сезона
+	 * echo $season->number; // Номер сезона
+	 * echo count($season->episodes); // Количество эпизодов
+	 * ```
 	 */
 	public function getSeasonById(int $seasonId): Season {
 		$response = $this->makeRequest('GET', "season/{$seasonId}");
@@ -69,7 +115,7 @@ class SeasonRequests extends Kinopoisk {
 	 *
 	 * @param   SeasonSearchFilter|null  $filters  Объект фильтра для поиска
 	 * @param   int                      $page     Номер страницы (по умолчанию: 1)
-	 * @param   int                      $limit    Количество результатов на странице (по умолчанию: 10, макс: 250)
+	 * @param   int                      $limit    Количество результатов на странице (по умолчанию: 10)
 	 *
 	 * @return SeasonDocsResponseDto Результаты поиска с пагинацией
 	 * @throws KinopoiskDevException При ошибках API
@@ -104,7 +150,7 @@ class SeasonRequests extends Kinopoisk {
 	}
 
 	/**
-	 * Получает определенный сезон по номеру для фильма
+	 * Получает сезон по ID фильма и номеру сезона
 	 *
 	 * @param   int  $movieId       Идентификатор фильма/сериала
 	 * @param   int  $seasonNumber  Номер сезона

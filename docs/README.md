@@ -1,142 +1,142 @@
-# Документация KinoPoisk.dev PHP Client
+# Содержание
 
-Данная папка содержит полную документацию для библиотеки KinoPoisk.dev PHP Client.
+## Contracts/
 
-## Содержание документации
+* [CacheInterface](Contracts/CacheInterface.md)
+* [LoggerInterface](Contracts/LoggerInterface.md)
+## Enums/
 
-### 📋 [api-documentation.md](./api-documentation.md)
-**Полная API документация**
+* [HttpStatusCode](Enums/HttpStatusCode.md)
+* [ImageType](Enums/ImageType.md)
+* [PersonSex](Enums/PersonSex.md)
+* [SortDirection](Enums/SortDirection.md)
+* [SortField](Enums/SortField.md)
+* [ReviewType](Enums/ReviewType.md)
+* [ListCategory](Enums/ListCategory.md)
+* [MovieType](Enums/MovieType.md)
+* [FilterField](Enums/FilterField.md)
+* [FilterOperator](Enums/FilterOperator.md)
+* [StudioType](Enums/StudioType.md)
+* [RatingMpaa](Enums/RatingMpaa.md)
+* [PersonProfession](Enums/PersonProfession.md)
+* [MovieStatus](Enums/MovieStatus.md)
+## Responses/
 
-Основной документ, содержащий:
-- Введение в проект и его возможности
-- Архитектуру проекта
-- Подробное описание всех компонентов
-- API Reference с примерами кода
-- Документацию по моделям данных
-- Руководство по фильтрам и поиску
-- Обработку ошибок и исключений
-- Примеры использования
+* [ErrorResponseDto](Responses/ErrorResponseDto.md)
+* [BaseResponseDto](Responses/BaseResponseDto.md)
+* [BaseDocsResponseDto](Responses/BaseDocsResponseDto.md)
+## Responses/Api/
 
-Рекомендуется для:
-- Изучения всех возможностей библиотеки
-- Глубокого понимания архитектуры
-- Поиска конкретных методов и их параметров
-- Изучения примеров кода
+* [PersonDocsResponseDto](Responses/Api/PersonDocsResponseDto.md)
+* [SearchStudioResponseDto](Responses/Api/SearchStudioResponseDto.md)
+* [KeywordDocsResponseDto](Responses/Api/KeywordDocsResponseDto.md)
+* [MovieDocsResponseDto](Responses/Api/MovieDocsResponseDto.md)
+* [SeasonDocsResponseDto](Responses/Api/SeasonDocsResponseDto.md)
+* [ListDocsResponseDto](Responses/Api/ListDocsResponseDto.md)
+* [SearchMovieResponseDto](Responses/Api/SearchMovieResponseDto.md)
+* [StudioDocsResponseDto](Responses/Api/StudioDocsResponseDto.md)
+* [ImageDocsResponseDto](Responses/Api/ImageDocsResponseDto.md)
+* [ReviewDocsResponseDto](Responses/Api/ReviewDocsResponseDto.md)
+* [SearchPersonResponseDto](Responses/Api/SearchPersonResponseDto.md)
+* [PossibleValueDto](Responses/Api/PossibleValueDto.md)
+* [MovieAwardDocsResponseDto](Responses/Api/MovieAwardDocsResponseDto.md)
+* [PersonAwardDocsResponseDto](Responses/Api/PersonAwardDocsResponseDto.md)
+## Responses/Errors/
 
-### 📚 [class-reference.md](./class-reference.md)
-**Краткий справочник классов**
+* [NotFoundErrorResponseDto](Responses/Errors/NotFoundErrorResponseDto.md)
+* [UnauthorizedErrorResponseDto](Responses/Errors/UnauthorizedErrorResponseDto.md)
+* [ForbiddenErrorResponseDto](Responses/Errors/ForbiddenErrorResponseDto.md)
+## Utils/
 
-Компактный справочник, содержащий:
-- Список всех классов с их назначением
-- Основные методы каждого класса
-- Краткое описание свойств
-- Структурированное разделение по категориям
+* [FilterTrait](Utils/FilterTrait.md)
+* [SortManager](Utils/SortManager.md)
+* [DataManager](Utils/DataManager.md)
+* [MovieFilter](Utils/MovieFilter.md)
+## Models/
 
-Рекомендуется для:
-- Быстрого поиска нужного класса
-- Понимания структуры проекта
-- Справочной информации во время разработки
-- Ориентирования в коде
+* [Keyword](Models/Keyword.md)
+* [Fees](Models/Fees.md)
+* [ExternalId](Models/ExternalId.md)
+* [VideoTypes](Models/VideoTypes.md)
+* [Season](Models/Season.md)
+* [Movie](Models/Movie.md)
+* [SearchMovie](Models/SearchMovie.md)
+* [MovieFromKeyword](Models/MovieFromKeyword.md)
+* [Audience](Models/Audience.md)
+* [ItemName](Models/ItemName.md)
+* [Review](Models/Review.md)
+* [MovieAward](Models/MovieAward.md)
+* [NetworkItem](Models/NetworkItem.md)
+* [FactInPerson](Models/FactInPerson.md)
+* [Person](Models/Person.md)
+* [PersonInMovie](Models/PersonInMovie.md)
+* [BirthPlace](Models/BirthPlace.md)
+* [CurrencyValue](Models/CurrencyValue.md)
+* [ReviewInfo](Models/ReviewInfo.md)
+* [LinkedMovie](Models/LinkedMovie.md)
+* [Studio](Models/Studio.md)
+* [DeathPlace](Models/DeathPlace.md)
+* [PersonAward](Models/PersonAward.md)
+* [Nomination](Models/Nomination.md)
+* [PersonPlace](Models/PersonPlace.md)
+* [Watchability](Models/Watchability.md)
+* [NominationAward](Models/NominationAward.md)
+* [Episode](Models/Episode.md)
+* [Logo](Models/Logo.md)
+* [Votes](Models/Votes.md)
+* [Networks](Models/Networks.md)
+* [MeiliPersonEntity](Models/MeiliPersonEntity.md)
+* [Lists](Models/Lists.md)
+* [Video](Models/Video.md)
+* [AbstractBaseModel](Models/AbstractBaseModel.md)
+* [MovieInPerson](Models/MovieInPerson.md)
+* [YearRange](Models/YearRange.md)
+* [SeasonInfo](Models/SeasonInfo.md)
+* [ShortImage](Models/ShortImage.md)
+* [Name](Models/Name.md)
+* [MovieFromStudio](Models/MovieFromStudio.md)
+* [Premiere](Models/Premiere.md)
+* [ApiImage](Models/ApiImage.md)
+* [FactInMovie](Models/FactInMovie.md)
+* [Spouses](Models/Spouses.md)
+* [Rating](Models/Rating.md)
+* [Image](Models/Image.md)
+* [WatchabilityItem](Models/WatchabilityItem.md)
+* [BaseModel](Models/BaseModel.md)
+## Exceptions/
 
-## Структура проекта
+* [ValidationException](Exceptions/ValidationException.md)
+* [KinopoiskDevException](Exceptions/KinopoiskDevException.md)
+* [KinopoiskResponseException](Exceptions/KinopoiskResponseException.md)
+## 
 
-```
-docs/
-├── README.md                 # Этот файл - описание документации
-├── api-documentation.md      # Полная API документация
-└── class-reference.md        # Краткий справочник классов
-```
+* [Kinopoisk](Kinopoisk.md)
+## Attributes/
 
-## Как пользоваться документацией
+* [ApiField](Attributes/ApiField.md)
+* [Sensitive](Attributes/Sensitive.md)
+* [Validation](Attributes/Validation.md)
+## Http/
 
-### Для начинающих
-1. Начните с [api-documentation.md](./api-documentation.md)
-2. Изучите раздел "Введение" и "Архитектура проекта"
-3. Ознакомьтесь с примерами в разделе "Примеры использования"
-4. Используйте [class-reference.md](./class-reference.md) как справочник
+* [KeywordRequests](Http/KeywordRequests.md)
+* [ListRequests](Http/ListRequests.md)
+* [ImageRequests](Http/ImageRequests.md)
+* [ReviewRequests](Http/ReviewRequests.md)
+* [PersonRequests](Http/PersonRequests.md)
+* [StudioRequests](Http/StudioRequests.md)
+* [MovieRequests](Http/MovieRequests.md)
+* [SeasonRequests](Http/SeasonRequests.md)
+## Filter/
 
-### Для опытных разработчиков
-1. Используйте [class-reference.md](./class-reference.md) для быстрого поиска
-2. Обращайтесь к [api-documentation.md](./api-documentation.md) за детальной информацией
-3. Изучите раздел "Фильтры и поиск" для сложных запросов
+* [SeasonSearchFilter](Filter/SeasonSearchFilter.md)
+* [StudioSearchFilter](Filter/StudioSearchFilter.md)
+* [PersonSearchFilter](Filter/PersonSearchFilter.md)
+* [SortCriteria](Filter/SortCriteria.md)
+* [ReviewSearchFilter](Filter/ReviewSearchFilter.md)
+* [MovieSearchFilter](Filter/MovieSearchFilter.md)
+* [KeywordSearchFilter](Filter/KeywordSearchFilter.md)
+* [ImageSearchFilter](Filter/ImageSearchFilter.md)
+## Services/
 
-### Для понимания архитектуры
-1. Изучите раздел "Архитектура проекта" в [api-documentation.md](./api-documentation.md)
-2. Ознакомьтесь с разделами "Интерфейсы и контракты" и "Сервисы"
-3. Используйте [class-reference.md](./class-reference.md) для понимания связей между классами
-
-## Основные компоненты
-
-### 🎬 HTTP Клиенты
-- **MovieRequests** - работа с фильмами и сериалами
-- **PersonRequests** - работа с персонами
-- **ImageRequests** - работа с изображениями
-- **ListRequests** - работа с коллекциями
-- **KeywordRequests** - работа с ключевыми словами
-- **StudioRequests** - работа со студиями
-- **ReviewRequests** - работа с рецензиями
-- **SeasonRequests** - работа с сезонами
-
-### 📊 Модели данных
-- **Movie** - основная модель фильма/сериала
-- **Person** - модель персоны
-- **Image** - модель изображения
-- **Rating** - модель рейтингов
-- **Votes** - модель голосов
-
-### 🔍 Фильтры
-- **MovieSearchFilter** - фильтрация фильмов
-- **PersonSearchFilter** - фильтрация персон
-- **KeywordSearchFilter** - фильтрация ключевых слов
-- **ImageSearchFilter** - фильтрация изображений
-
-### ⚙️ Сервисы
-- **CacheService** - кэширование
-- **HttpService** - HTTP запросы
-- **ValidationService** - валидация данных
-
-## Быстрый старт
-
-```php
-<?php
-
-require_once 'vendor/autoload.php';
-
-use KinopoiskDev\Http\MovieRequests;
-use KinopoiskDev\Filter\MovieSearchFilter;
-
-// Инициализация
-$apiToken = 'YOUR_API_TOKEN';
-$movieClient = new MovieRequests($apiToken);
-
-// Получение фильма по ID
-$movie = $movieClient->getMovieById(666);
-echo "Фильм: {$movie->name} ({$movie->year})\n";
-
-// Поиск с фильтрами
-$filter = new MovieSearchFilter();
-$filter->withIncludedGenres('драма')
-       ->withYearBetween(2020, 2024)
-       ->sortByKinopoiskRating();
-
-$results = $movieClient->searchMovies($filter, 1, 10);
-```
-
-## Полезные ссылки
-
-- [Официальная документация API Kinopoisk.dev](https://kinopoisk.dev)
-- [Telegram бот для получения токена](https://t.me/kinopoiskdev_bot)
-- [Composer package](https://packagist.org/packages/devcraftclub/kinopoisk-dev)
-
-## Обратная связь
-
-При обнаружении ошибок в документации или предложениях по улучшению, пожалуйста:
-1. Создайте issue в репозитории проекта
-2. Укажите конкретную страницу документации
-3. Опишите проблему или предложение
-
----
-
-**Версия документации:** 1.0.0  
-**Совместимость:** PHP 8.3+  
-**API версия:** v1.4
+* [CacheService](Services/CacheService.md)
+* [ValidationService](Services/ValidationService.md)

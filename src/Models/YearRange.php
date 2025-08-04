@@ -18,7 +18,7 @@ namespace KinopoiskDev\Models;
  * @version 1.0.0
  * @see     \KinopoiskDev\Models\Movie Для использования в информации о фильмах
  */
-readonly class YearRange implements BaseModel {
+ class YearRange extends AbstractBaseModel {
 
 	/**
 	 * Конструктор для создания объекта диапазона годов
@@ -51,7 +51,7 @@ readonly class YearRange implements BaseModel {
 	 *                        - start: int|null - начальный год диапазона
 	 *                        - end: int|null - конечный год диапазона
 	 *
-	 * @return \KinopoiskDev\Models\YearRange Новый экземпляр класса YearRange с данными из массива
+	 * @return static Новый экземпляр класса YearRange с данными из массива
 	 */
 	public static function fromArray(array $data): static {
 		return new self(
@@ -84,37 +84,13 @@ readonly class YearRange implements BaseModel {
 	 * Валидирует данные модели
 	 *
 	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
 	 */
 	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
+		// Проверяем, что если указаны оба года, то начальный не больше конечного
+		if ($this->start !== null && $this->end !== null) {
+			return $this->start <= $this->end;
+		}
+		return true;
 	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

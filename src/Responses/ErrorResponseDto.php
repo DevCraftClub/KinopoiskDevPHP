@@ -27,16 +27,16 @@ class ErrorResponseDto extends BaseResponseDto {
 	 * Конструктор для создания DTO ошибки
 	 *
 	 * Инициализирует все обязательные поля ответа об ошибке.
-	 * Все свойства являются readonly для обеспечения неизменности данных.
+	 * Все свойства являются  для обеспечения неизменности данных.
 	 *
 	 * @param   int     $statusCode  HTTP статус код ошибки (например, 400, 401, 403, 404, 500)
 	 * @param   string  $message     Человекочитаемое сообщение об ошибке на русском языке
 	 * @param   string  $error       Краткое техническое описание типа ошибки (например, "Bad Request", "Unauthorized")
 	 */
 	public function __construct(
-		#[Getter] public readonly int    $statusCode,
-		#[Getter] public readonly string $message,
-		#[Getter] public readonly string $error,
+		#[Getter] public  int    $statusCode,
+		#[Getter] public  string $message,
+		#[Getter] public  string $error,
 	) {}
 
 	/**

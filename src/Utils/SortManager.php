@@ -208,7 +208,7 @@ trait SortManager {
 	/**
 	 * Добавляет множественные критерии сортировки из массива строк
 	 *
-	 * @param   array<string>  $sorts  Массив строк в формате "field:direction" или просто "field"
+	 * @param   array<string|SortCriteria>  $sorts  Массив строк в формате "field:direction" или просто "field"
 	 *
 	 * @return $this Возвращает текущий экземпляр для цепочки вызовов
 	 *
@@ -223,7 +223,9 @@ trait SortManager {
 	 */
 	public function addMultipleSort(array $sorts): static {
 		foreach ($sorts as $sort) {
-			if (is_string($sort)) {
+			if ($sort instanceof SortCriteria) {
+				$this->addSortCriteria($sort);
+			} elseif (is_string($sort)) {
 				$parts     = explode(':', $sort, 2);
 				$field     = $parts[0];
 				$direction = $parts[1] ?? NULL;
@@ -232,8 +234,6 @@ trait SortManager {
 				if ($criteria) {
 					$this->addSortCriteria($criteria);
 				}
-			} elseif ($sort instanceof SortCriteria) {
-				$this->addSortCriteria($sort);
 			}
 		}
 
@@ -246,19 +246,20 @@ trait SortManager {
 	 * Формирует строку сортировки в формате, ожидаемом API Kinopoisk.dev.
 	 * Множественные критерии объединяются запятыми.
 	 *
-	 * @return string|null Строка сортировки для API или null, если критерии не установлены
+	 * @return array|null Массив с данными о критериях сортировки или null, если критерии не установлены
 	 */
-	public function getSortString(): ?string {
+	public function getSortData(): array|null {
 		if (empty($this->sortCriteria)) {
 			return NULL;
 		}
 
-		$sortStrings = array_map(
-			fn (SortCriteria $criteria) => $criteria->toApiString(),
+		return array_map(
+			fn (SortCriteria $criteria) => [
+				'sortField' => $criteria->field->value,
+				'sortType'  => $criteria->direction->getConvertedValue(),
+			],
 			$this->sortCriteria,
 		);
-
-		return implode(',', $sortStrings);
 	}
 
 	/**
@@ -411,7 +412,7 @@ trait SortManager {
 	/**
 	 * Экспорт критериев сортировки в массив для сериализации
 	 *
-	 * @return array Массив с данными о критериях сортировки
+	 * @return array<array<string, string>> Массив с данными о критериях сортировки
 	 */
 	public function exportSortCriteria(): array {
 		return array_map(

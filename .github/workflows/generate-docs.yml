@@ -1,0 +1,110 @@
+name: Generate Documentation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  generate-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, iconv, json, mbstring, pdo
+          coverage: none
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        if: steps.composer-cache.outputs.cache-hit != 'true'
+        run: composer install --prefer-dist --no-progress
+
+      - name: Generate documentation
+        run: php bin/generate_docs.php
+
+      - name: Check for documentation changes
+        id: check-docs
+        run: |
+          if [ -n "$(git status --porcelain docs/)" ]; then
+            echo "Documentation changes detected"
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "No documentation changes"
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Get branch info
+        id: branch-info
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "branch_name=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+            echo "is_pr=true" >> $GITHUB_OUTPUT
+          else
+            echo "branch_name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            echo "is_pr=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit documentation changes (PR)
+        if: github.event_name == 'pull_request' && steps.check-docs.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b ${{ steps.branch-info.outputs.branch_name }}
+          git add docs/
+          git commit -m "📚 Auto-generate documentation [skip ci]"
+          git push origin ${{ steps.branch-info.outputs.branch_name }}
+
+      - name: Commit documentation changes (Push to main)
+        if: github.event_name == 'push' && steps.check-docs.outputs.has_changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git checkout -b ${{ steps.branch-info.outputs.branch_name }}
+          git add docs/
+          git commit -m "📚 Auto-generate documentation [skip ci]"
+          git push origin ${{ steps.branch-info.outputs.branch_name }}
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request' && steps.check-docs.outputs.has_changes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '📚 **Документация обновлена автоматически**\n\nГенератор документации обнаружил изменения в PHPDoc комментариях и обновил документацию в папке `docs/`.'
+            })
+
+      - name: Comment on PR (no changes)
+        if: github.event_name == 'pull_request' && steps.check-docs.outputs.has_changes == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ **Документация актуальна**\n\nГенератор документации не обнаружил изменений в PHPDoc комментариях.'
+            })

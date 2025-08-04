@@ -25,8 +25,8 @@ class SortCriteria {
 	 * @param   SortDirection  $direction  Направление сортировки
 	 */
 	public function __construct(
-		public readonly SortField     $field,
-		public readonly SortDirection $direction,
+		public SortField     $field,
+		public SortDirection $direction,
 	) {}
 
 	/**
@@ -79,12 +79,9 @@ class SortCriteria {
 	}
 
 	/**
-	 * Создает критерии из массива данных
+	 * Создает экземпляр SortCriteria из массива данных
 	 *
-	 * Фабричный метод для создания SortCriteria из ассоциативного массива
-	 * с ключами 'field' и 'direction'.
-	 *
-	 * @param   array<string, mixed>  $data  Массив с данными сортировки
+	 * @param   array<string, mixed>  $data  Массив с данными для создания объекта
 	 *
 	 * @return self|null Новый экземпляр SortCriteria или null при некорректных данных
 	 */
@@ -93,17 +90,30 @@ class SortCriteria {
 			return NULL;
 		}
 
-		return self::fromStrings(
-			$data['field'],
-			$data['direction'] ?? NULL,
-		);
+		$field = $data['field'];
+		if (!$field instanceof SortField) {
+			// Try to convert from string if needed
+			$field = SortField::tryFrom(is_string($field) ? $field : '');
+			if (!$field) {
+				return NULL;
+			}
+		}
+
+		$direction = $data['direction'] ?? NULL;
+		if ($direction === NULL) {
+			$direction = $field->getDefaultDirection();
+		} elseif (!$direction instanceof SortDirection) {
+			$direction = SortDirection::tryFrom(is_string($direction) ? $direction : '');
+			if (!$direction) {
+				$direction = $field->getDefaultDirection();
+			}
+		}
+
+		return new self($field, $direction);
 	}
 
 	/**
-	 * Создает критерии из строковых значений
-	 *
-	 * Фабричный метод для создания SortCriteria из строковых представлений
-	 * поля и направления сортировки с возможностью указания fallback значений.
+	 * Создает экземпляр SortCriteria из строковых значений
 	 *
 	 * @param   string       $field      Строковое значение поля
 	 * @param   string|null  $direction  Строковое значение направления (опционально)
@@ -136,17 +146,18 @@ class SortCriteria {
 	}
 
 	/**
-	 * Преобразует критерии в строку для URL параметров API
+	 * Преобразует критерии в массив для URL параметров API
 	 *
-	 * Формирует строковое представление критериев сортировки в формате,
-	 * ожидаемом API Kinopoisk.dev (например: "-rating.kp" для убывания).
+	 * Формирует массив с отдельными параметрами sortField и sortType
+	 * для использования в API Kinopoisk.dev.
 	 *
-	 * @return string Строковое представление для API
+	 * @return array Массив с ключами sortField и sortType
 	 */
-	public function toApiString(): string {
-		$prefix = $this->direction === SortDirection::DESC ? '-' : '';
-
-		return $prefix . $this->field->value;
+	public function toApiString(): array {
+		return [
+			'sortField' => $this->field->value,
+			'sortType' => $this->direction->getConvertedValue(),
+		];
 	}
 
 	/**

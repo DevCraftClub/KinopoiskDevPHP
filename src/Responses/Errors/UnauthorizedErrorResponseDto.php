@@ -30,16 +30,16 @@ class UnauthorizedErrorResponseDto extends BaseResponseDto {
 	 * Инициализирует объект с предустановленными значениями для типичных
 	 * ошибок авторизации. Все параметры имеют значения по умолчанию,
 	 * соответствующие стандартному ответу об отсутствии токена.
-	 * Все свойства являются readonly для обеспечения неизменности данных.
+	 * Все свойства являются  для обеспечения неизменности данных.
 	 *
 	 * @param   int     $statusCode  HTTP статус код авторизации (по умолчанию 401 - Unauthorized)
 	 * @param   string  $message     Сообщение об ошибке на русском языке (по умолчанию "В запросе не указан токен!")
 	 * @param   string  $error       Краткое техническое описание ошибки (по умолчанию "Unauthorized")
 	 */
 	public function __construct(
-		public readonly int    $statusCode = 401,
-		public readonly string $message = 'В запросе не указан токен!',
-		public readonly string $error = 'Unauthorized',
+		public  int    $statusCode = 401,
+		public  string $message = 'В запросе не указан токен!',
+		public  string $error = 'Unauthorized',
 	) {}
 
 	/**
@@ -57,11 +57,13 @@ class UnauthorizedErrorResponseDto extends BaseResponseDto {
 	 * @return static Новый экземпляр UnauthorizedErrorResponseDto с данными ошибки авторизации
 	 */
 	public static function fromArray(array $data): static {
-		return new self(
+		$instance = new self(
 			statusCode: $data['statusCode'] ?? 401,
 			message   : $data['message'] ?? 'В запросе не указан токен!',
 			error     : $data['error'] ?? 'Unauthorized',
 		);
+		return $instance;
+
 	}
 
 	/**
@@ -71,7 +73,7 @@ class UnauthorizedErrorResponseDto extends BaseResponseDto {
 	 * Структура возвращаемого массива полностью соответствует формату API ответа
 	 * и содержит все необходимые поля для обработки ошибки авторизации.
 	 *
-	 * @return array Ассоциативный массив с полями:
+	 * @return array<string, string|int> Ассоциативный массив с полями:
 	 *               - statusCode: int - HTTP статус код ошибки
 	 *               - message: string - человекочитаемое сообщение об ошибке
 	 *               - error: string - техническое описание типа ошибки

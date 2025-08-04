@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Movie::getVotes() Для получения голосов фильма
  * @see     \KinopoiskDev\Models\Rating Для информации о рейтингах
  */
-readonly class Votes implements BaseModel {
+class Votes extends AbstractBaseModel {
 
 	/**
 	 * Конструктор для создания объекта голосов
@@ -31,12 +31,12 @@ readonly class Votes implements BaseModel {
 	 * @see Votes::fromArray() Для создания объекта из массива данных API
 	 * @see Votes::toArray() Для преобразования объекта в массив
 	 *
-	 * @param   int|null  $kp                 Количество голосов на Кинопоиске
-	 * @param   int|null  $imdb               Количество голосов на IMDB
-	 * @param   int|null  $tmdb               Количество голосов на The Movie Database
-	 * @param   int|null  $filmCritics        Количество голосов кинокритиков
-	 * @param   int|null  $russianFilmCritics Количество голосов российских кинокритиков
-	 * @param   int|null  $await              Количество голосов ожидания
+	 * @param   int|null  $kp                  Количество голосов на Кинопоиске
+	 * @param   int|null  $imdb                Количество голосов на IMDB
+	 * @param   int|null  $tmdb                Количество голосов на The Movie Database
+	 * @param   int|null  $filmCritics         Количество голосов кинокритиков
+	 * @param   int|null  $russianFilmCritics  Количество голосов российских кинокритиков
+	 * @param   int|null  $await               Количество голосов ожидания
 	 */
 	public function __construct(
 		public ?int $kp = NULL,
@@ -46,6 +46,35 @@ readonly class Votes implements BaseModel {
 		public ?int $russianFilmCritics = NULL,
 		public ?int $await = NULL,
 	) {}
+
+	/**
+	 * Возвращает строковое представление голосов
+	 *
+	 * Реализует магический метод __toString для преобразования объекта
+	 * в строку. Формирует строку, содержащую основные голоса в удобочитаемом
+	 * формате, разделенные запятыми.
+	 *
+	 * @see Votes::formatVoteCount() Для форматирования количества голосов
+	 * @see Votes::getFormattedKpVotes() Для получения отформатированных голосов Кинопоиска
+	 * @see Votes::getFormattedImdbVotes() Для получения отформатированных голосов IMDB
+	 *
+	 * @return string Строковое представление голосов или 'No votes', если голоса отсутствуют
+	 */
+	public function __toString(): string {
+		$parts = [];
+
+		if ($this->kp) {
+			$parts[] = "KP: " . $this->formatVoteCount($this->kp);
+		}
+		if ($this->imdb) {
+			$parts[] = "IMDB: " . $this->formatVoteCount($this->imdb);
+		}
+		if ($this->tmdb) {
+			$parts[] = "TMDB: " . $this->formatVoteCount($this->tmdb);
+		}
+
+		return empty($parts) ? 'No votes' : implode(', ', $parts);
+	}
 
 	/**
 	 * Создает объект Votes из массива данных API
@@ -68,14 +97,14 @@ readonly class Votes implements BaseModel {
 	 */
 	public static function fromArray(array $data): static {
 		return new self(
-			kp: isset($data['kp']) ? (int) $data['kp'] : NULL,
-			imdb: isset($data['imdb']) ? (int) $data['imdb'] : NULL,
-			tmdb: isset($data['tmdb']) ? (int) $data['tmdb'] : NULL,
-			filmCritics: isset($data['filmCritics'])
+			kp                : isset($data['kp']) ? (int) $data['kp'] : NULL,
+			imdb              : isset($data['imdb']) ? (int) $data['imdb'] : NULL,
+			tmdb              : isset($data['tmdb']) ? (int) $data['tmdb'] : NULL,
+			filmCritics       : isset($data['filmCritics'])
 				? (int) $data['filmCritics'] : NULL,
 			russianFilmCritics: isset($data['russianFilmCritics'])
 				? (int) $data['russianFilmCritics'] : NULL,
-			await: isset($data['await']) ? (int) $data['await'] : NULL,
+			await             : isset($data['await']) ? (int) $data['await'] : NULL,
 		);
 	}
 
@@ -90,7 +119,7 @@ readonly class Votes implements BaseModel {
 	 *
 	 * @return array Массив с данными о количестве голосов из различных источников
 	 */
-	public function toArray(bool $includeNulls = true): array {
+	public function toArray(bool $includeNulls = TRUE): array {
 		return [
 			'kp'                 => $this->kp,
 			'imdb'               => $this->imdb,
@@ -203,6 +232,21 @@ readonly class Votes implements BaseModel {
 	}
 
 	/**
+	 * Возвращает отформатированное количество голосов Кинопоиска
+	 *
+	 * Предоставляет количество голосов с Кинопоиска в удобочитаемом формате
+	 * с использованием суффиксов K/M. Возвращает null, если голоса отсутствуют.
+	 *
+	 * @see Votes::formatVoteCount() Для форматирования количества голосов
+	 * @see Votes::getFormattedImdbVotes() Для получения отформатированных голосов IMDB
+	 *
+	 * @return string|null Отформатированное количество голосов или null, если голоса отсутствуют
+	 */
+	public function getFormattedKpVotes(): ?string {
+		return $this->kp ? $this->formatVoteCount($this->kp) : NULL;
+	}
+
+	/**
 	 * Форматирует количество голосов с суффиксами K/M
 	 *
 	 * Преобразует числовое значение количества голосов в удобочитаемый формат
@@ -227,21 +271,6 @@ readonly class Votes implements BaseModel {
 	}
 
 	/**
-	 * Возвращает отформатированное количество голосов Кинопоиска
-	 *
-	 * Предоставляет количество голосов с Кинопоиска в удобочитаемом формате
-	 * с использованием суффиксов K/M. Возвращает null, если голоса отсутствуют.
-	 *
-	 * @see Votes::formatVoteCount() Для форматирования количества голосов
-	 * @see Votes::getFormattedImdbVotes() Для получения отформатированных голосов IMDB
-	 *
-	 * @return string|null Отформатированное количество голосов или null, если голоса отсутствуют
-	 */
-	public function getFormattedKpVotes(): ?string {
-		return $this->kp ? $this->formatVoteCount($this->kp) : NULL;
-	}
-
-	/**
 	 * Возвращает отформатированное количество голосов IMDB
 	 *
 	 * Предоставляет количество голосов с IMDB в удобочитаемом формате
@@ -257,70 +286,12 @@ readonly class Votes implements BaseModel {
 	}
 
 	/**
-	 * Возвращает строковое представление голосов
-	 *
-	 * Реализует магический метод __toString для преобразования объекта
-	 * в строку. Формирует строку, содержащую основные голоса в удобочитаемом
-	 * формате, разделенные запятыми.
-	 *
-	 * @see Votes::formatVoteCount() Для форматирования количества голосов
-	 * @see Votes::getFormattedKpVotes() Для получения отформатированных голосов Кинопоиска
-	 * @see Votes::getFormattedImdbVotes() Для получения отформатированных голосов IMDB
-	 *
-	 * @return string Строковое представление голосов или 'No votes', если голоса отсутствуют
-	 */
-	public function __toString(): string {
-		$parts = [];
-
-		if ($this->kp) {
-			$parts[] = "KP: " . $this->formatVoteCount($this->kp);
-		}
-		if ($this->imdb) {
-			$parts[] = "IMDB: " . $this->formatVoteCount($this->imdb);
-		}
-		if ($this->tmdb) {
-			$parts[] = "TMDB: " . $this->formatVoteCount($this->tmdb);
-		}
-
-		return empty($parts) ? 'No votes' : implode(', ', $parts);
-	}
-
-
-	/**
 	 * Валидирует данные модели
 	 *
 	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
 	 */
 	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
+		return TRUE; // Basic validation - override in specific models if needed
 	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

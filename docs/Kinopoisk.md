@@ -1,280 +1,276 @@
-# Класс Kinopoisk
+# Kinopoisk
 
-## Описание
+**Описание:** Главный класс для работы с API Kinopoisk.dev
+Предоставляет базовую функциональность для выполнения HTTP запросов к API,
+обработки ответов, кэширования и управления ошибками. Использует современные
+PHP 8.3 возможности и архитектурные паттерны.
+Основные возможности:
+- Выполнение HTTP запросов к API Kinopoisk.dev
+- Автоматическое кэширование ответов
+- Валидация входных данных
+- Обработка ошибок API
+- Логирование операций
 
-`Kinopoisk` - главный класс для работы с API Kinopoisk.dev. Предоставляет базовую функциональность для выполнения HTTP запросов к API, обработки ответов, кэширования и управления ошибками. Использует современные PHP 8.3 возможности и архитектурные паттерны.
+**С версии:** 1.0.0
 
-## Пространство имен
+**Версия:** 1.0.0
 
-```php
-namespace KinopoiskDev;
-```
+**См. также:**
 
-## Объявление класса
+* `\KinopoiskDev\Http\MovieRequests`: Для работы с фильмами
+* `\KinopoiskDev\Http\PersonRequests`: Для работы с персонами
+* `\KinopoiskDev\Http\StudioRequests`: Для работы со студиями
+* `\KinopoiskDev\Contracts\CacheInterface`: Интерфейс кэширования
+* `\KinopoiskDev\Contracts\LoggerInterface`: Интерфейс логирования
 
-```php
-final readonly class Kinopoisk extends Helper
-```
+## `__construct()`
 
-## Константы
+**Описание:** Конструктор клиента API Kinopoisk
+Инициализирует клиент API с указанными параметрами. Если параметры не переданы,
+используются значения по умолчанию. API токен может быть передан напрямую
+или получен из переменной окружения KINOPOISK_TOKEN.
 
-| Константа | Тип | Значение | Описание |
-|-----------|-----|----------|----------|
-| `BASE_URL` | `string` | `'https://api.kinopoisk.dev'` | Базовый URL API |
-| `API_VERSION` | `string` | `'v1.4'` | Версия API по умолчанию |
-| `APP_VERSION` | `string` | `'2.0.0'` | Версия клиента |
-| `DEFAULT_TIMEOUT` | `int` | `30` | Таймаут запросов в секундах |
-| `CACHE_TTL` | `int` | `3600` | Время жизни кэша (1 час) |
-
-## Свойства
-
-| Свойство | Тип | Модификаторы | Описание |
-|----------|-----|--------------|----------|
-| `$httpClient` | `HttpClientInterface` | `private readonly` | HTTP клиент для выполнения запросов |
-| `$apiToken` | `string` | `private readonly` | Токен авторизации API (чувствительные данные) |
-| `$cache` | `CacheInterface` | `private readonly` | Сервис кэширования |
-| `$validator` | `ValidationService` | `private readonly` | Сервис валидации |
-| `$logger` | `?LoggerInterface` | `private readonly` | Логгер (опциональный) |
-| `$useCache` | `bool` | `private readonly` | Флаг использования кэширования |
-
-## Методы
-
-### __construct()
-
-Конструктор клиента API Kinopoisk.
-
-```php
-public function __construct(
-    ?string $apiToken = null,
-    ?HttpClientInterface $httpClient = null,
-    ?CacheInterface $cache = null,
-    ?LoggerInterface $logger = null,
-    private readonly bool $useCache = false,
-)
-```
+**С версии:** 1.0.0
 
 **Параметры:**
-- `$apiToken` - Токен авторизации API (если не указан, берется из $_ENV['KINOPOISK_TOKEN'])
-- `$httpClient` - HTTP клиент (если не указан, создается по умолчанию)
-- `$cache` - Сервис кэширования (если не указан, используется FilesystemAdapter)
-- `$logger` - Логгер для записи событий
-- `$useCache` - Флаг включения кэширования
+
+* `$apiToken` (string|null): Токен авторизации API (если null, берется из $_ENV['KINOPOISK_TOKEN'])
+* `$httpClient` (HttpClient|null): HTTP клиент (если null, создается новый)
+* `$cache` (CacheInterface|null): Сервис кэширования (если null, создается FilesystemAdapter)
+* `$logger` (LoggerInterface|null): Логгер (если null, логирование отключено)
+* `$useCache` (bool): Использовать кэширование (по умолчанию false)
+* `$responseValidator` (ValidationService|null): Валидатор ответов API (если null, валидация отключена)
 
 **Исключения:**
-- `ValidationException` - При отсутствии или неверном формате токена
-- `KinopoiskDevException` - При ошибке инициализации
 
-### makeRequest()
+* `ValidationException`: При отсутствии токена или неверном формате
+* `KinopoiskDevException`: При ошибке инициализации компонентов
 
-Выполняет HTTP запрос к API с поддержкой кэширования.
-
+**Пример:**
 ```php
-public function makeRequest(
-    string $method,
-    string $endpoint,
-    array $queryParams = [],
-    ?string $apiVersion = null,
-): ResponseInterface
-```
-
-**Параметры:**
-- `$method` - HTTP метод (GET, POST, PUT, DELETE, PATCH)
-- `$endpoint` - Конечная точка API
-- `$queryParams` - Параметры запроса
-- `$apiVersion` - Версия API (по умолчанию v1.4)
-
-**Возвращает:** `ResponseInterface` - Ответ от API
-
-**Исключения:**
-- `KinopoiskDevException` - При ошибках запроса
-- `ValidationException` - При неверном методе или endpoint
-
-### parseResponse()
-
-Обрабатывает ответ от API с валидацией.
-
-```php
-public function parseResponse(ResponseInterface $response): array
-```
-
-**Параметры:**
-- `$response` - HTTP ответ
-
-**Возвращает:** `array` - Декодированные данные
-
-**Исключения:**
-- `KinopoiskDevException` - При ошибках обработки
-- `KinopoiskResponseException` - При ошибках API (401, 403, 404)
-
-## Приватные методы
-
-### validateAndSetApiToken()
-
-Валидирует и устанавливает API токен.
-
-```php
-private function validateAndSetApiToken(?string $apiToken): void
-```
-
-### createDefaultHttpClient()
-
-Создает HTTP клиент по умолчанию.
-
-```php
-private function createDefaultHttpClient(): HttpClientInterface
-```
-
-### executeHttpRequest()
-
-Выполняет HTTP запрос.
-
-```php
-private function executeHttpRequest(
-    string $method,
-    string $endpoint,
-    array $queryParams,
-    string $version,
-): ResponseInterface
-```
-
-### generateCacheKey()
-
-Генерирует ключ для кэширования.
-
-```php
-private function generateCacheKey(
-    string $method,
-    string $endpoint,
-    array $queryParams,
-    string $version,
-): string
-```
-
-### handleErrorStatusCode()
-
-Обрабатывает ошибочные статус коды.
-
-```php
-private function handleErrorStatusCode(
-    ?HttpStatusCode $statusCode,
-    ?int $rawStatusCode = null,
-): void
-```
-
-### validateHttpMethod()
-
-Валидирует HTTP метод.
-
-```php
-private function validateHttpMethod(string $method): void
-```
-
-### validateEndpoint()
-
-Валидирует конечную точку API.
-
-```php
-private function validateEndpoint(string $endpoint): void
-```
-
-### isValidApiToken()
-
-Проверяет валидность API токена.
-
-```php
-private function isValidApiToken(string $token): bool
-```
-
-## Примеры использования
-
-### Базовая инициализация
-
-```php
-use KinopoiskDev\Kinopoisk;
-
-// С токеном напрямую
-$kinopoisk = new Kinopoisk('ABC1DEF-2GH3IJK-4LM5NOP-6QR7STU');
-
-// С токеном из переменной окружения
+// Минимальная инициализация
 $kinopoisk = new Kinopoisk();
-
-// С кэшированием
+// С кастомными параметрами
 $kinopoisk = new Kinopoisk(
-    apiToken: 'ABC1DEF-2GH3IJK-4LM5NOP-6QR7STU',
-    useCache: true
+apiToken: 'ABC1DEF-2GH3IJK-4LM5NOP-6QR7STU',
+useCache: true
 );
+// С кастомным HTTP клиентом и логгером
+$httpClient = new HttpClient(['timeout' => 60]);
+$logger = new CustomLogger();
+$kinopoisk = new Kinopoisk('your-api-token', $httpClient, null, $logger);
 ```
 
-### Выполнение запроса
+## `validateAndSetApiToken()`
 
+**Описание:** Валидирует и устанавливает API токен
+Проверяет наличие и формат API токена. Если токен не передан,
+пытается получить его из переменной окружения KINOPOISK_TOKEN.
+Валидирует формат токена Kinopoisk.dev.
+
+**С версии:** 1.0.0
+
+**Параметры:**
+
+* `$apiToken` (string|null): Токен API для валидации
+
+**Исключения:**
+
+* `ValidationException`: При отсутствии токена или неверном формате
+
+## `createDefaultHttpClient()`
+
+**Описание:** Создает HTTP клиент по умолчанию
+Создает экземпляр GuzzleHttp\Client с базовыми настройками
+для работы с API Kinopoisk.dev.
+
+**С версии:** 1.0.0
+
+**Возвращает:** `HttpClient` Экземпляр HTTP клиента с настроенными параметрами
+
+## `makeRequestWithValidation()`
+
+**Описание:** Выполняет HTTP запрос к API с валидацией ответа
+Расширенная версия makeRequest, которая также выполняет валидацию
+ответа с эталонными данными, если включена валидация.
+
+**Параметры:**
+
+* `$method` (string): HTTP метод
+* `$endpoint` (string): Конечная точка API
+* `$apiVersion` (string|null): Версия API
+
+**Возвращает:** `array<string, mixed>` Декодированные данные ответа
+
+**Исключения:**
+
+* `KinopoiskDevException`: При ошибках запроса или валидации
+
+## `buildFullUrl()`
+
+**Описание:** Строит полный URL для запроса
+
+**Параметры:**
+
+* `$method` (string): HTTP метод
+* `$endpoint` (string): Конечная точка
+* `$version` (string): Версия API
+
+**Возвращает:** `string` Полный URL
+
+## `makeRequest()`
+
+**Описание:** Выполняет HTTP запрос к API с поддержкой кэширования
+Основной метод для выполнения запросов к API Kinopoisk.dev. Поддерживает
+автоматическое кэширование GET запросов и обработку различных HTTP методов.
+Валидирует входные параметры перед выполнением запроса.
+
+**С версии:** 1.0.0
+
+**Параметры:**
+
+* `$method` (string): HTTP метод (GET, POST, PUT, DELETE, PATCH)
+* `$endpoint` (string): Конечная точка API (без версии)
+* `$apiVersion` (string|null): Версия API (если null, используется API_VERSION)
+
+**Возвращает:** `ResponseInterface` Ответ от API
+
+**Исключения:**
+
+* `KinopoiskDevException`: При ошибках валидации или HTTP запроса
+* `ValidationException`: При неверных параметрах запроса
+
+**Пример:**
 ```php
-// GET запрос
+// Простой GET запрос
+$response = $kinopoisk->makeRequest('GET', 'movie/123');
+// GET запрос с параметрами
 $response = $kinopoisk->makeRequest('GET', 'movie', [
-    'page' => 1,
-    'limit' => 10
+'page' => 1,
+'limit' => 10
 ]);
+// Запрос к другой версии API
+$response = $kinopoisk->makeRequest('GET', 'movie/123', [], 'v1.3');
+```
 
-// Обработка ответа
+## `validateHttpMethod()`
+
+**Описание:** Валидирует HTTP метод
+Проверяет, что переданный HTTP метод поддерживается API.
+
+**С версии:** 1.0.0
+
+**Параметры:**
+
+* `$method` (string): HTTP метод для валидации
+
+**Исключения:**
+
+* `ValidationException`: При неверном или неподдерживаемом методе
+
+## `validateEndpoint()`
+
+**Описание:** Валидирует конечную точку API
+Проверяет формат и валидность конечной точки API.
+Допускает только буквы, цифры, слеши, подчеркивания и дефисы.
+
+**С версии:** 1.0.0
+
+**Параметры:**
+
+* `$endpoint` (string): Конечная точка для валидации
+
+**Исключения:**
+
+* `ValidationException`: При неверном формате конечной точки
+
+## `generateCacheKey()`
+
+**Описание:** Генерирует ключ для кэширования
+Создает уникальный ключ кэша на основе параметров запроса.
+Использует SHA256 хэш для обеспечения уникальности и безопасности.
+
+**С версии:** 1.0.0
+
+**Параметры:**
+
+* `$method` (string): HTTP метод
+* `$endpoint` (string): Конечная точка
+* `$version` (string): Версия API
+
+**Возвращает:** `string` Уникальный ключ кэша
+
+## `executeHttpRequest()`
+
+**Описание:** Выполняет HTTP запрос
+Формирует полный URL запроса и выполняет его через HTTP клиент.
+Добавляет API токен в заголовки запроса.
+
+**С версии:** 1.0.0
+
+**Параметры:**
+
+* `$method` (string): HTTP метод
+* `$endpoint` (string): Конечная точка
+* `$version` (string): Версия API
+
+**Возвращает:** `ResponseInterface` Ответ от сервера
+
+**Исключения:**
+
+* `GuzzleException`: При ошибке выполнения HTTP запроса
+
+## `parseResponse()`
+
+**Описание:** Обрабатывает ответ от API с валидацией
+Парсит HTTP ответ от API, проверяет статус код и декодирует JSON.
+Обрабатывает различные типы ошибок API и логирует результаты.
+Если включена валидация ответов, сравнивает с эталонными данными.
+
+**С версии:** 1.0.0
+
+**Параметры:**
+
+* `$response` (ResponseInterface): HTTP ответ от API
+* `$requestUrl` (string|null): Полный URL запроса для валидации (опционально)
+
+**Возвращает:** `array<string, mixed>` Декодированные данные ответа
+
+**Исключения:**
+
+* `KinopoiskDevException`: При ошибках обработки ответа
+* `KinopoiskResponseException`: При ошибках API (401, 403, 404, 500)
+* `\JsonException`: При ошибках парсинга JSON
+
+**Пример:**
+```php
+$response = $kinopoisk->makeRequest('GET', 'movie/123');
 $data = $kinopoisk->parseResponse($response);
+$movie = Movie::fromArray($data);
 ```
 
-### С пользовательским HTTP клиентом и логгером
+## `handleErrorStatusCode()`
 
-```php
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
+**Описание:** Обрабатывает ошибочные статус коды
+Проверяет статус код ответа и выбрасывает соответствующие исключения
+для известных ошибок API (401, 403, 404).
 
-$logger = new Logger('kinopoisk');
-$logger->pushHandler(new StreamHandler('kinopoisk.log'));
+**С версии:** 1.0.0
 
-$kinopoisk = new Kinopoisk(
-    apiToken: 'YOUR_TOKEN',
-    httpClient: new CustomHttpClient(),
-    logger: $logger,
-    useCache: true
-);
-```
+**Параметры:**
 
-## Обработка ошибок
+* `$statusCode` (HttpStatusCode|null): Статус код как enum
+* `$rawStatusCode` (int|null): Сырой статус код
 
-```php
-try {
-    $response = $kinopoisk->makeRequest('GET', 'movie/123');
-    $data = $kinopoisk->parseResponse($response);
-} catch (ValidationException $e) {
-    // Ошибка валидации параметров
-    echo "Ошибка валидации: " . $e->getMessage();
-} catch (KinopoiskResponseException $e) {
-    // Ошибка от API (401, 403, 404)
-    echo "Ошибка API: " . $e->getErrorClass();
-} catch (KinopoiskDevException $e) {
-    // Общая ошибка
-    echo "Ошибка: " . $e->getMessage();
-}
-```
+**Исключения:**
 
-## Особенности реализации
+* `KinopoiskResponseException`: При известных ошибках API
 
-1. **Readonly класс** - Все свойства класса неизменяемы после инициализации
-2. **Автоматическое кэширование** - GET запросы кэшируются автоматически при включенной опции
-3. **Валидация токена** - Проверяется формат токена (4 блока по 7 символов)
-4. **Логирование** - Поддержка PSR-3 совместимых логгеров
-5. **Обработка ошибок** - Автоматическое преобразование HTTP ошибок в исключения
+## `validateResponse()`
 
-## Связанные классы
+**Описание:** Валидирует ответ API с эталонными данными
 
-- [HttpClientInterface](contracts/HttpClientInterface.md) - Интерфейс HTTP клиента
-- [CacheInterface](contracts/CacheInterface.md) - Интерфейс кэширования
-- [LoggerInterface](contracts/LoggerInterface.md) - Интерфейс логгера
-- [ValidationService](services/ValidationService.md) - Сервис валидации
-- [HttpStatusCode](enums/HttpStatusCode.md) - Перечисление HTTP статус кодов
-- [KinopoiskDevException](exceptions/KinopoiskDevException.md) - Базовое исключение
-- [KinopoiskResponseException](exceptions/KinopoiskResponseException.md) - Исключение ответа API
-- [ValidationException](exceptions/ValidationException.md) - Исключение валидации
+**Параметры:**
 
-## Требования
+* `$requestUrl` (string): URL запроса
 
-- PHP 8.3+
-- Guzzle HTTP Client
-- PSR-3 Logger (опционально)
-- PSR-6/PSR-16 Cache (опционально)

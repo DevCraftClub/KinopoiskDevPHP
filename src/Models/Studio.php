@@ -19,7 +19,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see     \KinopoiskDev\Models\MovieFromStudio Для фильмов, связанных со студией
  * @see     \KinopoiskDev\Models\BaseModel Базовый интерфейс для всех моделей
  */
-readonly class Studio implements BaseModel {
+class Studio extends AbstractBaseModel {
 
 	/**
 	 * Конструктор для создания объекта студии
@@ -46,8 +46,8 @@ readonly class Studio implements BaseModel {
 		public ?string     $title = NULL,
 		public ?StudioType $type = NULL,
 		public array       $movies = [],
-		public string      $updateAt,
-		public string      $createdAt,
+		public ?string     $updateAt = NULL,
+		public ?string     $createdAt = NULL,
 	) {}
 
 	/**
@@ -70,10 +70,10 @@ readonly class Studio implements BaseModel {
 	 *                        - updateAt: string - дата последнего обновления (обязательный)
 	 *                        - createdAt: string - дата создания (обязательный)
 	 *
-	 * @return \KinopoiskDev\Models\BaseModel Новый экземпляр Studio с данными из массива
+	 * @return static Новый экземпляр Studio с данными из массива
 	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException
 	 */
-	public static function fromArray(array $data): \KinopoiskDev\Models\BaseModel {
+	public static function fromArray(array $data): static {
 		return new self(
 			id       : $data['id'],
 			subType  : $data['subType'] ?? NULL,
@@ -95,6 +95,8 @@ readonly class Studio implements BaseModel {
 	 * @see Studio::fromArray() Для создания объекта из массива
 	 * @see \KinopoiskDev\Models\BaseModel::toArray() Для интерфейса BaseModel
 	 *
+	 * @param   bool  $includeNulls  Включать ли null значения в результат (по умолчанию true)
+	 *
 	 * @return array Ассоциативный массив с данными студии, содержащий ключи:
 	 *               - id: string - уникальный идентификатор студии
 	 *               - subType: string|null - подтип студии
@@ -104,8 +106,8 @@ readonly class Studio implements BaseModel {
 	 *               - updateAt: string - дата последнего обновления
 	 *               - createdAt: string - дата создания
 	 */
-	public function toArray(): array {
-		return [
+	public function toArray(bool $includeNulls = TRUE): array {
+		$data = [
 			'id'        => $this->id,
 			'subType'   => $this->subType,
 			'title'     => $this->title,
@@ -114,6 +116,40 @@ readonly class Studio implements BaseModel {
 			'updateAt'  => $this->updateAt,
 			'createdAt' => $this->createdAt,
 		];
+
+		if (!$includeNulls) {
+			$data = array_filter($data, fn ($value) => $value !== NULL);
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Создает объект Studio из JSON строки
+	 *
+	 * @param   string  $json  JSON строка с данными студии
+	 *
+	 * @return static
+	 * @throws \JsonException
+	 */
+
+	/**
+	 * Преобразует объект Studio в JSON строку
+	 *
+	 * @param   int  $flags  Флаги для json_encode
+	 *
+	 * @return string
+	 * @throws \JsonException
+	 */
+
+	/**
+	 * Валидирует данные студии
+	 *
+	 * @return bool
+	 */
+	public function validate(): bool {
+		// Простая валидация: id, updateAt, createdAt не пустые
+		return !empty($this->id) && !empty($this->updateAt) && !empty($this->createdAt);
 	}
 
 }

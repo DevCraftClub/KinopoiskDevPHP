@@ -156,6 +156,26 @@ class PersonSearchFilter extends MovieFilter {
 		return $this;
 	}
 
+	/**
+	 * Фильтрация по году рождения (один год или диапазон)
+	 */
+	public function birthYear(int $from, ?int $to = null): static {
+		if ($to === null) {
+			$this->addFilter('birthYear', $from);
+		} else {
+			$this->addFilter('birthYear', [$from, $to]);
+		}
+		return $this;
+	}
+
+	/**
+	 * Фильтрация по году смерти
+	 */
+	public function deathYear(int $year): static {
+		$this->addFilter('deathYear', $year);
+		return $this;
+	}
+
 // The `notNullFields` method is inherited from the parent `MovieFilter` class.
 
 }

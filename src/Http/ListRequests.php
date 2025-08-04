@@ -2,12 +2,13 @@
 
 namespace KinopoiskDev\Http;
 
+use KinopoiskDev\Enums\ListCategory;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Exceptions\KinopoiskResponseException;
-use KinopoiskDev\Kinopoisk;
-use KinopoiskDev\Models\Movie;
-use KinopoiskDev\Responses\Api\ListDocsResponseDto;
 use KinopoiskDev\Filter\MovieSearchFilter;
+use KinopoiskDev\Kinopoisk;
+use KinopoiskDev\Models\Lists;
+use KinopoiskDev\Responses\Api\ListDocsResponseDto;
 use KinopoiskDev\Utils\DataManager;
 
 /**
@@ -23,6 +24,45 @@ use KinopoiskDev\Utils\DataManager;
  * @link    https://kinopoiskdev.readme.io/reference/
  */
 class ListRequests extends Kinopoisk {
+
+	/**
+	 * Получает конкретную коллекцию по её slug
+	 *
+	 * @api  /v1.4/list/{slug}
+	 * @link https://kinopoiskdev.readme.io/reference/listcontroller_findonev1_4
+	 *
+	 * @param   string  $slug  Уникальный идентификатор коллекции (например: 'top250', 'popular-films')
+	 *
+	 * @return \KinopoiskDev\Models\Lists Коллекция фильмов со всеми доступными данными
+	 * @throws KinopoiskDevException При ошибках API или проблемах с сетью
+	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
+	 */
+	public function getListBySlug(string $slug): Lists {
+		$response = $this->makeRequest('GET', "list/{$slug}");
+		$data     = $this->parseResponse($response);
+
+		return Lists::fromArray($data);
+	}
+
+	/**
+	 * Получает коллекции по категории
+	 *
+	 * @param   \KinopoiskDev\Enums\ListCategory  $category  Категория коллекций
+	 * @param   int                               $page      Номер страницы
+	 * @param   int                               $limit     Количество результатов на странице
+	 *
+	 * @return ListDocsResponseDto Коллекции указанной категории
+	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskDevException При ошибках API
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
+	 */
+	public function getListsByCategory(ListCategory $category, int $page = 1, int $limit = 10): ListDocsResponseDto {
+		$filters = new MovieSearchFilter();
+		$filters->addFilter('category', $category->value);
+
+		return $this->getAllLists($filters, $page, $limit);
+	}
 
 	/**
 	 * Получает все доступные коллекции с возможностью фильтрации и пагинации
@@ -43,7 +83,8 @@ class ListRequests extends Kinopoisk {
 	 *                                            (категория, название, количество фильмов).
 	 *                                            При значении null создается новый экземпляр MovieSearchFilter без фильтров
 	 * @param   int                     $page     Номер запрашиваемой страницы результатов, начиная с 1 (по умолчанию 1)
-	 * @param   int                     $limit    Максимальное количество результатов на одной странице (по умолчанию 10, максимум ограничен API до 250)
+	 * @param   int                     $limit    Максимальное количество результатов на одной странице (по умолчанию 10, максимум ограничен API до
+	 *                                            250)
 	 *
 	 * @return ListDocsResponseDto Объект ответа, содержащий массив коллекций и метаданные пагинации
 	 *                             (общее количество, количество страниц, текущая страница)
@@ -52,7 +93,7 @@ class ListRequests extends Kinopoisk {
 	 * @throws KinopoiskResponseException При ошибках HTTP-запроса к API (401, 403, 404)
 	 * @throws \JsonException            При ошибках парсинга JSON-ответа от API, некорректном формате данных или повреждении ответа
 	 */
-	public function getAllLists(?MovieSearchFilter $filters = null, int $page = 1, int $limit = 10): ListDocsResponseDto {
+	public function getAllLists(?MovieSearchFilter $filters = NULL, int $page = 1, int $limit = 10): ListDocsResponseDto {
 		if ($limit > 250) {
 			throw new KinopoiskDevException('Лимит не должен превышать 250');
 		}
@@ -64,76 +105,20 @@ class ListRequests extends Kinopoisk {
 			$filters = new MovieSearchFilter();
 		}
 
-		$filters->addFilter('page', $page);
-		$filters->addFilter('limit', $limit);
+		$filters->setPageNumber($page);
+		$filters->setMaxLimit($limit);
 		$queryParams = $filters->getFilters();
 
 		$response = $this->makeRequest('GET', 'list', $queryParams);
 		$data     = $this->parseResponse($response);
 
 		return new ListDocsResponseDto(
-			docs : DataManager::parseObjectArray($data, 'docs', \KinopoiskDev\Models\Lists::class),
+			docs : DataManager::parseObjectArray($data, 'docs', Lists::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? $limit,
 			page : $data['page'] ?? $page,
 			pages: $data['pages'] ?? 1,
 		);
-	}
-
-	/**
-	 * Получает конкретную коллекцию по её slug
-	 *
-	 * @api  /v1.4/list/{slug}
-	 * @link https://kinopoiskdev.readme.io/reference/listcontroller_findonev1_4
-	 *
-	 * @param   string  $slug  Уникальный идентификатор коллекции (например: 'top250', 'popular-films')
-	 *
-	 * @return \KinopoiskDev\Models\Lists Коллекция фильмов со всеми доступными данными
-	 * @throws KinopoiskDevException При ошибках API или проблемах с сетью
-	 * @throws \JsonException При ошибках парсинга JSON
-	 */
-	public function getListBySlug(string $slug): \KinopoiskDev\Models\Lists {
-		$response = $this->makeRequest('GET', "/list/{$slug}");
-		$data     = $this->parseResponse($response);
-
-		return \KinopoiskDev\Models\Lists::fromArray($data);
-	}
-
-	/**
-	 * Получает популярные коллекции
-	 *
-	 * @param   int  $page   Номер страницы
-	 * @param   int  $limit  Количество результатов на странице
-	 *
-	 * @return ListDocsResponseDto Популярные коллекции
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
-	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
-	 */
-	public function getPopularLists(int $page = 1, int $limit = 10): ListDocsResponseDto {
-		$filters = new MovieSearchFilter();
-		// Можно добавить сортировку по популярности, если API это поддерживает
-		
-		return $this->getAllLists($filters, $page, $limit);
-	}
-
-	/**
-	 * Получает коллекции по категории
-	 *
-	 * @param   string  $category  Категория коллекций
-	 * @param   int     $page      Номер страницы
-	 * @param   int     $limit     Количество результатов на странице
-	 *
-	 * @return ListDocsResponseDto Коллекции указанной категории
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
-	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
-	 */
-	public function getListsByCategory(string $category, int $page = 1, int $limit = 10): ListDocsResponseDto {
-		$filters = new MovieSearchFilter();
-		$filters->addFilter('category', $category);
-		
-		return $this->getAllLists($filters, $page, $limit);
 	}
 
 }

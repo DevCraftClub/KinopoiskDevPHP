@@ -4,14 +4,13 @@ namespace KinopoiskDev\Models;
 
 use KinopoiskDev\Enums\PersonProfession;
 use KinopoiskDev\Enums\PersonSex;
-use KinopoiskDev\Utils\DataManager;
 
 /**
  * Сущность персоны для индексации в поисковой системе MeiliSearch
  *
  * Этот класс представляет структуру данных персоны для индексации в поисковой системе MeiliSearch.
  * Содержит основную информацию о персоне, включая биографические данные, профессиональную информацию
- * и места рождения/смерти. Все свойства являются readonly для обеспечения неизменности данных.
+ * и места рождения/смерти. Все свойства являются  для обеспечения неизменности данных.
  *
  * @package   KinopoiskDev\Models
  * @since     1.0.0
@@ -21,7 +20,7 @@ use KinopoiskDev\Utils\DataManager;
  * @see       \KinopoiskDev\Enums\PersonSex Enum для определения пола персоны
  * @see       \KinopoiskDev\Models\Person Основная модель персоны
  */
-class MeiliPersonEntity implements BaseModel {
+class MeiliPersonEntity extends AbstractBaseModel {
 
 	/**
 	 * Создает новый экземпляр сущности персоны для MeiliSearch
@@ -77,20 +76,30 @@ class MeiliPersonEntity implements BaseModel {
 	 */
 	public static function fromArray(array $data): static {
 		return new self(
-			id: $data['id'] ?? 0,
-			name: $data['name'] ?? NULL,
-			enName: $data['enName'] ?? NULL,
-			photo: $data['photo'] ?? NULL,
-			sex: isset($data['sex']) ? PersonSex::tryFrom($data['sex']) : NULL,
-			growth: $data['growth'] ?? NULL,
-			birthday: $data['birthday'] ?? NULL,
-			death: $data['death'] ?? NULL,
-			age: $data['age'] ?? NULL,
+			id        : $data['id'] ?? 0,
+			name      : $data['name'] ?? NULL,
+			enName    : $data['enName'] ?? NULL,
+			photo     : $data['photo'] ?? NULL,
+			sex       : isset($data['sex']) ? PersonSex::tryFrom($data['sex']) : NULL,
+			growth    : $data['growth'] ?? NULL,
+			birthday  : $data['birthday'] ?? NULL,
+			death     : $data['death'] ?? NULL,
+			age       : $data['age'] ?? NULL,
 			birthPlace: $data['birthPlace'] ?? [],
 			deathPlace: $data['deathPlace'] ?? [],
-			profession: isset($data['profession']) && is_array($data['profession']) ? 
-			array_map(fn($pr) => is_string($pr) ? $pr : (is_object($pr) && property_exists($pr, 'value') ? $pr->value : $pr), $data['profession']) : [],
+			profession: isset($data['profession']) && is_array($data['profession']) ?
+				array_map(fn ($pr) => is_string($pr) ? $pr : (is_object($pr) && property_exists($pr, 'value') ? $pr->value : $pr),
+					$data['profession']) : [],
 		);
+	}
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * @return bool True если данные валидны
+	 */
+	public function validate(): bool {
+		return TRUE; // Basic validation - override in specific models if needed
 	}
 
 	/**
@@ -104,99 +113,6 @@ class MeiliPersonEntity implements BaseModel {
 	 */
 	public function getBestName(): ?string {
 		return $this->name ?? $this->enName;
-	}
-
-	/**
-	 * Преобразует объект сущности персоны в массив данных
-	 *
-	 * Конвертирует все свойства сущности персоны в ассоциативный массив
-	 * для сериализации, передачи в API или сохранения в хранилище данных.
-	 * Метод выполняет безопасное преобразование nullable enum значений
-	 * в их строковые представления через использование null-safe оператора.
-	 *
-	 * Возвращаемый массив содержит как базовые свойства персоны (id, имена,
-	 * фото), так и дополнительные данные (профессии на русском и английском
-	 * языках, полученные через соответствующие методы).
-	 *
-	 * @since 1.0.0
-	 * @see   getBestName() Для получения наиболее подходящего имени персоны
-	 * @see   getProfessionRu() Для получения массива профессий на русском языке
-	 * @see   getProfessionEn() Для получения массива профессий на английском языке
-	 * @see   \KinopoiskDev\Enums\PersonSex Enum для значений пола персоны
-	 * @see   \KinopoiskDev\Enums\PersonProfession Enum для значений профессий персоны
-	 *
-	 * @return array<string, mixed> Ассоциативный массив с данными персоны, содержащий ключи:
-	 *               - id: int - уникальный идентификатор персоны
-	 *               - photo: string|null - URL фотографии персоны
-	 *               - name: string|null - русское имя персоны
-	 *               - enName: string|null - английское имя персоны
-	 *               - profession: array|null - массив объектов профессий персоны
-	 *               - professionRu: array - массив профессий на русском языке
-	 *               - professionEn: array - массив профессий на английском языке
-	 *               - sex: string|null - пол персоны (значение enum или null)
-	 *               - growth: int|null - рост персоны в сантиметрах
-	 *               - birthday: string|null - дата рождения в формате строки
-	 *               - death: string|null - дата смерти в формате строки
-	 *               - age: int|null - возраст персоны в годах
-	 *               - birthPlace: array - массив мест рождения
-	 *               - deathPlace: array - массив мест смерти
-	 */
-	public function toArray(bool $includeNulls = true): array {
-		return [
-			'id'           => $this->id,
-			'photo'        => $this->photo,
-			'name'         => $this->name,
-			'enName'       => $this->enName,
-			'profession'   => $this->profession,
-			'professionRu' => $this->getProfessionRu(),
-			'professionEn' => $this->getProfessionEn(),
-			'sex'          => $this->sex?->value,
-			'growth'       => $this->growth,
-			'birthday'     => $this->birthday,
-			'death'        => $this->death,
-			'age'          => $this->age,
-			'birthPlace'   => $this->birthPlace,
-			'deathPlace'   => $this->deathPlace,
-		];
-	}
-
-	/**
-	 * Возвращает профессию персоны на русском языке
-	 *
-	 * Предоставляет доступ к названию профессии персоны на русском языке.
-	 * Может использоваться для отображения профессии в русскоязычном интерфейсе.
-	 *
-	 * @see Person::getProfessionEn() Для получения профессии на английском языке
-	 *
-	 * @return array<string> Название профессии на русском языке или null, если не задано
-	 */
-	public function getProfessionRu(): array {
-		return array_map(function($professionValue) {
-			$profession = is_string($professionValue) 
-				? PersonProfession::tryFrom($professionValue) 
-				: $professionValue;
-			return $profession?->getRussianName() ?? $professionValue;
-		}, $this->profession ?? []);
-	}
-
-	/**
-	 * Возвращает профессию персоны на английском языке
-	 *
-	 * Предоставляет доступ к профессии персоны в виде enum значения.
-	 * Может использоваться для программной обработки типа профессии.
-	 *
-	 * @see Person::getProfessionRu() Для получения профессии на русском языке
-	 * @see PersonProfession Для списка возможных профессий
-	 *
-	 * @return array<string> Enum значение профессии или null, если не задано
-	 */
-	public function getProfessionEn(): array {
-		return array_map(function($professionValue) {
-			$profession = is_string($professionValue) 
-				? PersonProfession::tryFrom($professionValue) 
-				: $professionValue;
-			return $profession?->getEnglishName() ?? $professionValue;
-		}, $this->profession ?? []);
 	}
 
 	/**
@@ -275,7 +191,7 @@ class MeiliPersonEntity implements BaseModel {
 	 * @return bool true, если персона является актером, false в противном случае
 	 */
 	public function isActor(): bool {
-		return $this->profession !== null && in_array(PersonProfession::ACTOR->value, $this->profession, TRUE);
+		return $this->profession !== NULL && in_array(PersonProfession::ACTOR->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -299,7 +215,7 @@ class MeiliPersonEntity implements BaseModel {
 	 * @return bool true, если персона является режиссером, false в противном случае
 	 */
 	public function isDirector(): bool {
-		return $this->profession !== null && in_array(PersonProfession::DIRECTOR->value, $this->profession, TRUE);
+		return $this->profession !== NULL && in_array(PersonProfession::DIRECTOR->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -323,7 +239,7 @@ class MeiliPersonEntity implements BaseModel {
 	 * @return bool true, если персона является сценаристом, false в противном случае
 	 */
 	public function isWriter(): bool {
-		return $this->profession !== null && in_array(PersonProfession::WRITER->value, $this->profession, TRUE);
+		return $this->profession !== NULL && in_array(PersonProfession::WRITER->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -347,7 +263,7 @@ class MeiliPersonEntity implements BaseModel {
 	 * @return bool true, если персона является продюсером, false в противном случае
 	 */
 	public function isProducer(): bool {
-		return $this->profession !== null && in_array(PersonProfession::PRODUCER->value, $this->profession, TRUE);
+		return $this->profession !== NULL && in_array(PersonProfession::PRODUCER->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -371,7 +287,7 @@ class MeiliPersonEntity implements BaseModel {
 	 * @return bool true, если персона является композитором, false в противном случае
 	 */
 	public function isComposer(): bool {
-		return $this->profession !== null && in_array(PersonProfession::COMPOSER->value, $this->profession, TRUE);
+		return $this->profession !== NULL && in_array(PersonProfession::COMPOSER->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -395,7 +311,7 @@ class MeiliPersonEntity implements BaseModel {
 	 * @return bool true, если персона является оператором, false в противном случае
 	 */
 	public function isOperator(): bool {
-		return $this->profession !== null && in_array(PersonProfession::OPERATOR->value, $this->profession, TRUE);
+		return $this->profession !== NULL && in_array(PersonProfession::OPERATOR->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -419,7 +335,7 @@ class MeiliPersonEntity implements BaseModel {
 	 * @return bool true, если персона является художником, false в противном случае
 	 */
 	public function isDesigner(): bool {
-		return $this->profession !== null && in_array(PersonProfession::DESIGN->value, $this->profession, TRUE);
+		return $this->profession !== NULL && in_array(PersonProfession::DESIGN->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -443,7 +359,7 @@ class MeiliPersonEntity implements BaseModel {
 	 * @return bool true, если персона является монтажёром, false в противном случае
 	 */
 	public function isEditor(): bool {
-		return $this->profession !== null && in_array(PersonProfession::EDITOR->value, $this->profession, TRUE);
+		return $this->profession !== NULL && in_array(PersonProfession::EDITOR->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -467,7 +383,7 @@ class MeiliPersonEntity implements BaseModel {
 	 * @return bool true, если персона является актером дубляжа, false в противном случае
 	 */
 	public function isVoiceActor(): bool {
-		return $this->profession !== null && in_array(PersonProfession::VOICE_ACTOR->value, $this->profession, TRUE);
+		return $this->profession !== NULL && in_array(PersonProfession::VOICE_ACTOR->value, $this->profession, TRUE);
 	}
 
 	/**
@@ -491,49 +407,102 @@ class MeiliPersonEntity implements BaseModel {
 	 * @return bool true, если персона является другой профессии, false в противном случае
 	 */
 	public function isOtherProfession(): bool {
-		return $this->profession !== null && in_array(PersonProfession::OTHER->value, $this->profession, TRUE);
-	}
-
-
-	/**
-	 * Валидирует данные модели
-	 *
-	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
-	 */
-	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
+		return $this->profession !== NULL && in_array(PersonProfession::OTHER->value, $this->profession, TRUE);
 	}
 
 	/**
-	 * Возвращает JSON представление объекта
+	 * Преобразует объект сущности персоны в массив данных
 	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
+	 * Конвертирует все свойства сущности персоны в ассоциативный массив
+	 * для сериализации, передачи в API или сохранения в хранилище данных.
+	 * Метод выполняет безопасное преобразование nullable enum значений
+	 * в их строковые представления через использование null-safe оператора.
+	 *
+	 * Возвращаемый массив содержит как базовые свойства персоны (id, имена,
+	 * фото), так и дополнительные данные (профессии на русском и английском
+	 * языках, полученные через соответствующие методы).
+	 *
+	 * @since 1.0.0
+	 * @see   getBestName() Для получения наиболее подходящего имени персоны
+	 * @see   getProfessionRu() Для получения массива профессий на русском языке
+	 * @see   getProfessionEn() Для получения массива профессий на английском языке
+	 * @see   \KinopoiskDev\Enums\PersonSex Enum для значений пола персоны
+	 * @see   \KinopoiskDev\Enums\PersonProfession Enum для значений профессий персоны
+	 *
+	 * @return array<string, mixed> Ассоциативный массив с данными персоны, содержащий ключи:
+	 *               - id: int - уникальный идентификатор персоны
+	 *               - photo: string|null - URL фотографии персоны
+	 *               - name: string|null - русское имя персоны
+	 *               - enName: string|null - английское имя персоны
+	 *               - profession: array|null - массив объектов профессий персоны
+	 *               - professionRu: array - массив профессий на русском языке
+	 *               - professionEn: array - массив профессий на английском языке
+	 *               - sex: string|null - пол персоны (значение enum или null)
+	 *               - growth: int|null - рост персоны в сантиметрах
+	 *               - birthday: string|null - дата рождения в формате строки
+	 *               - death: string|null - дата смерти в формате строки
+	 *               - age: int|null - возраст персоны в годах
+	 *               - birthPlace: array - массив мест рождения
+	 *               - deathPlace: array - массив мест смерти
 	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		$json = json_encode($this->toArray(), $flags);
-		if ($json === false) {
-			throw new \JsonException('Ошибка кодирования JSON');
-		}
-		return $json;
+	public function toArray(bool $includeNulls = TRUE): array {
+		return [
+			'id'           => $this->id,
+			'photo'        => $this->photo,
+			'name'         => $this->name,
+			'enName'       => $this->enName,
+			'profession'   => $this->profession,
+			'professionRu' => $this->getProfessionRu(),
+			'professionEn' => $this->getProfessionEn(),
+			'sex'          => $this->sex?->value,
+			'growth'       => $this->growth,
+			'birthday'     => $this->birthday,
+			'death'        => $this->death,
+			'age'          => $this->age,
+			'birthPlace'   => $this->birthPlace,
+			'deathPlace'   => $this->deathPlace,
+		];
 	}
 
 	/**
-	 * Создает объект из JSON строки
+	 * Возвращает профессию персоны на русском языке
 	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
+	 * Предоставляет доступ к названию профессии персоны на русском языке.
+	 * Может использоваться для отображения профессии в русскоязычном интерфейсе.
+	 *
+	 * @see Person::getProfessionEn() Для получения профессии на английском языке
+	 *
+	 * @return array<string> Название профессии на русском языке или null, если не задано
 	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
+	public function getProfessionRu(): array {
+		return array_map(function ($professionValue) {
+			$profession = is_string($professionValue)
+				? PersonProfession::tryFrom($professionValue)
+				: $professionValue;
+
+			return $profession?->getRussianName() ?? $professionValue;
+		}, $this->profession ?? []);
 	}
 
+	/**
+	 * Возвращает профессию персоны на английском языке
+	 *
+	 * Предоставляет доступ к профессии персоны в виде enum значения.
+	 * Может использоваться для программной обработки типа профессии.
+	 *
+	 * @see Person::getProfessionRu() Для получения профессии на русском языке
+	 * @see PersonProfession Для списка возможных профессий
+	 *
+	 * @return array<string> Enum значение профессии или null, если не задано
+	 */
+	public function getProfessionEn(): array {
+		return array_map(function ($professionValue) {
+			$profession = is_string($professionValue)
+				? PersonProfession::tryFrom($professionValue)
+				: $professionValue;
+
+			return $profession?->getEnglishName() ?? $professionValue;
+		}, $this->profession ?? []);
+	}
 
 }

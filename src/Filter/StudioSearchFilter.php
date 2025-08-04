@@ -179,5 +179,13 @@ class StudioSearchFilter extends MovieFilter {
 		return $this;
 	}
 
+	/**
+	 * Фильтрация по стране
+	 */
+	public function country(string $country): static {
+		$this->addFilter('country', $country);
+		return $this;
+	}
+
 // The `notNullFields` method is inherited from the parent `MovieFilter` class.
 }

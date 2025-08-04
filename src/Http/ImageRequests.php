@@ -2,12 +2,13 @@
 
 namespace KinopoiskDev\Http;
 
+use KinopoiskDev\Enums\ImageType;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
 use KinopoiskDev\Exceptions\KinopoiskResponseException;
-use KinopoiskDev\Kinopoisk;
-use KinopoiskDev\Models\Image;
-use KinopoiskDev\Responses\Api\ImageDocsResponseDto;
 use KinopoiskDev\Filter\MovieSearchFilter;
+use KinopoiskDev\Kinopoisk;
+use KinopoiskDev\Models\ApiImage;
+use KinopoiskDev\Responses\Api\ImageDocsResponseDto;
 use KinopoiskDev\Utils\DataManager;
 
 /**
@@ -23,6 +24,30 @@ use KinopoiskDev\Utils\DataManager;
  * @link    https://kinopoiskdev.readme.io/reference/
  */
 class ImageRequests extends Kinopoisk {
+
+	/**
+	 * Получает изображения для конкретного фильма
+	 *
+	 * @param   int     $movieId  ID фильма в Кинопоиске
+	 * @param   string  $type     Тип изображения (например: 'poster', 'frame', 'backdrop')
+	 * @param   int     $page     Номер страницы
+	 * @param   int     $limit    Количество результатов на странице
+	 *
+	 * @return ImageDocsResponseDto Изображения указанного фильма
+	 * @throws KinopoiskDevException При ошибках API
+	 * @throws \JsonException При ошибках парсинга JSON
+	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
+	 */
+	public function getImagesByMovieId(int $movieId, ImageType $type = null, int $page = 1, int $limit = 10): ImageDocsResponseDto {
+		$filters = new MovieSearchFilter();
+		$filters->addFilter('movieId', $movieId);
+
+		if (!is_null($type)) {
+			$filters->addFilter('type', $type->value);
+		}
+
+		return $this->getImages($filters, $page, $limit);
+	}
 
 	/**
 	 * Получает изображения с возможностью фильтрации и пагинации
@@ -44,7 +69,8 @@ class ImageRequests extends Kinopoisk {
 	 *                                            (тип изображения, ID фильма, язык, размеры).
 	 *                                            При значении null создается новый экземпляр MovieSearchFilter без фильтров
 	 * @param   int                     $page     Номер запрашиваемой страницы результатов, начиная с 1 (по умолчанию 1)
-	 * @param   int                     $limit    Максимальное количество результатов на одной странице (по умолчанию 10, максимум ограничен API до 250)
+	 * @param   int                     $limit    Максимальное количество результатов на одной странице (по умолчанию 10, максимум ограничен API до
+	 *                                            250)
 	 *
 	 * @return ImageDocsResponseDto Объект ответа, содержащий массив изображений и метаданные пагинации
 	 *                              (общее количество, количество страниц, текущая страница)
@@ -53,7 +79,7 @@ class ImageRequests extends Kinopoisk {
 	 * @throws KinopoiskResponseException При ошибках HTTP-запроса к API (401, 403, 404)
 	 * @throws \JsonException            При ошибках парсинга JSON-ответа от API, некорректном формате данных или повреждении ответа
 	 */
-	public function getImages(?MovieSearchFilter $filters = null, int $page = 1, int $limit = 10): ImageDocsResponseDto {
+	public function getImages(?MovieSearchFilter $filters = NULL, int $page = 1, int $limit = 10): ImageDocsResponseDto {
 		if ($limit > 250) {
 			throw new KinopoiskDevException('Лимит не должен превышать 250');
 		}
@@ -65,64 +91,20 @@ class ImageRequests extends Kinopoisk {
 			$filters = new MovieSearchFilter();
 		}
 
-		$filters->addFilter('page', $page);
-		$filters->addFilter('limit', $limit);
+		$filters->setPageNumber($page);
+		$filters->setMaxLimit($limit);
 		$queryParams = $filters->getFilters();
 
 		$response = $this->makeRequest('GET', 'image', $queryParams);
 		$data     = $this->parseResponse($response);
 
 		return new ImageDocsResponseDto(
-			docs : DataManager::parseObjectArray($data, 'docs', Image::class),
+			docs : DataManager::parseObjectArray($data, 'docs', ApiImage::class),
 			total: $data['total'] ?? 0,
 			limit: $data['limit'] ?? $limit,
 			page : $data['page'] ?? $page,
 			pages: $data['pages'] ?? 1,
 		);
-	}
-
-	/**
-	 * Получает изображения для конкретного фильма
-	 *
-	 * @param   int     $movieId  ID фильма в Кинопоиске
-	 * @param   string  $type     Тип изображения (например: 'poster', 'frame', 'backdrop')
-	 * @param   int     $page     Номер страницы
-	 * @param   int     $limit    Количество результатов на странице
-	 *
-	 * @return ImageDocsResponseDto Изображения указанного фильма
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
-	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
-	 */
-	public function getImagesByMovieId(int $movieId, string $type = '', int $page = 1, int $limit = 10): ImageDocsResponseDto {
-		$filters = new MovieSearchFilter();
-		$filters->addFilter('movieId', $movieId);
-		
-		if (!empty($type)) {
-			$filters->addFilter('type', $type);
-		}
-
-		return $this->getImages($filters, $page, $limit);
-	}
-
-	/**
-	 * Получает постеры фильмов с высоким рейтингом
-	 *
-	 * @param   float  $minRating  Минимальный рейтинг КиноПоиска (по умолчанию 7.0)
-	 * @param   int    $page       Номер страницы
-	 * @param   int    $limit      Количество результатов на странице
-	 *
-	 * @return ImageDocsResponseDto Постеры высоко оцененных фильмов
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
-	 * @throws \KinopoiskDev\Exceptions\KinopoiskResponseException
-	 */
-	public function getHighRatedPosters(float $minRating = 7.0, int $page = 1, int $limit = 10): ImageDocsResponseDto {
-		$filters = new MovieSearchFilter();
-		$filters->addFilter('type', 'poster');
-		// Здесь можно было бы добавить фильтрацию по рейтингу, если API это поддерживает
-
-		return $this->getImages($filters, $page, $limit);
 	}
 
 }

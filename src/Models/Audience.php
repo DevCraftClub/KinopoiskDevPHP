@@ -19,10 +19,10 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Rating Для информации о рейтингах
  * @see     \KinopoiskDev\Models\Fees Для информации о кассовых сборах
  */
-readonly class Audience implements BaseModel {
+class Audience extends AbstractBaseModel {
 
 	/**
-	 * Конструктор для создания объекта данных об аудитории
+	 * Конструктор модели аудитории
 	 *
 	 * Создает новый экземпляр класса Audience с указанными параметрами
 	 * количества зрителей и страны. Все параметры являются опциональными
@@ -42,15 +42,12 @@ readonly class Audience implements BaseModel {
 	/**
 	 * Создает объект Audience из массива данных API
 	 *
-	 * Фабричный метод для создания экземпляра класса Audience из массива данных,
-	 * полученных от API Kinopoisk.dev. Безопасно обрабатывает отсутствующие
-	 * значения, устанавливая их в null.
 	 *
 	 * @see Audience::toArray() Для обратного преобразования в массив
 	 *
 	 * @param   array<string, mixed>  $data  Массив данных об аудитории от API, содержащий ключи:
-	 *                        - count: int|null - количество зрителей
-	 *                        - country: string|null - страна сбора данных
+	 *                                       - count: int|null - количество зрителей
+	 *                                       - country: string|null - страна сбора данных
 	 *
 	 * @return static Новый экземпляр класса Audience
 	 *
@@ -63,65 +60,29 @@ readonly class Audience implements BaseModel {
 	}
 
 	/**
-	 * Преобразует объект в массив данных
-	 *
-	 * Конвертирует текущий экземпляр класса Audience в массив,
-	 * совместимый с форматом API Kinopoisk.dev. Используется для
-	 * сериализации данных при отправке запросов к API.
+	 * Преобразует объект в массив
 	 *
 	 * @see Audience::fromArray() Для создания объекта из массива
+	 *
+	 * @param   bool  $includeNulls  Включать ли null значения
+	 *
 	 * @return array<string, mixed> Массив с данными об аудитории, содержащий ключи:
 	 *               - count: int|null - количество зрителей
 	 *               - country: string|null - страна сбора данных
 	 *
 	 */
-	public function toArray(bool $includeNulls = true): array {
-		return [
-			'count'   => $this->count,
-			'country' => $this->country,
-		];
-	}
+	public function toArray(bool $includeNulls = TRUE): array {
+		$result = [];
 
-
-	/**
-	 * Валидирует данные модели
-	 *
-	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
-	 */
-	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
-	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		$json = json_encode($this->toArray(), $flags);
-		if ($json === false) {
-			throw new \JsonException('Ошибка кодирования JSON');
+		if ($this->count !== NULL || $includeNulls) {
+			$result['count'] = $this->count;
 		}
-		return $json;
-	}
 
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
+		if ($this->country !== NULL || $includeNulls) {
+			$result['country'] = $this->country;
+		}
 
+		return $result;
+	}
 
 }

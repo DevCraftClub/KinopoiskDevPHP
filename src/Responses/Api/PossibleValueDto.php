@@ -31,8 +31,8 @@ class PossibleValueDto extends BaseResponseDto {
 	 * @param   string|null  $slug  Вспомогательное значение для идентификации
 	 */
 	public function __construct(
-		public readonly ?string $name = NULL,
-		public readonly ?string $slug = NULL,
+		public  ?string $name = NULL,
+		public  ?string $slug = NULL,
 	) {}
 
 	/**

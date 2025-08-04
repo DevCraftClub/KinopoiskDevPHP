@@ -27,9 +27,10 @@ use Lombok\Getter;
  * @see     \KinopoiskDev\Models\ExternalId Для внешних идентификаторов
  * @link    https://kinopoiskdev.readme.io/reference/moviecontroller_findonev1_4
  */
-readonly class Movie implements BaseModel {
+ class Movie extends AbstractBaseModel {
 
 	private const int MIN_YEAR = 1888;
+
 	private const int MAX_YEAR = 2030;
 
 	/**
@@ -40,52 +41,52 @@ readonly class Movie implements BaseModel {
 	 *
 	 * @see Movie::fromArray() Для создания объекта из массива данных API
 	 *
-	 * @param   int|null           $id                    Уникальный идентификатор фильма
-	 * @param   ExternalId|null    $externalId            Внешние идентификаторы (IMDB, TMDB и т.д.)
-	 * @param   string|null        $name                  Название фильма на русском языке
-	 * @param   string|null        $alternativeName       Альтернативное название
-	 * @param   string|null        $enName                Название фильма на английском языке
-	 * @param   array<Name>|null   $names                 Массив названий на разных языках
-	 * @param   MovieType|null     $type                  Тип фильма (фильм, сериал, мини-сериал)
-	 * @param   int|null           $typeNumber            Номер типа
-	 * @param   int|null           $year                  Год выпуска
-	 * @param   string|null        $description           Полное описание фильма
-	 * @param   string|null        $shortDescription      Краткое описание
-	 * @param   string|null        $slogan                Слоган фильма
-	 * @param   MovieStatus|null   $status                Статус фильма
-	 * @param   array<FactInMovie>|null $facts            Массив фактов о фильме
-	 * @param   int|null           $movieLength           Длительность фильма в минутах
-	 * @param   RatingMpaa|null    $ratingMpaa            Рейтинг MPAA
-	 * @param   int|null           $ageRating             Возрастной рейтинг
-	 * @param   Rating|null        $rating                Рейтинги фильма
-	 * @param   Votes|null         $votes                 Голоса за фильм
-	 * @param   Logo|null          $logo                  Логотип фильма
-	 * @param   ShortImage|null    $poster                Постер фильма
-	 * @param   ShortImage|null    $backdrop              Фоновое изображение
-	 * @param   VideoTypes|null    $videos                Видео материалы
-	 * @param   array<ItemName>    $genres                Массив жанров
-	 * @param   array<ItemName>    $countries             Массив стран производства
-	 * @param   array<PersonInMovie> $persons             Массив участников съемочной группы
-	 * @param   ReviewInfo|null    $reviewInfo            Информация о рецензиях
-	 * @param   array<string, mixed>|null         $seasonsInfo           Информация о сезонах
-	 * @param   CurrencyValue|null $budget                Бюджет фильма
-	 * @param   Fees|null          $fees                  Кассовые сборы
-	 * @param   Premiere|null      $premiere              Информация о премьере
-	 * @param   array<int, mixed>|null         $similarMovies         Похожие фильмы
-	 * @param   array<int, mixed>|null         $sequelsAndPrequels    Сиквелы и приквелы
-	 * @param   Watchability|null  $watchability          Где посмотреть фильм
-	 * @param   array<int>|null         $releaseYears          Годы выпуска
-	 * @param   int|null           $top10                 Позиция в топ-10
-	 * @param   int|null           $top250                Позиция в топ-250
-	 * @param   bool               $isSeries              Является ли сериалом
-	 * @param   bool|null          $ticketsOnSale         Продаются ли билеты
-	 * @param   int|null           $totalSeriesLength     Общая длительность сериала
-	 * @param   int|null           $seriesLength          Длительность серии
-	 * @param   array<Audience>|null $audience            Аудитория фильма
-	 * @param   array<Lists>       $lists                 Списки фильмов
-	 * @param   Networks|null      $networks              Сети вещания
-	 * @param   string|null        $createdAt             Дата создания записи
-	 * @param   string|null        $updatedAt             Дата обновления записи
+	 * @param   int|null                   $id                  Уникальный идентификатор фильма
+	 * @param   ExternalId|null            $externalId          Внешние идентификаторы (IMDB, TMDB и т.д.)
+	 * @param   string|null                $name                Название фильма на русском языке
+	 * @param   string|null                $alternativeName     Альтернативное название
+	 * @param   string|null                $enName              Название фильма на английском языке
+	 * @param   array<Name>|null           $names               Массив названий на разных языках
+	 * @param   MovieType|null             $type                Тип фильма (фильм, сериал, мини-сериал)
+	 * @param   int|null                   $typeNumber          Номер типа
+	 * @param   int|null                   $year                Год выпуска
+	 * @param   string|null                $description         Полное описание фильма
+	 * @param   string|null                $shortDescription    Краткое описание
+	 * @param   string|null                $slogan              Слоган фильма
+	 * @param   MovieStatus|null           $status              Статус фильма
+	 * @param   array<FactInMovie>|null    $facts               Массив фактов о фильме
+	 * @param   int|null                   $movieLength         Длительность фильма в минутах
+	 * @param   RatingMpaa|null            $ratingMpaa          Рейтинг MPAA
+	 * @param   int|null                   $ageRating           Возрастной рейтинг
+	 * @param   Rating|null                $rating              Рейтинги фильма
+	 * @param   Votes|null                 $votes               Голоса за фильм
+	 * @param   Logo|null                  $logo                Логотип фильма
+	 * @param   ShortImage|null            $poster              Постер фильма
+	 * @param   ShortImage|null            $backdrop            Фоновое изображение
+	 * @param   VideoTypes|null            $videos              Видео материалы
+	 * @param   array<ItemName>            $genres              Массив жанров
+	 * @param   array<ItemName>            $countries           Массив стран производства
+	 * @param   array<PersonInMovie>       $persons             Массив участников съемочной группы
+	 * @param   ReviewInfo|null            $reviewInfo          Информация о рецензиях
+	 * @param   array<string, mixed>|null  $seasonsInfo         Информация о сезонах
+	 * @param   CurrencyValue|null         $budget              Бюджет фильма
+	 * @param   Fees|null                  $fees                Кассовые сборы
+	 * @param   Premiere|null              $premiere            Информация о премьере
+	 * @param   array<int, mixed>|null     $similarMovies       Похожие фильмы
+	 * @param   array<int, mixed>|null     $sequelsAndPrequels  Сиквелы и приквелы
+	 * @param   Watchability|null          $watchability        Где посмотреть фильм
+	 * @param   array<int>|null            $releaseYears        Годы выпуска
+	 * @param   int|null                   $top10               Позиция в топ-10
+	 * @param   int|null                   $top250              Позиция в топ-250
+	 * @param   bool                       $isSeries            Является ли сериалом
+	 * @param   bool|null                  $ticketsOnSale       Продаются ли билеты
+	 * @param   int|null                   $totalSeriesLength   Общая длительность сериала
+	 * @param   int|null                   $seriesLength        Длительность серии
+	 * @param   array<Audience>|null       $audience            Аудитория фильма
+	 * @param   array<Lists>               $lists               Списки фильмов
+	 * @param   Networks|null              $networks            Сети вещания
+	 * @param   string|null                $createdAt           Дата создания записи
+	 * @param   string|null                $updatedAt           Дата обновления записи
 	 */
 	public function __construct(
 		#[Getter] public ?int           $id = NULL,
@@ -136,6 +137,7 @@ readonly class Movie implements BaseModel {
 		#[Getter] public ?string        $updatedAt = NULL,
 	) {}
 
+
 	/**
 	 * Создает объект Movie из массива данных API
 	 *
@@ -152,122 +154,88 @@ readonly class Movie implements BaseModel {
 	 */
 	public static function fromArray(array $data): static {
 		return new self(
-			id: $data['id'] ?? NULL,
-			externalId: isset($data['externalId']) ? ExternalId::fromArray($data['externalId']) : NULL,
-			name: $data['name'] ?? NULL,
-			alternativeName: $data['alternativeName'] ?? NULL,
-			enName: $data['enName'] ?? NULL,
-			names: isset($data['names']) ? DataManager::parseObjectArray($data['names'], Name::class) : [],
-			type: isset($data['type']) ? MovieType::tryFrom($data['type']) : NULL,
-			typeNumber: $data['typeNumber'] ?? NULL,
-			year: $data['year'] ?? NULL,
-			description: $data['description'] ?? NULL,
-			shortDescription: $data['shortDescription'] ?? NULL,
-			slogan: $data['slogan'] ?? NULL,
-			status: isset($data['status']) ? MovieStatus::tryFrom($data['status']) : NULL,
-			facts: isset($data['facts']) ? DataManager::parseObjectArray($data['facts'], FactInMovie::class) : [],
-			movieLength: $data['movieLength'] ?? NULL,
-			ratingMpaa: isset($data['ratingMpaa']) ? RatingMpaa::tryFrom($data['ratingMpaa']) : NULL,
-			ageRating: $data['ageRating'] ?? NULL,
-			rating: isset($data['rating']) ? Rating::fromArray($data['rating']) : NULL,
-			votes: isset($data['votes']) ? Votes::fromArray($data['votes']) : NULL,
-			logo: isset($data['logo']) ? Logo::fromArray($data['logo']) : NULL,
-			poster: isset($data['poster']) ? ShortImage::fromArray($data['poster']) : NULL,
-			backdrop: isset($data['backdrop']) ? ShortImage::fromArray($data['backdrop']) : NULL,
-			videos: isset($data['videos']) ? VideoTypes::fromArray($data['videos']) : NULL,
-			genres: isset($data['genres']) ? DataManager::parseObjectArray($data['genres'], ItemName::class) : [],
-			countries: isset($data['countries']) ? DataManager::parseObjectArray($data['countries'], ItemName::class) : [],
-			persons: isset($data['persons']) ? DataManager::parseObjectArray($data['persons'], PersonInMovie::class) : [],
-			reviewInfo: isset($data['reviewInfo']) ? ReviewInfo::fromArray($data['reviewInfo']) : NULL,
-			seasonsInfo: $data['seasonsInfo'] ?? [],
-			budget: isset($data['budget']) ? CurrencyValue::fromArray($data['budget']) : NULL,
-			fees: isset($data['fees']) ? Fees::fromArray($data['fees']) : NULL,
-			premiere: isset($data['premiere']) ? Premiere::fromArray($data['premiere']) : NULL,
-			similarMovies: $data['similarMovies'] ?? [],
+			id                : $data['id'] ?? NULL,
+			externalId        : isset($data['externalId']) ? ExternalId::fromArray($data['externalId']) : NULL,
+			name              : $data['name'] ?? NULL,
+			alternativeName   : $data['alternativeName'] ?? NULL,
+			enName            : $data['enName'] ?? NULL,
+			names             : isset($data['names']) ? DataManager::parseObjectArray($data, 'names', Name::class) : [],
+			type              : isset($data['type']) ? MovieType::tryFrom($data['type']) : NULL,
+			typeNumber        : $data['typeNumber'] ?? NULL,
+			year              : $data['year'] ?? NULL,
+			description       : $data['description'] ?? NULL,
+			shortDescription  : $data['shortDescription'] ?? NULL,
+			slogan            : $data['slogan'] ?? NULL,
+			status            : isset($data['status']) ? MovieStatus::tryFrom($data['status']) : NULL,
+			facts             : isset($data['facts']) ? DataManager::parseObjectArray($data, 'facts', FactInMovie::class) : [],
+			movieLength       : $data['movieLength'] ?? NULL,
+			ratingMpaa        : isset($data['ratingMpaa']) ? RatingMpaa::tryFrom($data['ratingMpaa']) : NULL,
+			ageRating         : $data['ageRating'] ?? NULL,
+			rating            : isset($data['rating']) ? Rating::fromArray($data['rating']) : NULL,
+			votes             : isset($data['votes']) ? Votes::fromArray($data['votes']) : NULL,
+			logo              : isset($data['logo']) ? Logo::fromArray($data['logo']) : NULL,
+			poster            : isset($data['poster']) ? ShortImage::fromArray($data['poster']) : NULL,
+			backdrop          : isset($data['backdrop']) ? ShortImage::fromArray($data['backdrop']) : NULL,
+			videos            : isset($data['videos']) ? VideoTypes::fromArray($data['videos']) : NULL,
+			genres            : isset($data['genres']) ? DataManager::parseObjectArray($data, 'genres', ItemName::class) : [],
+			countries         : isset($data['countries']) ? DataManager::parseObjectArray($data, 'countries', ItemName::class) : [],
+			persons           : isset($data['persons']) ? DataManager::parseObjectArray($data, 'persons', PersonInMovie::class) : [],
+			reviewInfo        : isset($data['reviewInfo']) ? ReviewInfo::fromArray($data['reviewInfo']) : NULL,
+			seasonsInfo       : $data['seasonsInfo'] ?? [],
+			budget            : isset($data['budget']) ? CurrencyValue::fromArray($data['budget']) : NULL,
+			fees              : isset($data['fees']) ? Fees::fromArray($data['fees']) : NULL,
+			premiere          : isset($data['premiere']) ? Premiere::fromArray($data['premiere']) : NULL,
+			similarMovies     : $data['similarMovies'] ?? [],
 			sequelsAndPrequels: $data['sequelsAndPrequels'] ?? [],
-			watchability: isset($data['watchability']) ? Watchability::fromArray($data['watchability']) : NULL,
-			releaseYears: $data['releaseYears'] ?? [],
-			top10: $data['top10'] ?? NULL,
-			top250: $data['top250'] ?? NULL,
-			isSeries: $data['isSeries'] ?? FALSE,
-			ticketsOnSale: $data['ticketsOnSale'] ?? NULL,
-			totalSeriesLength: $data['totalSeriesLength'] ?? NULL,
-			seriesLength: $data['seriesLength'] ?? NULL,
-			audience: isset($data['audience']) ? DataManager::parseObjectArray($data['audience'], Audience::class) : [],
-			lists: isset($data['lists']) ? DataManager::parseObjectArray($data['lists'], Lists::class) : [],
-			networks: isset($data['networks']) ? Networks::fromArray($data['networks']) : NULL,
-			createdAt: $data['createdAt'] ?? NULL,
-			updatedAt: $data['updatedAt'] ?? NULL,
+			watchability      : isset($data['watchability']) ? Watchability::fromArray($data['watchability']) : NULL,
+			releaseYears      : $data['releaseYears'] ?? [],
+			top10             : $data['top10'] ?? NULL,
+			top250            : $data['top250'] ?? NULL,
+			isSeries          : $data['isSeries'] ?? FALSE,
+			ticketsOnSale     : $data['ticketsOnSale'] ?? NULL,
+			totalSeriesLength : $data['totalSeriesLength'] ?? NULL,
+			seriesLength      : $data['seriesLength'] ?? NULL,
+			audience          : isset($data['audience']) ? DataManager::parseObjectArray($data, 'audience', Audience::class) : [],
+			lists             : isset($data['lists']) ? DataManager::parseObjectArray($data, 'lists', Lists::class) : [],
+			networks          : isset($data['networks']) ? Networks::fromArray($data['networks']) : NULL,
+			createdAt         : $data['createdAt'] ?? NULL,
+			updatedAt         : $data['updatedAt'] ?? NULL,
 		);
 	}
 
 	/**
-	 * Преобразует объект в массив данных
+	 * Валидирует данные модели
 	 *
-	 * Конвертирует текущий экземпляр класса Movie в массив,
-	 * совместимый с форматом API Kinopoisk.dev. Используется для
-	 * сериализации данных при отправке запросов к API.
+	 * Проверяет корректность основных полей объекта Movie.
+	 * Проверяет наличие обязательного идентификатора и валидность опциональных полей.
 	 *
-	 * @see Movie::fromArray() Для создания объекта из массива
-	 * @return array<string, mixed> Массив с данными фильма
-	 *
-	 */
-	public function toArray(bool $includeNulls = true): array {
-		$data = [
-			'id'                  => $this->id,
-			'externalId'          => $this->externalId?->toArray(),
-			'name'                => $this->name,
-			'alternativeName'     => $this->alternativeName,
-			'enName'              => $this->enName,
-			'names'               => DataManager::getObjectsArray($this->names),
-			'type'                => $this->type?->value,
-			'typeNumber'          => $this->typeNumber,
-			'year'                => $this->year,
-			'description'         => $this->description,
-			'shortDescription'    => $this->shortDescription,
-			'slogan'              => $this->slogan,
-			'status'              => $this->status?->value,
-			'facts'               => DataManager::getObjectsArray($this->facts),
-			'movieLength'         => $this->movieLength,
-			'ratingMpaa'          => $this->ratingMpaa?->value,
-			'ageRating'           => $this->ageRating,
-			'rating'              => $this->rating?->toArray(),
-			'votes'               => $this->votes?->toArray(),
-			'logo'                => $this->logo?->toArray(),
-			'poster'              => $this->poster?->toArray(),
-			'backdrop'            => $this->backdrop?->toArray(),
-			'videos'              => $this->videos?->toArray(),
-			'genres'              => DataManager::getObjectsArray($this->genres),
-			'countries'           => DataManager::getObjectsArray($this->countries),
-			'persons'             => DataManager::getObjectsArray($this->persons),
-			'reviewInfo'          => $this->reviewInfo?->toArray(),
-			'seasonsInfo'         => $this->seasonsInfo,
-			'budget'              => $this->budget?->toArray(),
-			'fees'                => $this->fees?->toArray(),
-			'premiere'            => $this->premiere?->toArray(),
-			'similarMovies'       => $this->similarMovies,
-			'sequelsAndPrequels'  => $this->sequelsAndPrequels,
-			'watchability'        => $this->watchability?->toArray(),
-			'releaseYears'        => $this->releaseYears,
-			'top10'               => $this->top10,
-			'top250'              => $this->top250,
-			'isSeries'            => $this->isSeries,
-			'ticketsOnSale'       => $this->ticketsOnSale,
-			'totalSeriesLength'   => $this->totalSeriesLength,
-			'seriesLength'        => $this->seriesLength,
-			'audience'            => DataManager::getObjectsArray($this->audience),
-			'lists'               => $this->lists,
-			'networks'            => $this->networks?->toArray(),
-			'createdAt'           => $this->createdAt,
-			'updatedAt'           => $this->updatedAt,
-		];
-
-		// Удаляем null значения если не нужно их включать
-		if (!$includeNulls) {
-			return array_filter($data, fn($value) => $value !== null);
+	 * @return bool True если данные валидны	 */
+	public function validate(): bool {
+		// Основная валидация - должен быть ID
+		if ($this->id === NULL || $this->id <= 0) {
+			throw new \KinopoiskDev\Exceptions\ValidationException('Movie ID обязателен и должен быть больше нуля');
 		}
 
-		return $data;
+		// Валидация года
+		if ($this->year !== NULL && ($this->year < self::MIN_YEAR || $this->year > self::MAX_YEAR)) {
+			throw new \KinopoiskDev\Exceptions\ValidationException('Год должен быть в диапазоне от ' . self::MIN_YEAR . ' до ' . self::MAX_YEAR);
+		}
+
+		// Валидация рейтингов
+		if ($this->rating?->kp !== NULL && ($this->rating->kp < 0 || $this->rating->kp > 10)) {
+			throw new \KinopoiskDev\Exceptions\ValidationException('Kinopoisk rating должен быть в диапазоне от 0 до 10');
+		}
+
+		if ($this->rating?->imdb !== NULL && ($this->rating->imdb < 0 || $this->rating->imdb > 10)) {
+			throw new \KinopoiskDev\Exceptions\ValidationException('IMDB rating должен быть в диапазоне от 0 до 10');
+		}
+
+		// Валидация возрастного рейтинга
+		if ($this->ageRating !== NULL && ($this->ageRating < 0 || $this->ageRating > 21)) {
+			throw new \KinopoiskDev\Exceptions\ValidationException('Age rating должен быть в диапазоне от 0 до 21');
+		}
+
+		return TRUE;
 	}
 
 	/**
@@ -380,76 +348,90 @@ readonly class Movie implements BaseModel {
 	}
 
 	/**
-	 * Валидирует данные модели
+	 * Преобразует объект в массив данных
 	 *
-	 * Проверяет корректность основных полей объекта Movie.
-	 * Проверяет наличие обязательного идентификатора и валидность опциональных полей.
+	 * Конвертирует текущий экземпляр класса Movie в массив,
+	 * совместимый с форматом API Kinopoisk.dev. Используется для
+	 * сериализации данных при отправке запросов к API.
 	 *
-	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
+	 * @see Movie::fromArray() Для создания объекта из массива
+	 * @return array<string, mixed> Массив с данными фильма
+	 *
 	 */
-	public function validate(): bool {
-		// Основная валидация - должен быть ID
-		if ($this->id === null || $this->id <= 0) {
-			throw new \KinopoiskDev\Exceptions\ValidationException('Movie ID is required and must be positive');
+	public function toArray(bool $includeNulls = TRUE): array {
+		$data = [
+			'id'                 => $this->id,
+			'externalId'         => $this->externalId?->toArray(),
+			'name'               => $this->name,
+			'alternativeName'    => $this->alternativeName,
+			'enName'             => $this->enName,
+			'names'              => DataManager::getObjectsArray($this->names),
+			'type'               => $this->type?->value,
+			'typeNumber'         => $this->typeNumber,
+			'year'               => $this->year,
+			'description'        => $this->description,
+			'shortDescription'   => $this->shortDescription,
+			'slogan'             => $this->slogan,
+			'status'             => $this->status?->value,
+			'facts'              => DataManager::getObjectsArray($this->facts),
+			'movieLength'        => $this->movieLength,
+			'ratingMpaa'         => $this->ratingMpaa?->value,
+			'ageRating'          => $this->ageRating,
+			'rating'             => $this->rating?->toArray(),
+			'votes'              => $this->votes?->toArray(),
+			'logo'               => $this->logo?->toArray(),
+			'poster'             => $this->poster?->toArray(),
+			'backdrop'           => $this->backdrop?->toArray(),
+			'videos'             => $this->videos?->toArray(),
+			'genres'             => DataManager::getObjectsArray($this->genres),
+			'countries'          => DataManager::getObjectsArray($this->countries),
+			'persons'            => DataManager::getObjectsArray($this->persons),
+			'reviewInfo'         => $this->reviewInfo?->toArray(),
+			'seasonsInfo'        => $this->seasonsInfo,
+			'budget'             => $this->budget?->toArray(),
+			'fees'               => $this->fees?->toArray(),
+			'premiere'           => $this->premiere?->toArray(),
+			'similarMovies'      => $this->similarMovies,
+			'sequelsAndPrequels' => $this->sequelsAndPrequels,
+			'watchability'       => $this->watchability?->toArray(),
+			'releaseYears'       => $this->releaseYears,
+			'top10'              => $this->top10,
+			'top250'             => $this->top250,
+			'isSeries'           => $this->isSeries,
+			'ticketsOnSale'      => $this->ticketsOnSale,
+			'totalSeriesLength'  => $this->totalSeriesLength,
+			'seriesLength'       => $this->seriesLength,
+			'audience'           => DataManager::getObjectsArray($this->audience),
+			'lists'              => $this->lists,
+			'networks'           => $this->networks?->toArray(),
+			'createdAt'          => $this->createdAt,
+			'updatedAt'          => $this->updatedAt,
+		];
+
+		// Удаляем null значения если не нужно их включать
+		if (!$includeNulls) {
+			return array_filter($data, fn ($value) => $value !== NULL);
 		}
 
-		// Валидация года
-		if ($this->year !== null && ($this->year < self::MIN_YEAR || $this->year > self::MAX_YEAR)) {
-			throw new \KinopoiskDev\Exceptions\ValidationException('Movie year must be between ' . self::MIN_YEAR . ' and ' . self::MAX_YEAR);
-		}
-
-		// Валидация рейтингов
-		if ($this->rating?->kp !== null && ($this->rating->kp < 0 || $this->rating->kp > 10)) {
-			throw new \KinopoiskDev\Exceptions\ValidationException('Kinopoisk rating must be between 0 and 10');
-		}
-
-		if ($this->rating?->imdb !== null && ($this->rating->imdb < 0 || $this->rating->imdb > 10)) {
-			throw new \KinopoiskDev\Exceptions\ValidationException('IMDB rating must be between 0 and 10');
-		}
-
-		// Валидация возрастного рейтинга
-		if ($this->ageRating !== null && ($this->ageRating < 0 || $this->ageRating > 21)) {
-			throw new \KinopoiskDev\Exceptions\ValidationException('Age rating must be between 0 and 21');
-		}
-
-		return true;
+		return $data;
 	}
+
 
 	/**
-	 * Возвращает JSON представление объекта
+	 * Возвращает наиболее подходящее название фильма.
 	 *
-	 * Сериализует объект Movie в JSON строку с использованием указанных флагов.
-	 * По умолчанию включает поддержку Unicode и выбрасывает исключения при ошибках.
+	 * Метод последовательно проверяет наличие русского названия (`name`),
+	 * альтернативного названия (`alternativeName`) и английского названия (`enName`).
+	 * Возвращается первое найденное не-null значение. Если все названия отсутствуют,
+	 * возвращается пустая строка.
 	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
+	 * @see Movie::$name
+	 * @see Movie::$alternativeName
+	 * @see Movie::$enName
+	 * @return string Название фильма или пустая строка, если ни одно из названий не доступно.
+	 * @since 1.0.0
 	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		$json = json_encode($this->toArray(), $flags);
-		if ($json === false) {
-			throw new \JsonException('Ошибка кодирования JSON');
-		}
-		return $json;
+	public function getName(): string {
+		return $this->name?? $this->alternativeName?? $this->enName?? '';
 	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * Парсит JSON строку и создает из неё объект Movie.
-	 * Автоматически валидирует полученные данные.
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 }

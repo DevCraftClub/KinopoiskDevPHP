@@ -14,7 +14,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\Studio Для основной модели студии
  * @see     \KinopoiskDev\Models\Movie Для полной информации о фильме
  */
-class MovieFromStudio implements BaseModel {
+ class MovieFromStudio extends AbstractBaseModel {
 
 	/**
 	 * Конструктор для создания объекта фильма из студии
@@ -44,9 +44,9 @@ class MovieFromStudio implements BaseModel {
 	 * @param   array  $data  Массив данных от API, содержащий ключ:
 	 *                        - id: int - уникальный идентификатор фильма
 	 *
-	 * @return \KinopoiskDev\Models\BaseModel Новый экземпляр MovieFromStudio с данными из массива
+	 * @return static Новый экземпляр MovieFromStudio с данными из массива
 	 */
-	public static function fromArray(array $data): \KinopoiskDev\Models\BaseModel {
+	public static function fromArray(array $data): static {
 		return new self(
 			id: $data['id'],
 		);
@@ -62,13 +62,27 @@ class MovieFromStudio implements BaseModel {
 	 * @see MovieFromStudio::fromArray() Для создания объекта из массива
 	 * @see \KinopoiskDev\Models\BaseModel::toArray() Для интерфейса BaseModel
 	 *
+	 * @param   bool  $includeNulls  Включать ли null значения в результат (по умолчанию true)
+	 *
 	 * @return array Массив с данными о фильме, содержащий ключ:
 	 *               - id: int - уникальный идентификатор фильма
 	 */
-	public function toArray(): array {
+	public function toArray(bool $includeNulls = true): array {
 		return [
 			'id' => $this->id,
 		];
+	}
+
+	/**
+	 * Валидирует данные модели
+	 *
+	 * Проверяет корректность данных модели согласно бизнес-правилам.
+	 * Для MovieFromStudio проверяется только валидность идентификатора.
+	 *
+	 * @return bool True если данные валидны, false в противном случае
+	 */
+	public function validate(): bool {
+		return $this->id > 0;
 	}
 
 }

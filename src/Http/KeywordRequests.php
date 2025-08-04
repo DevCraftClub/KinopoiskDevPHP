@@ -2,11 +2,14 @@
 
 namespace KinopoiskDev\Http;
 
+use KinopoiskDev\Enums\SortDirection;
+use KinopoiskDev\Enums\SortField;
 use KinopoiskDev\Exceptions\KinopoiskDevException;
+use KinopoiskDev\Filter\KeywordSearchFilter;
+use KinopoiskDev\Filter\SortCriteria;
 use KinopoiskDev\Kinopoisk;
 use KinopoiskDev\Models\Keyword;
 use KinopoiskDev\Responses\Api\KeywordDocsResponseDto;
-use KinopoiskDev\Filter\KeywordSearchFilter;
 
 /**
  * Класс для API-запросов, связанных с ключевыми словами
@@ -23,51 +26,6 @@ use KinopoiskDev\Filter\KeywordSearchFilter;
  * @see     \KinopoiskDev\Filter\KeywordSearchFilter Для фильтрации запросов
  */
 class KeywordRequests extends Kinopoisk {
-
-	/**
-	 * Ищет ключевые слова по различным критериям
-	 *
-	 * Основной метод для поиска ключевых слов с поддержкой сложных фильтров.
-	 * Позволяет искать по названию ключевого слова, связанным фильмам и другим параметрам.
-	 *
-	 * @api    /v1.4/keyword
-	 * @link   https://kinopoiskdev.readme.io/reference/keywordcontroller_findmanyv1_4
-	 *
-	 * @param   KeywordSearchFilter|null  $filters  Объект фильтра для поиска ключевых слов
-	 * @param   int                       $page     Номер страницы результатов (по умолчанию: 1)
-	 * @param   int                       $limit    Количество результатов на странице (по умолчанию: 10, максимум: 250)
-	 *
-	 * @return KeywordDocsResponseDto Результаты поиска с информацией о пагинации
-	 * @throws KinopoiskDevException При ошибках API или превышении лимитов
-	 * @throws \JsonException При ошибках парсинга JSON-ответа
-	 */
-	public function searchKeywords(?KeywordSearchFilter $filters = NULL, int $page = 1, int $limit = 10): KeywordDocsResponseDto {
-		if ($limit > 250) {
-			throw new KinopoiskDevException('Лимит не должен превышать 250');
-		}
-		if ($page < 1) {
-			throw new KinopoiskDevException('Номер страницы не должен быть меньше 1');
-		}
-
-		if (is_null($filters)) {
-			$filters = new KeywordSearchFilter();
-		}
-
-		$queryParams = $filters->getFilters();
-		$queryParams['page'] = $page;
-		$queryParams['limit'] = $limit;
-
-		$response = $this->makeRequest('GET', 'keyword', $queryParams);
-		$data     = $this->parseResponse($response);
-
-		return new KeywordDocsResponseDto(
-			docs : array_map(fn ($keywordData) => Keyword::fromArray($keywordData), $data['docs'] ?? []),
-			total: $data['total'] ?? 0,
-			limit: $data['limit'] ?? $limit,
-			page : $data['page'] ?? $page,
-			pages: $data['pages'] ?? 1,
-		);
-	}
 
 	/**
 	 * Получает ключевые слова по названию
@@ -88,6 +46,50 @@ class KeywordRequests extends Kinopoisk {
 		$filters->title($title);
 
 		return $this->searchKeywords($filters, $page, $limit);
+	}
+
+	/**
+	 * Ищет ключевые слова по различным критериям
+	 *
+	 * Основной метод для поиска ключевых слов с поддержкой сложных фильтров.
+	 * Позволяет искать по названию ключевого слова, связанным фильмам и другим параметрам.
+	 *
+	 * @api    /v1.4/keyword
+	 * @link   https://kinopoiskdev.readme.io/reference/keywordcontroller_findmanyv1_4
+	 *
+	 * @param   KeywordSearchFilter|null  $filters  Объект фильтра для поиска ключевых слов
+	 * @param   int                       $page     Номер страницы результатов (по умолчанию: 1)
+	 * @param   int                       $limit    Количество результатов на странице (по умолчанию: 10, максимум: 250)
+	 *
+	 * @return KeywordDocsResponseDto Результаты поиска с пагинацией
+	 * @throws KinopoiskDevException При ошибках API
+	 */
+	public function searchKeywords(?KeywordSearchFilter $filters = NULL, int $page = 1, int $limit = 10): KeywordDocsResponseDto {
+		if ($limit > 250) {
+			throw new KinopoiskDevException('Лимит не должен превышать 250');
+		}
+		if ($page < 1) {
+			throw new KinopoiskDevException('Номер страницы не должен быть меньше 1');
+		}
+
+		if (is_null($filters)) {
+			$filters = new KeywordSearchFilter();
+		}
+
+		$filters->addFilter('page', $page);
+		$filters->addFilter('limit', $limit);
+		$queryParams = $filters->getFilters();
+
+		$response = $this->makeRequest('GET', 'keyword', $queryParams);
+		$data     = $this->parseResponse($response);
+
+		return new KeywordDocsResponseDto(
+			docs : array_map(fn ($keywordData) => Keyword::fromArray($keywordData), $data['docs'] ?? []),
+			total: $data['total'] ?? 0,
+			limit: $data['limit'] ?? $limit,
+			page : $data['page'] ?? $page,
+			pages: $data['pages'] ?? 1,
+		);
 	}
 
 	/**
@@ -129,26 +131,6 @@ class KeywordRequests extends Kinopoisk {
 		$result = $this->searchKeywords($filters, 1, 1);
 
 		return $result->docs[0] ?? NULL;
-	}
-
-	/**
-	 * Получает популярные ключевые слова
-	 *
-	 * Возвращает ключевые слова, отсортированные по популярности
-	 * (количеству связанных с ними фильмов).
-	 *
-	 * @param   int  $page   Номер страницы результатов
-	 * @param   int  $limit  Количество результатов на странице
-	 *
-	 * @return KeywordDocsResponseDto Популярные ключевые слова
-	 * @throws KinopoiskDevException При ошибках API
-	 * @throws \JsonException При ошибках парсинга JSON
-	 */
-	public function getPopularKeywords(int $page = 1, int $limit = 10): KeywordDocsResponseDto {
-		$filters = new KeywordSearchFilter();
-		$filters->sortByPopularity();
-
-		return $this->searchKeywords($filters, $page, $limit);
 	}
 
 }

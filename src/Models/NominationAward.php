@@ -19,7 +19,7 @@ namespace KinopoiskDev\Models;
  * @see     \KinopoiskDev\Models\MovieAward Для наград фильмов
  * @see     \KinopoiskDev\Models\PersonAward Для наград персон
  */
-readonly class NominationAward implements BaseModel {
+class NominationAward extends AbstractBaseModel {
 
 	/**
 	 * Конструктор для создания объекта награды номинации
@@ -32,47 +32,9 @@ readonly class NominationAward implements BaseModel {
 	 * @param   int|null     $year   Год вручения награды
 	 */
 	public function __construct(
-		public ?string $title = null,
-		public ?int    $year = null,
+		public ?string $title = NULL,
+		public ?int    $year = NULL,
 	) {}
-
-	/**
-	 * Создает объект NominationAward из массива данных API
-	 *
-	 * Фабричный метод для создания экземпляра класса NominationAward из массива данных,
-	 * полученных от API Kinopoisk.dev. Безопасно обрабатывает отсутствующие
-	 * значения, устанавливая их в null.
-	 *
-	 * @param   array  $data  Массив данных о награде от API, содержащий ключи:
-	 *                        - title: string|null - название награды
-	 *                        - year: int|null - год вручения награды
-	 *
-	 * @return \KinopoiskDev\Models\NominationAward Новый экземпляр класса NominationAward с данными из массива
-	 */
-	public static function fromArray(array $data): static {
-		return new self(
-			title: $data['title'] ?? null,
-			year: $data['year'] ?? null,
-		);
-	}
-
-	/**
-	 * Преобразует объект в массив данных
-	 *
-	 * Конвертирует текущий экземпляр класса NominationAward в массив,
-	 * совместимый с форматом API Kinopoisk.dev. Используется для сериализации
-	 * данных при отправке запросов к API или для экспорта данных.
-	 *
-	 * @return array Массив с данными о награде, содержащий ключи:
-	 *               - title: string|null - название награды
-	 *               - year: int|null - год вручения награды
-	 */
-	public function toArray(bool $includeNulls = true): array {
-		return [
-			'title' => $this->title,
-			'year'  => $this->year,
-		];
-	}
 
 	/**
 	 * Возвращает строковое представление награды
@@ -97,49 +59,59 @@ readonly class NominationAward implements BaseModel {
 	}
 
 	/**
+	 * Создает объект NominationAward из массива данных API
+	 *
+	 * Фабричный метод для создания экземпляра класса NominationAward из массива данных,
+	 * полученных от API Kinopoisk.dev. Безопасно обрабатывает отсутствующие
+	 * значения, устанавливая их в null.
+	 *
+	 * @param   array  $data  Массив данных о награде от API, содержащий ключи:
+	 *                        - title: string|null - название награды
+	 *                        - year: int|null - год вручения награды
+	 *
+	 * @return \KinopoiskDev\Models\NominationAward Новый экземпляр класса NominationAward с данными из массива
+	 */
+	public static function fromArray(array $data): static {
+		return new self(
+			title: $data['title'] ?? NULL,
+			year : $data['year'] ?? NULL,
+		);
+	}
+
+	/**
+	 * Преобразует объект в массив данных
+	 *
+	 * Конвертирует текущий экземпляр класса NominationAward в массив,
+	 * совместимый с форматом API Kinopoisk.dev. Используется для сериализации
+	 * данных при отправке запросов к API или для экспорта данных.
+	 *
+	 * @return array Массив с данными о награде, содержащий ключи:
+	 *               - title: string|null - название награды
+	 *               - year: int|null - год вручения награды
+	 */
+	public function toArray(bool $includeNulls = TRUE): array {
+		return [
+			'title' => $this->title,
+			'year'  => $this->year,
+		];
+	}
+
+	/**
 	 * Проверяет, установлена ли информация о награде
 	 *
 	 * @return bool true если есть название или год, иначе false
 	 */
 	public function hasInfo(): bool {
-		return $this->title !== null || $this->year !== null;
+		return $this->title !== NULL || $this->year !== NULL;
 	}
 
 	/**
 	 * Валидирует данные модели
 	 *
 	 * @return bool True если данные валидны
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При ошибке валидации
 	 */
 	public function validate(): bool {
-		return true; // Basic validation - override in specific models if needed
+		return TRUE; // Basic validation - override in specific models if needed
 	}
-
-	/**
-	 * Возвращает JSON представление объекта
-	 *
-	 * @param int $flags Флаги для json_encode
-	 * @return string JSON строка
-	 * @throws \JsonException При ошибке сериализации
-	 */
-	public function toJson(int $flags = JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE): string {
-		return json_encode($this->toArray(), $flags);
-	}
-
-	/**
-	 * Создает объект из JSON строки
-	 *
-	 * @param string $json JSON строка
-	 * @return static Экземпляр модели
-	 * @throws \JsonException При ошибке парсинга
-	 * @throws \KinopoiskDev\Exceptions\ValidationException При некорректных данных
-	 */
-	public static function fromJson(string $json): static {
-		$data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-		$instance = static::fromArray($data);
-		$instance->validate();
-		return $instance;
-	}
-
 
 }

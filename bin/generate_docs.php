@@ -40,7 +40,7 @@ class DocGenerator
 			foreach ($filesInDir as $file) {
 				$fullClassName = $this->extractFullClassNameFromFile($file);
 
-				if ($fullClassName && (class_exists($fullClassName) || interface_exists($fullClassName) || enum_exists($fullClassName))) {
+				if ($fullClassName && (class_exists($fullClassName) || interface_exists($fullClassName) || enum_exists($fullClassName) || trait_exists($fullClassName))) {
 					$reflection = new ReflectionClass($fullClassName);
 					$className = $reflection->getShortName();
 
@@ -65,6 +65,15 @@ class DocGenerator
 							$methodDocBlock = $method->getDocComment();
 							if ($methodDocBlock) {
 								$doc = $this->parseDocBlock($methodDocBlock);
+								
+								// Если есть @inheritDoc, получаем документацию из родительского класса/интерфейса
+								if ($doc['inheritDoc']) {
+									$parentDoc = $this->getInheritedDocBlock($method);
+									if ($parentDoc) {
+										$doc = $this->mergeDocBlocks($doc, $parentDoc);
+									}
+								}
+								
 								$markdownContent .= $this->formatMethodMarkdown($method->getName(), $doc);
 							}
 						}
@@ -121,7 +130,7 @@ class DocGenerator
 				}
 			}
 
-			if (is_array($token) && ($token[0] === T_CLASS || $token[0] === T_INTERFACE || $token[0] === T_ENUM)) {
+			if (is_array($token) && ($token[0] === T_CLASS || $token[0] === T_INTERFACE || $token[0] === T_ENUM || $token[0] === T_TRAIT)) {
 				$i++;
 				// Пропускаем пробелы
 				while ($i < $count && is_array($tokens[$i]) && $tokens[$i][0] === T_WHITESPACE) {
@@ -208,6 +217,7 @@ class DocGenerator
 			'since' => NULL,
 			'version' => NULL,
 			'api' => NULL,
+			'inheritDoc' => false,
 		];
 
 		// Очищаем от символов комментариев
@@ -288,9 +298,19 @@ class DocGenerator
 				} elseif (str_starts_with($line, '@api')) {
 					$parts = preg_split('/\s+/', substr($line, 5), 2);
 					$parsed['api'] = $parts[1] ?? $parts[0];
+				} elseif (str_starts_with($line, '@inheritDoc')) {
+					$parsed['inheritDoc'] = true;
 				}
 			} else {
-				$descriptionLines[] = $line;
+				// Проверяем на {@inheritDoc} в фигурных скобках
+				if (str_contains($line, '{@inheritDoc}')) {
+					$parsed['inheritDoc'] = true;
+				}
+				
+				// Не добавляем {@inheritDoc} в описание
+				if ($line !== '{@inheritDoc}') {
+					$descriptionLines[] = $line;
+				}
 			}
 		}
 
@@ -452,6 +472,90 @@ class DocGenerator
 		}
 
 		return $output;
+	}
+
+	private function getInheritedDocBlock(ReflectionMethod $method): ?array
+	{
+		$declaringClass = $method->getDeclaringClass();
+		
+		// Проверяем родительский класс
+		$parentClass = $declaringClass->getParentClass();
+		if ($parentClass) {
+			try {
+				$parentMethod = $parentClass->getMethod($method->getName());
+				$parentDocBlock = $parentMethod->getDocComment();
+				if ($parentDocBlock) {
+					return $this->parseDocBlock($parentDocBlock);
+				}
+			} catch (\ReflectionException $e) {
+				// Метод не найден в родительском классе
+			}
+		}
+		
+		// Проверяем интерфейсы
+		$interfaces = $declaringClass->getInterfaces();
+		foreach ($interfaces as $interface) {
+			try {
+				$interfaceMethod = $interface->getMethod($method->getName());
+				$interfaceDocBlock = $interfaceMethod->getDocComment();
+				if ($interfaceDocBlock) {
+					return $this->parseDocBlock($interfaceDocBlock);
+				}
+			} catch (\ReflectionException $e) {
+				// Метод не найден в интерфейсе
+			}
+		}
+		
+		return null;
+	}
+
+	private function mergeDocBlocks(array $childDoc, array $parentDoc): array
+	{
+		$merged = $childDoc;
+		
+		// Если в дочернем блоке есть @inheritDoc, используем родительскую документацию
+		if ($childDoc['inheritDoc']) {
+			// Описание: объединяем родительское и дочернее описание
+			if (!empty($childDoc['description'])) {
+				// Если есть дополнительное описание в дочернем блоке, объединяем
+				$merged['description'] = trim($parentDoc['description'] . "\n\n" . $childDoc['description']);
+			} else {
+				// Если нет дополнительного описания, используем только родительское
+				$merged['description'] = $parentDoc['description'];
+			}
+			
+			// Параметры из родительского блока (если в дочернем нет)
+			if (empty($childDoc['params']) && !empty($parentDoc['params'])) {
+				$merged['params'] = $parentDoc['params'];
+			}
+			
+			// Возвращаемое значение из родительского блока (если в дочернем нет)
+			if (empty($childDoc['return']) && !empty($parentDoc['return'])) {
+				$merged['return'] = $parentDoc['return'];
+			}
+			
+			// Исключения из родительского блока (если в дочернем нет)
+			if (empty($childDoc['throws']) && !empty($parentDoc['throws'])) {
+				$merged['throws'] = $parentDoc['throws'];
+			}
+			
+			// Пример из родительского блока (если в дочернем нет)
+			if (empty($childDoc['example']) && !empty($parentDoc['example'])) {
+				$merged['example'] = $parentDoc['example'];
+			}
+			
+			// Ссылки из родительского блока (если в дочернем нет)
+			if (empty($childDoc['see']) && !empty($parentDoc['see'])) {
+				$merged['see'] = $parentDoc['see'];
+			}
+			
+			// Версия из родительского блока (если в дочернем нет)
+			if (empty($childDoc['since']) && !empty($parentDoc['since'])) {
+				$merged['since'] = $parentDoc['since'];
+			}
+		}
+		
+		return $merged;
 	}
 }
 

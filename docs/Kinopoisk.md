@@ -78,18 +78,6 @@ $kinopoisk = new Kinopoisk('your-api-token', $httpClient, null, $logger);
 
 * `ValidationException`: При отсутствии токена или неверном формате
 
-## `isValidApiToken()`
-
-**Описание:** Проверяет валидность API токена
-Валидирует формат токена Kinopoisk.dev. Токен должен соответствовать
-формату: 4 группы по 7 символов, разделенные дефисами.
-
-**Параметры:**
-
-* `$token` (string): Токен API для проверки
-
-**Возвращает:** `bool True` если токен валиден, false в противном случае
-
 ## `createDefaultHttpClient()`
 
 **Описание:** Создает HTTP клиент по умолчанию

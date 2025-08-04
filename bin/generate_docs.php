@@ -1,250 +1,310 @@
 <?php
 
-declare(strict_types=1);
+// generate_docs.php
 
-/**
- * Простой генератор документации для PHP клиента Kinopoisk.dev
- *
- * Сканирует директорию src/, извлекает определения namespace, class/trait/interface/enum
- * вместе с их PHPDoc блоками и сигнатурами публичных методов
- * и записывает соответствующий markdown файл в директорию docs/, сохраняя
- * оригинальную структуру папок (например, src/Models/Movie.php -> docs/Models/Movie.md).
- *
- * Использование:
- *   php bin/generate_docs.php
- */
+// Включаем автозагрузчик Composer
+require_once __DIR__ . '/../vendor/autoload.php';
 
-$projectRoot = dirname(__DIR__);
-$srcDir      = $projectRoot . '/src';
-$docsDir     = $projectRoot . '/docs';
-
-if (!is_dir($srcDir)) {
-    fwrite(STDERR, "[ERROR] src/ directory not found.\n");
-    exit(1);
-}
-
-require_once $projectRoot . '/vendor/autoload.php';
-
-$rii = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($srcDir));
-
-$classesProcessed = 0;
-
-foreach ($rii as $file) {
-    if (!$file->isFile() || $file->getExtension() !== 'php') {
-        continue;
-    }
-
-    $relativePath = str_replace($srcDir . '/', '', $file->getPathname());
-
-    try {
-        $classDocs = parsePhpFile($file->getPathname());
-    } catch (Throwable $e) {
-        // Skip files that cannot be parsed
-        fwrite(STDERR, "[WARN] Failed to parse {$relativePath}: {$e->getMessage()}\n");
-        continue;
-    }
-
-    foreach ($classDocs as $doc) {
-        $outPath = $docsDir . '/' . dirname($relativePath);
-        if (!is_dir($outPath)) {
-            mkdir($outPath, 0777, true);
-        }
-
-        $fileName = $outPath . '/' . $doc['name'] . '.md';
-        file_put_contents($fileName, buildMarkdown($doc));
-        $classesProcessed++;
-    }
-}
-
-updateProgressFile($projectRoot, $classesProcessed);
-
-echo "[OK] Generated documentation for {$classesProcessed} classes to {$docsDir}.\n";
-
-/******************** Вспомогательные функции ************************/ 
-
-/**
- * Парсит PHP файл и возвращает массив с информацией о документации для каждого
- * class/trait/interface/enum, содержащегося в файле.
- *
- * @param string $filePath
- * @return array<int, array<string, mixed>>
- */
-function parsePhpFile(string $filePath): array
+// Класс для генерации документации
+class DocGenerator
 {
-    $code    = file_get_contents($filePath);
-    $tokens  = token_get_all($code);
-    $classes = [];
+	private string $sourceDir;
+	private string $outputDir;
 
-    $namespace    = '';
-    $currentDoc   = null;
-    $collectNs    = false;
-    $nsParts      = [];
-    $collectClass = false;
-    $classInfo    = [];
-    $braceLevel   = 0;
+	public function __construct(string $sourceDir, string $outputDir)
+	{
+		$this->sourceDir = rtrim($sourceDir, '/\\') . DIRECTORY_SEPARATOR;
+		$this->outputDir = rtrim($outputDir, '/\\') . DIRECTORY_SEPARATOR;
+	}
 
-    for ($i = 0, $len = count($tokens); $i < $len; $i++) {
-        $token = $tokens[$i];
+	public function generate(): void
+	{
+		$this->rmdirRecursive($this->outputDir);
+		mkdir($this->outputDir, 0777, true);
 
-        if (is_array($token)) {
-            [$id, $text] = $token;
+		$files = $this->scanDirectory($this->sourceDir);
+		$groupedFiles = $this->groupFilesByDirectory($files);
 
-            switch ($id) {
-                case T_NAMESPACE:
-                    $collectNs = true;
-                    $nsParts   = [];
-                    break;
+		foreach ($groupedFiles as $dir => $filesInDir) {
+			$relativeDir = str_replace($this->sourceDir, '', rtrim($dir, '/\\') . DIRECTORY_SEPARATOR);
+			$outputDir = $this->outputDir . $relativeDir;
 
-                case T_DOC_COMMENT:
-                    $currentDoc = $text;
-                    break;
+			if (!is_dir($outputDir)) {
+				mkdir($outputDir, 0777, true);
+			}
 
-                case T_STRING:
-                    if ($collectNs) {
-                        $nsParts[] = $text;
-                    } elseif ($collectClass) {
-                        $classInfo['name']      = $text;
-                        $classInfo['namespace'] = $namespace;
-                        $classInfo['docblock']  = $currentDoc ?? '';
-                        $classInfo['methods']   = [];
-                        $collectClass           = false;
-                    }
-                    break;
+			foreach ($filesInDir as $file) {
+				$content = file_get_contents($file);
 
-                case T_CURLY_OPEN:
-                case T_DOLLAR_OPEN_CURLY_BRACES:
-                case ord('{'):
-                    $braceLevel++;
-                    break;
+				// Используем Reflection для получения имени класса и его методов
+				$classInfo = $this->getClassInfoFromFile($file);
 
-                case ord('}'):
-                    $braceLevel--;
-                    // Конец определения класса
-                    if ($braceLevel === 0 && !empty($classInfo)) {
-                        $classes[]   = $classInfo;
-                        $classInfo   = [];
-                        $currentDoc  = null;
-                    }
-                    break;
+				if ($classInfo) {
+					$className = $classInfo['name'];
+					$methods = $classInfo['methods'];
 
-                case T_CLASS:
-                case T_INTERFACE:
-                case T_TRAIT:
-                case T_ENUM:
-                    // Убеждаемся, что это не анонимный класс (ключевое слово 'class' за которым следует '('
-                    $nextToken = $tokens[$i + 1] ?? null;
-                    if (is_array($nextToken) && $nextToken[0] === T_WHITESPACE) {
-                        $nextToken = $tokens[$i + 2] ?? null;
-                    }
-                    if ($nextToken === '(') {
-                        // анонимный, пропускаем
-                        break;
-                    }
-                    $collectClass = true;
-                    break;
+					$markdownContent = "### {$className}\n\n";
 
-                case T_FUNCTION:
-                    if (empty($classInfo)) {
-                        break; // функция вне класса
-                    }
-                    // Захватываем имя функции
-                    $j = $i + 1;
-                    while (isset($tokens[$j]) && (is_array($tokens[$j]) && $tokens[$j][0] === T_WHITESPACE)) {
-                        $j++;
-                    }
-                    // Пропускаем символ & для ссылки
-                    if (is_array($tokens[$j]) && $tokens[$j][0] === (defined('T_BITWISE_AND') ? T_BITWISE_AND : ord('&'))) {
-                        $j++;
-                        while (isset($tokens[$j]) && (is_array($tokens[$j]) && $tokens[$j][0] === T_WHITESPACE)) {
-                            $j++;
-                        }
-                    }
-                    if (isset($tokens[$j]) && is_array($tokens[$j]) && $tokens[$j][0] === T_STRING) {
-                        $methodName               = $tokens[$j][1];
-                        $classInfo['methods'][]   = $methodName;
-                    }
-                    break;
+					foreach ($methods as $methodName => $methodInfo) {
+						$docBlock = $methodInfo['doc'];
 
-                default:
-                    // no-op
-            }
-        } else {
-            // Простые строковые токены '{' или '}' обрабатываются выше
-            if ($token === '{') {
-                $braceLevel++;
-            } elseif ($token === '}') {
-                $braceLevel--;
-                if ($braceLevel === 0 && !empty($classInfo)) {
-                    $classes[]  = $classInfo;
-                    $classInfo  = [];
-                    $currentDoc = null;
-                }
-            }
-        }
+						if ($docBlock) {
+							$doc = $this->parseDocBlock($docBlock);
+							if ($doc) {
+								$markdownContent .= $this->formatMethodMarkdown($methodName, $doc);
+							}
+						}
+					}
 
-        // Захватываем завершенный namespace
-        if ($collectNs && !is_array($token) && $token === ';') {
-            $namespace = implode('\\', $nsParts);
-            $collectNs = false;
-        }
-    }
+					file_put_contents("{$outputDir}{$className}.md", $markdownContent);
+				}
+			}
+		}
+	}
 
-    return $classes;
+	private function getClassInfoFromFile(string $file): ?array
+	{
+		require_once $file;
+
+		$className = '';
+		$methods = [];
+
+		$tokens = token_get_all(file_get_contents($file));
+		$count = count($tokens);
+		$i = 0;
+		$inClass = false;
+
+		while ($i < $count) {
+			$token = $tokens[$i];
+
+			if (is_array($token) && $token[0] === T_CLASS) {
+				$i = $this->findNext($tokens, $i, T_STRING);
+				$className = $tokens[$i][1];
+				$inClass = true;
+			}
+
+			if ($inClass && is_array($token) && $token[0] === T_DOC_COMMENT) {
+				$docComment = $token[1];
+				$i++; // Переходим к следующему токену
+
+				// Находим следующий T_FUNCTION
+				while ($i < $count && $tokens[$i][0] !== T_FUNCTION) {
+					$i++;
+				}
+
+				if ($i < $count) {
+					$i = $this->findNext($tokens, $i, T_STRING);
+					$methodName = $tokens[$i][1];
+					$methods[$methodName] = [
+						'doc' => $docComment
+					];
+				}
+			}
+			$i++;
+		}
+
+		if ($className) {
+			return [
+				'name' => $className,
+				'methods' => $methods
+			];
+		}
+
+		return null;
+	}
+
+	private function findNext(array $tokens, int $start, int $type): int
+	{
+		$i = $start;
+		while ($i < count($tokens)) {
+			if (is_array($tokens[$i]) && $tokens[$i][0] === $type) {
+				return $i;
+			}
+			$i++;
+		}
+		return -1;
+	}
+
+	private function scanDirectory(string $path): array
+	{
+		$rii = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path));
+		$files = [];
+		foreach ($rii as $file) {
+			if ($file->isDir() || $file->getExtension() !== 'php') {
+				continue;
+			}
+			$files[] = $file->getPathname();
+		}
+		return $files;
+	}
+
+	private function groupFilesByDirectory(array $files): array
+	{
+		$grouped = [];
+		foreach ($files as $file) {
+			$dir = dirname($file);
+			if (!isset($grouped[$dir])) {
+				$grouped[$dir] = [];
+			}
+			$grouped[$dir][] = $file;
+		}
+		return $grouped;
+	}
+
+	private function parseFile(string $content): ?array
+	{
+		// Ищем все PHPDoc-блоки
+		preg_match_all('~/\*\*(.*?)\*/~s', $content, $matches);
+
+		if (empty($matches[1])) {
+			return null;
+		}
+
+		$docs = [];
+		foreach ($matches[1] as $docBlock) {
+			$parsed = $this->parseDocBlock($docBlock);
+			if ($parsed) {
+				$docs[] = $parsed;
+			}
+		}
+
+		return $docs;
+	}
+
+	private function parseDocBlock(string $docBlock): ?array
+	{
+		$parsed = [
+			'description' => '',
+			'params'      => [],
+			'return'      => null,
+			'throws'      => [],
+			'example'     => null,
+			'see'         => [],
+			'link'        => null
+		];
+
+		$lines = explode("\n", $docBlock);
+
+		$descriptionLines = [];
+		$isExampleBlock = false;
+		$currentExample = [];
+
+		foreach ($lines as $line) {
+			$line = trim($line);
+
+			if (empty($line) || $line === '*') {
+				continue;
+			}
+
+			if (str_starts_with($line, '* ')) {
+				$line = substr($line, 2);
+			} elseif (str_starts_with($line, '*')) {
+				$line = substr($line, 1);
+			}
+			$line = trim($line);
+
+			if (str_starts_with($line, '```')) {
+				$isExampleBlock = !$isExampleBlock;
+				if ($isExampleBlock) {
+					$currentExample[] = $line;
+				} else {
+					$currentExample[] = $line;
+					$parsed['example'] = implode("\n", $currentExample);
+					$currentExample = [];
+				}
+				continue;
+			}
+
+			if ($isExampleBlock) {
+				$currentExample[] = $line;
+			} elseif (str_starts_with($line, '@')) {
+				if (str_starts_with($line, '@param')) {
+					if (preg_match('/^@param\s+(?P<type>[\w|\\\<>\[\]]+)\s+(?P<name>\$\w+)\s*(?P<description>.*)$/s', $line, $matches)) {
+						$parsed['params'][] = [
+							'type' => $matches['type'],
+							'name' => $matches['name'],
+							'description' => trim($matches['description'])
+						];
+					}
+				} elseif (str_starts_with($line, '@return')) {
+					$parts = preg_split('/\s+/', substr($line, 8), 2);
+					$parsed['return'] = [
+						'type' => $parts[0],
+						'description' => $parts[1] ?? ''
+					];
+				} elseif (str_starts_with($line, '@throws')) {
+					$parts = preg_split('/\s+/', substr($line, 8), 2);
+					$parsed['throws'][] = [
+						'type' => $parts[0],
+						'description' => $parts[1] ?? ''
+					];
+				} elseif (str_starts_with($line, '@see')) {
+					$parts = preg_split('/\s+/', substr($line, 5), 2);
+					$parsed['see'][] = [
+						'link' => $parts[0],
+						'description' => $parts[1] ?? ''
+					];
+				} elseif (str_starts_with($line, '@link')) {
+					$parts = preg_split('/\s+/', substr($line, 6), 2);
+					$parsed['link'] = $parts[0];
+				}
+			} else {
+				$descriptionLines[] = $line;
+			}
+		}
+
+		$parsed['description'] = implode(' ', $descriptionLines);
+
+		return $parsed;
+	}
+
+	private function formatMethodMarkdown(string $methodName, array $doc): string
+	{
+		$output = "#### `{$methodName}()`\n\n"; // Заголовок метода
+
+		if (!empty($doc['description'])) {
+			$output .= "**Описание:** {$doc['description']}\n\n";
+		}
+
+		if (!empty($doc['example'])) {
+			$output .= "**Пример:**\n{$doc['example']}\n\n";
+		}
+
+		if (!empty($doc['params'])) {
+			$output .= "**Параметры:**\n\n";
+			foreach ($doc['params'] as $param) {
+				$output .= "* `{$param['name']}` ({$param['type']}): {$param['description']}\n";
+			}
+			$output .= "\n";
+		}
+
+		if (!empty($doc['return'])) {
+			$output .= "**Возвращает:** `{$doc['return']['type']}` {$doc['return']['description']}\n\n";
+		}
+
+		if (!empty($doc['throws'])) {
+			$output .= "**Исключения:**\n\n";
+			foreach ($doc['throws'] as $throw) {
+				$output .= "* `{$throw['type']}`: {$throw['description']}\n";
+			}
+			$output .= "\n";
+		}
+
+		return $output;
+	}
+
+	private function rmdirRecursive(string $dir): void
+	{
+		if (!is_dir($dir)) {
+			return;
+		}
+		$files = array_diff(scandir($dir), ['.', '..']);
+		foreach ($files as $file) {
+			(is_dir("$dir/$file")) ? $this->rmdirRecursive("$dir/$file") : unlink("$dir/$file");
+		}
+		rmdir($dir);
+	}
 }
 
-/**
- * Строит markdown строку из распарсенной информации о классе
- *
- * @param array<string, mixed> $classInfo
- */
-function buildMarkdown(array $classInfo): string
-{
-    $fqcn   = $classInfo['namespace'] ? $classInfo['namespace'] . '\\' . $classInfo['name'] : $classInfo['name'];
-    $doc    = cleanDocblock($classInfo['docblock'] ?? '') ?: 'Описание отсутствует.';
-    $md  = "# {$classInfo['name']}\n\n";
-    $md .= "**Полное имя:** `{$fqcn}`\n\n";
-    $md .= "## Описание\n\n{$doc}\n\n";
-
-    if (!empty($classInfo['methods'])) {
-        $md .= "## Методы\n\n";
-        foreach ($classInfo['methods'] as $method) {
-            $md .= "- `{$method}()`\n";
-        }
-        $md .= "\n";
-    }
-
-    return $md;
-}
-
-/**
- * Удаляет маркеры комментариев из PHPDoc блока
- */
-function cleanDocblock(string $doc): string
-{
-    $lines = explode("\n", $doc);
-    $clean = [];
-    foreach ($lines as $line) {
-        $line = trim($line, "\t *\/");
-        if ($line === '' || str_starts_with($line, '@')) {
-            continue; // Пропускаем пустые строки и строки с аннотациями
-        }
-        $clean[] = $line;
-    }
-    return trim(implode("\n", $clean));
-}
-
-/**
- * Добавляет простое резюме в DOCUMENTATION_PROGRESS.md
- */
-function updateProgressFile(string $projectRoot, int $classesProcessed): void
-{
-    $progressFile = $projectRoot . '/DOCUMENTATION_PROGRESS.md';
-    if (!is_file($progressFile)) {
-        return;
-    }
-
-    $summary = "\n---\n\n### Автоматическая генерация документации\n" .
-               "Документация была сгенерирована для **{$classesProcessed}** классов: " . date('Y-m-d H:i:s') . "\n";
-
-    file_put_contents($progressFile, $summary, FILE_APPEND | LOCK_EX);
-}
+$generator = new DocGenerator('src/', 'docs/');
+$generator->generate();

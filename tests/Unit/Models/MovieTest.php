@@ -359,7 +359,8 @@ class MovieTest extends TestCase {
 	/**
 	 * @dataProvider validYearProvider
 	 */
-	public function test_validate_withValidYears_returnsTrue(int $year): void {
+	public function test_validate_withValidYears_returnsTrue(): void {
+		$year = $this->validYearProvider()[array_rand($this->validYearProvider())][0];
 		$movie = new Movie(id: 123, year: $year);
 
 		$result = $movie->validate();
@@ -379,7 +380,8 @@ class MovieTest extends TestCase {
 	/**
 	 * @dataProvider invalidYearProvider
 	 */
-	public function test_validate_withInvalidYears_throwsException(int $year): void {
+	public function test_validate_withInvalidYears_throwsException(): void {
+		$year = $this->invalidYearProvider()[array_rand($this->invalidYearProvider())][0];
 		$movie = new Movie(id: 123, year: $year);
 
 		$this->expectException(ValidationException::class);

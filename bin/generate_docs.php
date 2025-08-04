@@ -153,7 +153,7 @@ function parsePhpFile(string $filePath): array
                         $j++;
                     }
                     // Пропускаем символ & для ссылки
-                    if (is_array($tokens[$j]) && $tokens[$j][0] === T_BITWISE_AND) {
+                    if (is_array($tokens[$j]) && $tokens[$j][0] === (defined('T_BITWISE_AND') ? T_BITWISE_AND : ord('&'))) {
                         $j++;
                         while (isset($tokens[$j]) && (is_array($tokens[$j]) && $tokens[$j][0] === T_WHITESPACE)) {
                             $j++;

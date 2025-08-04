@@ -181,12 +181,12 @@ Dependabot создает Pull Request'ы с обновлениями завис
 - [Официальная документация API](https://kinopoiskdev.readme.io/)
 - [Сайт Kinopoisk.dev](https://kinopoisk.dev/)
 - [Telegram бот для получения токена](https://t.me/kinopoiskdev_bot)
-- [GitHub репозиторий](https://github.com/your-username/kinopoisk-dev-client)
+- [GitHub репозиторий](https://github.com/DevCraftClub/KinopoiskDevPHP)
 
 ## 📞 Поддержка
 
 Если у вас есть вопросы или проблемы:
 
-1. Проверьте [существующие issues](https://github.com/your-username/kinopoisk-dev-client/issues)
+1. Проверьте [существующие issues](https://github.com/DevCraftClub/KinopoiskDevPHP/issues)
 2. Создайте новый issue с детальным описанием
 3. Напишите в [Telegram чат](https://t.me/kinopoiskdev_chat)

@@ -20,94 +20,126 @@ class DocGenerator
 	public function generate(): void
 	{
 		$this->rmdirRecursive($this->outputDir);
-		mkdir($this->outputDir, 0777, true);
+		if (!mkdir($concurrentDirectory = $this->outputDir, 0777, TRUE) && !is_dir($concurrentDirectory)) {
+			throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+		}
 
 		$files = $this->scanDirectory($this->sourceDir);
 		$groupedFiles = $this->groupFilesByDirectory($files);
+		$linkContent = "# Содержание\n\n";
 
 		foreach ($groupedFiles as $dir => $filesInDir) {
 			$relativeDir = str_replace($this->sourceDir, '', rtrim($dir, '/\\') . DIRECTORY_SEPARATOR);
 			$outputDir = $this->outputDir . $relativeDir;
+			$linkContent .= "## {$relativeDir}\n\n";
 
-			if (!is_dir($outputDir)) {
-				mkdir($outputDir, 0777, true);
+			if (!is_dir($outputDir) && !mkdir($outputDir, 0777, TRUE) && !is_dir($outputDir)) {
+				throw new \RuntimeException(sprintf('Directory "%s" was not created', $outputDir));
 			}
 
 			foreach ($filesInDir as $file) {
-				$content = file_get_contents($file);
+				$fullClassName = $this->extractFullClassNameFromFile($file);
 
-				// Используем Reflection для получения имени класса и его методов
-				$classInfo = $this->getClassInfoFromFile($file);
+				if ($fullClassName && (class_exists($fullClassName) || interface_exists($fullClassName) || enum_exists($fullClassName))) {
+					$reflection = new ReflectionClass($fullClassName);
+					$className = $reflection->getShortName();
 
-				if ($classInfo) {
-					$className = $classInfo['name'];
-					$methods = $classInfo['methods'];
+					// Если имя файла не совпадает с именем класса, то это может быть некорректный файл, пропускаем.
+					// Например, если файл называется Kinopoisk.php, а класс - Movie.
+					if (basename($file, '.php') !== $className) {
+						continue;
+					}
 
-					$markdownContent = "### {$className}\n\n";
+					$markdownContent = "# {$className}\n\n";
 
-					foreach ($methods as $methodName => $methodInfo) {
-						$docBlock = $methodInfo['doc'];
+					// Парсинг документации класса/интерфейса/enum
+					$classDocBlock = $reflection->getDocComment();
+					if ($classDocBlock) {
+						$doc = $this->parseDocBlock($classDocBlock);
+						$markdownContent .= $this->formatDocBlockMarkdown($doc);
+					}
 
-						if ($docBlock) {
-							$doc = $this->parseDocBlock($docBlock);
-							if ($doc) {
-								$markdownContent .= $this->formatMethodMarkdown($methodName, $doc);
+					// Парсинг документации методов
+					foreach ($reflection->getMethods() as $method) {
+						if ($method->getDeclaringClass()->getName() === $reflection->getName()) {
+							$methodDocBlock = $method->getDocComment();
+							if ($methodDocBlock) {
+								$doc = $this->parseDocBlock($methodDocBlock);
+								$markdownContent .= $this->formatMethodMarkdown($method->getName(), $doc);
 							}
 						}
 					}
 
+					// Парсинг документации enum cases
+					if ($reflection->isEnum()) {
+						$markdownContent .= $this->formatEnumCasesMarkdown($reflection);
+					}
+
 					file_put_contents("{$outputDir}{$className}.md", $markdownContent);
+					$linkContent .= "* [{$className}]({$relativeDir}{$className}.md)\n";
 				}
 			}
 		}
+		file_put_contents("{$this->outputDir}README.md", $linkContent);
 	}
 
-	private function getClassInfoFromFile(string $file): ?array
+	private function extractFullClassNameFromFile(string $file): ?string
 	{
-		require_once $file;
-
+		$content = file_get_contents($file);
+		$namespace = '';
 		$className = '';
-		$methods = [];
 
-		$tokens = token_get_all(file_get_contents($file));
+		$tokens = token_get_all($content);
 		$count = count($tokens);
 		$i = 0;
-		$inClass = false;
 
 		while ($i < $count) {
 			$token = $tokens[$i];
 
-			if (is_array($token) && $token[0] === T_CLASS) {
-				$i = $this->findNext($tokens, $i, T_STRING);
-				$className = $tokens[$i][1];
-				$inClass = true;
-			}
-
-			if ($inClass && is_array($token) && $token[0] === T_DOC_COMMENT) {
-				$docComment = $token[1];
-				$i++; // Переходим к следующему токену
-
-				// Находим следующий T_FUNCTION
-				while ($i < $count && $tokens[$i][0] !== T_FUNCTION) {
+			if (is_array($token) && $token[0] === T_NAMESPACE) {
+				$i++;
+				// Пропускаем пробелы
+				while ($i < $count && is_array($tokens[$i]) && $tokens[$i][0] === T_WHITESPACE) {
 					$i++;
 				}
-
-				if ($i < $count) {
-					$i = $this->findNext($tokens, $i, T_STRING);
-					$methodName = $tokens[$i][1];
-					$methods[$methodName] = [
-						'doc' => $docComment
-					];
+				// Читаем namespace
+				if ($i < $count && is_array($tokens[$i])) {
+					if ($tokens[$i][0] === T_NAME_QUALIFIED) {
+						$namespace = $tokens[$i][1];
+					} elseif ($tokens[$i][0] === T_STRING) {
+						$namespace = $tokens[$i][1];
+						$i++;
+						while ($i < $count && is_array($tokens[$i]) && $tokens[$i][0] === T_NS_SEPARATOR) {
+							$namespace .= '\\';
+							$i++;
+							if ($i < $count && is_array($tokens[$i]) && $tokens[$i][0] === T_STRING) {
+								$namespace .= $tokens[$i][1];
+								$i++;
+							}
+						}
+					}
 				}
+			}
+
+			if (is_array($token) && ($token[0] === T_CLASS || $token[0] === T_INTERFACE || $token[0] === T_ENUM)) {
+				$i++;
+				// Пропускаем пробелы
+				while ($i < $count && is_array($tokens[$i]) && $tokens[$i][0] === T_WHITESPACE) {
+					$i++;
+				}
+				// Читаем имя класса
+				if ($i < $count && is_array($tokens[$i]) && $tokens[$i][0] === T_STRING) {
+					$className = $tokens[$i][1];
+				}
+				break;
 			}
 			$i++;
 		}
 
-		if ($className) {
-			return [
-				'name' => $className,
-				'methods' => $methods
-			];
+		if ($namespace && $className) {
+			return "{$namespace}\\{$className}";
+		} elseif ($className) {
+			return $className;
 		}
 
 		return null;
@@ -123,6 +155,18 @@ class DocGenerator
 			$i++;
 		}
 		return -1;
+	}
+
+	private function rmdirRecursive(string $dir): void
+	{
+		if (!is_dir($dir)) {
+			return;
+		}
+		$files = array_diff(scandir($dir), ['.', '..']);
+		foreach ($files as $file) {
+			(is_dir("$dir/$file")) ? $this->rmdirRecursive("$dir/$file") : unlink("$dir/$file");
+		}
+		rmdir($dir);
 	}
 
 	private function scanDirectory(string $path): array
@@ -151,40 +195,25 @@ class DocGenerator
 		return $grouped;
 	}
 
-	private function parseFile(string $content): ?array
-	{
-		// Ищем все PHPDoc-блоки
-		preg_match_all('~/\*\*(.*?)\*/~s', $content, $matches);
-
-		if (empty($matches[1])) {
-			return null;
-		}
-
-		$docs = [];
-		foreach ($matches[1] as $docBlock) {
-			$parsed = $this->parseDocBlock($docBlock);
-			if ($parsed) {
-				$docs[] = $parsed;
-			}
-		}
-
-		return $docs;
-	}
-
 	private function parseDocBlock(string $docBlock): ?array
 	{
 		$parsed = [
 			'description' => '',
-			'params'      => [],
-			'return'      => null,
-			'throws'      => [],
-			'example'     => null,
-			'see'         => [],
-			'link'        => null
+			'params' => [],
+			'return' => NULL,
+			'throws' => [],
+			'example' => NULL,
+			'see' => [],
+			'link' => NULL,
+			'since' => NULL,
+			'version' => NULL,
+			'api' => NULL,
 		];
 
+		// Очищаем от символов комментариев
+		$docBlock = preg_replace('/^\/\*\*|\*\/$/', '', $docBlock);
+		
 		$lines = explode("\n", $docBlock);
-
 		$descriptionLines = [];
 		$isExampleBlock = false;
 		$currentExample = [];
@@ -223,51 +252,167 @@ class DocGenerator
 						$parsed['params'][] = [
 							'type' => $matches['type'],
 							'name' => $matches['name'],
-							'description' => trim($matches['description'])
+							'description' => trim($matches['description']),
 						];
 					}
 				} elseif (str_starts_with($line, '@return')) {
-					$parts = preg_split('/\s+/', substr($line, 8), 2);
-					$parsed['return'] = [
-						'type' => $parts[0],
-						'description' => $parts[1] ?? ''
-					];
+					if (preg_match('/^(?P<type>[\w|\\\<>\[\],\s]+)(?:\s+(?P<description>.*))?$/s', substr($line, 8), $matches)) {
+						$parsed['return'] = [
+							'type' => trim($matches['type']),
+							'description' => trim($matches['description'] ?? ''),
+						];
+					}
 				} elseif (str_starts_with($line, '@throws')) {
-					$parts = preg_split('/\s+/', substr($line, 8), 2);
-					$parsed['throws'][] = [
-						'type' => $parts[0],
-						'description' => $parts[1] ?? ''
-					];
+					if (preg_match('/^(?P<type>[\w|\\\<>\[\],\s]+)(?:\s+(?P<description>.*))?$/s', substr($line, 8), $matches)) {
+						$parsed['throws'][] = [
+							'type' => trim($matches['type']),
+							'description' => trim($matches['description'] ?? ''),
+						];
+					}
 				} elseif (str_starts_with($line, '@see')) {
-					$parts = preg_split('/\s+/', substr($line, 5), 2);
-					$parsed['see'][] = [
-						'link' => $parts[0],
-						'description' => $parts[1] ?? ''
-					];
+					if (preg_match('/^@see\s+(?P<link>[\w|\\\<>:\[\]]+)\s*(?P<description>.*)$/s', $line, $matches)) {
+						$parsed['see'][] = [
+							'link' => trim($matches['link']),
+							'description' => trim($matches['description']),
+						];
+					}
 				} elseif (str_starts_with($line, '@link')) {
 					$parts = preg_split('/\s+/', substr($line, 6), 2);
 					$parsed['link'] = $parts[0];
+				} elseif (str_starts_with($line, '@since')) {
+					$parts = preg_split('/\s+/', substr($line, 7), 2);
+					$parsed['since'] = $parts[1] ?? $parts[0];
+				} elseif (str_starts_with($line, '@version')) {
+					$parts = preg_split('/\s+/', substr($line, 9), 2);
+					$parsed['version'] = $parts[1] ?? $parts[0];
+				} elseif (str_starts_with($line, '@api')) {
+					$parts = preg_split('/\s+/', substr($line, 5), 2);
+					$parsed['api'] = $parts[1] ?? $parts[0];
 				}
 			} else {
 				$descriptionLines[] = $line;
 			}
 		}
 
-		$parsed['description'] = implode(' ', $descriptionLines);
+		// Объединяем описание, сохраняя переносы строк
+		$parsed['description'] = implode("\n", $descriptionLines);
+		// Убираем лишние пробелы в начале и конце
+		$parsed['description'] = trim($parsed['description']);
 
 		return $parsed;
 	}
 
-	private function formatMethodMarkdown(string $methodName, array $doc): string
+	private function formatDocBlockMarkdown(array $doc): string
 	{
-		$output = "#### `{$methodName}()`\n\n"; // Заголовок метода
+		$output = '';
 
 		if (!empty($doc['description'])) {
 			$output .= "**Описание:** {$doc['description']}\n\n";
 		}
 
+		if (!empty($doc['since'])) {
+			$output .= "**С версии:** {$doc['since']}\n\n";
+		}
+
+		if (!empty($doc['version'])) {
+			$output .= "**Версия:** {$doc['version']}\n\n";
+		}
+
+		if (!empty($doc['api'])) {
+			$output .= "**API Endpoint:** `{$doc['api']}`\n\n";
+		}
+
 		if (!empty($doc['example'])) {
 			$output .= "**Пример:**\n{$doc['example']}\n\n";
+		}
+
+		if (!empty($doc['see'])) {
+			$output .= "**См. также:**\n\n";
+			foreach ($doc['see'] as $see) {
+				$output .= "* `{$see['link']}`: {$see['description']}\n";
+			}
+			$output .= "\n";
+		}
+
+		if (!empty($doc['link'])) {
+			$output .= "**Ссылка:** {$doc['link']}\n\n";
+		}
+
+		return $output;
+	}
+
+	private function formatEnumCasesMarkdown(ReflectionClass $reflection): string
+	{
+		$output = '';
+		
+		// Проверяем, является ли это enum
+		if ($reflection->isEnum()) {
+			$className = $reflection->getName();
+			
+			// Получаем все cases через UnitEnum::cases()
+			$cases = $className::cases();
+			
+			if (!empty($cases)) {
+				$output .= "## Cases\n\n";
+				
+				foreach ($cases as $case) {
+					$caseName = $case->name;
+					$caseValue = $case->value;
+					
+					// Форматируем значение в зависимости от типа
+					if (is_string($caseValue)) {
+						$formattedValue = "'{$caseValue}'";
+					} elseif (is_int($caseValue)) {
+						$formattedValue = $caseValue;
+					} elseif (is_bool($caseValue)) {
+						$formattedValue = $caseValue ? 'true' : 'false';
+					} else {
+						$formattedValue = var_export($caseValue, true);
+					}
+					
+					$output .= "### `{$caseName}`\n\n";
+					$output .= "**Значение:** `{$formattedValue}`\n\n";
+					
+					// Добавляем документацию case, если есть
+					// Для этого нужно найти ReflectionConstant по имени
+					$reflectionConstants = $reflection->getReflectionConstants();
+					foreach ($reflectionConstants as $constant) {
+						if ($constant->getName() === $caseName) {
+							$caseDoc = $constant->getDocComment();
+							if ($caseDoc) {
+								$doc = $this->parseDocBlock($caseDoc);
+								if (!empty($doc['description'])) {
+									$output .= "**Описание:** {$doc['description']}\n\n";
+								}
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+		
+		return $output;
+	}
+
+	private function formatMethodMarkdown(string $methodName, array $doc): string
+	{
+		$output = "## `{$methodName}()`\n\n";
+
+		if (!empty($doc['description'])) {
+			$output .= "**Описание:** {$doc['description']}\n\n";
+		}
+
+		if (!empty($doc['since'])) {
+			$output .= "**С версии:** {$doc['since']}\n\n";
+		}
+
+		if (!empty($doc['version'])) {
+			$output .= "**Версия:** {$doc['version']}\n\n";
+		}
+
+		if (!empty($doc['api'])) {
+			$output .= "**API Endpoint:** `{$doc['api']}`\n\n";
 		}
 
 		if (!empty($doc['params'])) {
@@ -290,21 +435,28 @@ class DocGenerator
 			$output .= "\n";
 		}
 
-		return $output;
-	}
+		if (!empty($doc['example'])) {
+			$output .= "**Пример:**\n{$doc['example']}\n\n";
+		}
 
-	private function rmdirRecursive(string $dir): void
-	{
-		if (!is_dir($dir)) {
-			return;
+		if (!empty($doc['see'])) {
+			$output .= "**См. также:**\n\n";
+			foreach ($doc['see'] as $see) {
+				$output .= "* `{$see['link']}`: {$see['description']}\n";
+			}
+			$output .= "\n";
 		}
-		$files = array_diff(scandir($dir), ['.', '..']);
-		foreach ($files as $file) {
-			(is_dir("$dir/$file")) ? $this->rmdirRecursive("$dir/$file") : unlink("$dir/$file");
+
+		if (!empty($doc['link'])) {
+			$output .= "**Ссылка:** {$doc['link']}\n\n";
 		}
-		rmdir($dir);
+
+		return $output;
 	}
 }
 
-$generator = new DocGenerator('src/', 'docs/');
+// Запуск генератора документации
+$generator = new DocGenerator(__DIR__ . '/../src', __DIR__ . '/../docs');
 $generator->generate();
+
+echo "Документация сгенерирована в папке docs/\n";

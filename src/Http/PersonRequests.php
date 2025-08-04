@@ -173,7 +173,7 @@ class PersonRequests extends Kinopoisk {
 		$filters->addFilter('limit', $limit);
 		$queryParams = $filters->getFilters();
 
-		$response = $this->makeRequest('GET', '/person', $queryParams);
+		$response = $this->makeRequest('GET', 'person', $queryParams);
 		$data     = $this->parseResponse($response);
 
 		return new PersonDocsResponseDto(

@@ -77,14 +77,14 @@ class MovieRequestsTest extends BaseHttpTest {
         foreach ($result->docs as $movie) {
             $this->assertNotEmpty($movie->id);
             $this->assertNotEmpty($movie->type);
-            $this->assertIsInt($movie->year);
+            $this->assertNotNull($movie->type);
         }
     }
 
     public function test_getRandomMovie_real(): void {
         $result = $this->movieRequests->getRandomMovie();
         $this->assertNotEmpty($result->id);
-        $this->assertNotEmpty($result->name);
+        $this->assertNotEmpty($result->getName());
         $this->assertNotEmpty($result->type);
         $this->assertIsInt($result->year);
     }

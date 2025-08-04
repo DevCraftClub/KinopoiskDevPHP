@@ -457,4 +457,22 @@ use Lombok\Getter;
 		return $data;
 	}
 
+
+	/**
+	 * Возвращает наиболее подходящее название фильма.
+	 *
+	 * Метод последовательно проверяет наличие русского названия (`name`),
+	 * альтернативного названия (`alternativeName`) и английского названия (`enName`).
+	 * Возвращается первое найденное не-null значение. Если все названия отсутствуют,
+	 * возвращается пустая строка.
+	 *
+	 * @see Movie::$name
+	 * @see Movie::$alternativeName
+	 * @see Movie::$enName
+	 * @return string Название фильма или пустая строка, если ни одно из названий не доступно.
+	 * @since 1.0.0
+	 */
+	public function getName(): string {
+		return $this->name?? $this->alternativeName?? $this->enName?? '';
+	}
 }
